@@ -1,66 +1,74 @@
 ---
 layout: post
-title: (Working Title) Where do I testing helpers, fakes, and mocks in Go?
+title: Where do I put my mocks in Go?
+tags: golang go mock test testing production binary stub package API godoc gomock
 ---
 
-Sometimes when testing, it can be useful to have:
+#Introduction
 
-* testing frameworks
-* test helper functions
-* test fixtures
-* fakes
-* mocks
-* stubs
-* etc.
+Go's toolchain provides a mechanism to help prevent test code from being
+included in production binaries. It should be obvious why this is useful; if
+stubs or mocks intended for testing make their way your production system, they
+may cause it to fail silently in catastrophic and unexpected ways. This is
+especially a concern if you don't have automated application and integration
+tests in place. Imagine if you somehow end up with a stubbed out authentication
+manager that always returns `true` when asked if a user has administration
+privileges. Yikes.
 
-For convenience, I will refer to all of these as _testing utilities_.
+This blog post will explain this mechanism, along with some of the ways you can
+most effectively take advantage it, especially when dealing with mocks and
+stubs.
 
-These pieces of code are useful when testing, but for reasons that should be
-obvious, you don't want them anywhere near your production artifacts. This is
-especially the case for mocks, fakes, and stubs, since these things implement
-interfaces that are actually used in production code.
+#The Mechanism
 
-Sure, you can say "that could never happen to us". And you're right, it won't
-happen... until it does.
+It's well known that the `go test` tool looks in files that end in `_test.go`
+for tests to run. What is less well known is that these `*_test.go` files are
+_excluded_ from binaries built using `go build` and `go install`.
 
-Go and its toolchain imposes a fairly rigid method of storing test code. The
-tests themselves must be contained in files that end in `_test.go`. If they're
-not, then `go test` won't be able to find the tests. Files that end in
-`_test.go` are only included in builds made using `go test`. These files are
-_not_ included in normal builds produced using `go install` or `go build`.
+Excellent! This means we can put all of our testing stubs and mocks in the
+`*_test.go` files and they will never accidentally be included in production
+binaries!
 
-Because files ending in `_test.go` aren't compiled into the production
-artifacts, they _seem_ like the perfect place to put testing utilities. If
-you're testing a struct called `foo`, then `foo_test.go` is a great place to
-put the tests, any testing fixtures required, along with any helper functions
-specific to `foo`.
+#The Problem
 
-This breaks down when testing utilities are needed by the tests for more than
-one package. Identifiers defined in files ending in `_test.go` are only visible
-from other files if and only if:
+This works well most of the time. You have an interface `Foo` declared in
+package `foo`, and a mocked out implementation `MockFoo` also in package `foo`
+but in a file named `mock_foo_test.go`. This works great, you can use `MockFoo`
+instead of the real implementation for all of your tests in package `foo`!
 
-* the other file ends in `_test.go`, and
-* the other file is in the same package.
+But what if you want to use `MockFoo` for tests in packages `garply` and
+`waldo`? Unfortunately you can't. Because `MockFoo` is declared in a file
+ending in `_test.go`, it can only be used in tests contained in the same
+package.
 
-In order for testing utilities to be used in tests from two different packages,
-the testing utilities must _not_ be in files that end in `_test.go`, which
-removes some of the protection against accidentally including test code in
-production artifacts. This is the approach taken by
-[some](https://code.google.com/p/gomock/) [common](https://labix.org/gocheck)
-[testing](http://goconvey.co/) [frameworks](http://onsi.github.io/ginkgo/).
+#The Solutions
 
-I consider accidentally including mocks in production artifacts as to posing a
-different level of risk compared to doing the same for testing frameworks. Say
-you have an interface `Baz` in package `quux`. `Baz` is used as a dependency in
-packages `waldo` and `garply`. `MockBaz`, a mock of `Baz` by definition
-satisfies the `Baz` interface. You _really_ don't want the mock to be included
-in any production artifact. But in order to allow tests in `waldo` and `garply`
-access to the mock , it must live in a file that _doesn't_ end in `_test.go`
-(probably called `mock_baz.go` or similar).
+There are a two obvious ways to work around this:
 
-An alternate approach would be to include a copy of `MockBaz` in both `waldo`
-and `garply`. `MockBaz` can be placed in files named `mock_baz_test.go` (one
-copy in each package). This brings back the additional layer of safty that
-prevents test code ending up in production. The downside is that multiple
-copies of `MockBaz` exist, violating the DRY principal.  However I don't think
-it matters so much in this case since the repeated code is generated.
+* Rename the file containing `MockFoo` from `mock_foo_test.go` to
+  `mock_foo.go`. Now that it's not a test file, it can be accessed from other
+packages.
+* Copy `mock_foo_test.go` into the other packages that need it (modifying the
+  package declaration to match its destination package).
+
+There are same drawbacks to both approaches.
+
+In the first approach, we lose the guarantee that `MockFoo` won't accidentally
+be included the production binary.  As an additional annoyance, `MockFoo` is
+now part of the public API, and as such will appear in listings produced by the
+`godoc` tool.
+
+The second approach violates the [DRY
+principal](http://c2.com/cgi/wiki?DontRepeatYourself). If the interface
+changes, you then have to go and change all of the mocks. If you're manually
+rolling your own mocks, the process of updating them all could be error prone.
+
+In my opinion, the second approach is the better of the two, especially when
+considering that mocks can be generated automatically with tools such as
+[gomock](https://code.google.com/p/gomock/). If you write a small script that
+generates all of the mocks in your project using gomock, then you just have to
+run it whenever you change an interface that is being mocked out. Since the
+mocks are generated _from_ the interface, I don't think that the DRY principal
+is of great importance here.
+
+Happy testing!
