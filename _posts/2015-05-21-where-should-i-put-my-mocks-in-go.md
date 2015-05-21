@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Where do I put my mocks in Go?
+title: Where should I put my mocks in Go?
 tags: golang go mock test testing production binary stub package API godoc gomock
 ---
 
