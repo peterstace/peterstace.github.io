@@ -51,7 +51,7 @@ packages.
 * Copy `mock_foo_test.go` into the other packages that need it (modifying the
   package declaration to match its destination package).
 
-There are same drawbacks to both approaches.
+There are some drawbacks to both approaches.
 
 In the first approach, we lose the guarantee that `MockFoo` won't accidentally
 be included the production binary.  As an additional annoyance, `MockFoo` is
