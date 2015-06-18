@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Heterogeneous JSON decoding in Go
-tags: XXX
+tags: go, golang, json, heterogeneous, homogeneous, marshal, unmarshal, regular, irregular
 ---
 
 The Go standard library has an awesome [JSON encoding and decoding
@@ -80,7 +80,7 @@ the [Unmarshaler](http://golang.org/pkg/encoding/json/#Unmarshaler) interface.
 
     func (w *World) UnmarshalJSON(p []byte) error {
     
-    	// Unmarshal the homogeneous parts of the JSON value.
+    	// Unmarshal the regular parts of the JSON value.
     	record := struct {
     		Colour   string
     		Material string
@@ -92,7 +92,7 @@ the [Unmarshaler](http://golang.org/pkg/encoding/json/#Unmarshaler) interface.
     	w.Colour = record.Colour
     	w.Material = record.Material
     
-    	// Go back to the heterogeneous parts, find each type and unmarshal accordingly.
+    	// Go back to the irregular parts, find each type and unmarshal accordingly.
     	for _, rawObject := range record.Objects {
     
     		// Find the type.
