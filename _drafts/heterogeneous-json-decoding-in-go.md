@@ -18,9 +18,9 @@ upfront, you can instead pass in a `map[string]interface{}`, and that will be
 populated instead. Type assertions can then be used on the empty interfaces to
 determine what actually got decoded.
 
-But what if you know the precise structure of the JSON, but it's not 'regular'?
+But what if you know the precise structure of the JSON, but it's not _regular_?
 For example, the following JSON value represents a ray tracer scene. The array
-`"Objects"` contains a precise structure, but each element isn't of the same
+`"Objects"` contains a known structure, but each element isn't of the same
 type. Objects of type `"box"` will always have `"Corner1"` and `"Corner2"`
 fields, and objects of type `"sphere"` will always have `"Centre"` and
 `"Radius"` fields.
@@ -42,7 +42,7 @@ fields, and objects of type `"sphere"` will always have `"Centre"` and
     	]
     }
 
-I want to decode the JSON value into the follow data structure:
+I want to decode the JSON value into the follow Go data structure:
 
     type World struct {
     	Colour   string
@@ -57,32 +57,26 @@ I want to decode the JSON value into the follow data structure:
     type Box struct {
     	Corner1, Corner2 Vect
     }
+    func (b Box) Contains(Vect) bool { ... }
     
     type Sphere struct {
     	Centre Vect
     	Radius float64
     }
+    func (s Sphere) Contains(Vect) bool { ... }
     
     type Vect struct {
     	X, Y, Z float64
     }
 
-Go can't unmarshal the JSON value into `World` out of the box. The `Unmarshal`
-error will return an error "json: cannot unmarshal object into Go value of type
-main.Object".
+Go can't unmarshal the JSON value into `World` directly. The `json.Unmarshal`
+function will return an error "json: cannot unmarshal object into Go value of
+type main.Object". This makes sense, since the JSON value and the `World` Go
+type both have fields named `Objects`, but `Object` is a Go interface, so
+cannot be unmarshalled into.
 
-The solution is to have `World` implement the
-[Unmarshaler](http://golang.org/pkg/encoding/json/#Unmarshaler) interface. The
-implementation should directly unmarshal and populate the `Colour` and
-`Material` fields of `World`. Then for each element of the `"Objects"` array,
-the appropriate unmarshalling can take place depending on if we have a box or a
-sphere. This is essentially a two-pass unmarshal. First decode the type, then
-decode the object itself now that we know the type. This can be achieved with
-the [json.RawMessage](http://golang.org/pkg/encoding/json/#RawMessage) type,
-which allows unmarshalling of a sub piece of the JSON value to be unmarshalled
-later.
-
-The implementation of the `Unmarshaler` interface is show below.
+We need to perform custom unmarshalling into the `World` type by implementing
+the [Unmarshaler](http://golang.org/pkg/encoding/json/#Unmarshaler) interface.
 
     func (w *World) UnmarshalJSON(p []byte) error {
     
@@ -125,3 +119,13 @@ The implementation of the `Unmarshaler` interface is show below.
     	}
     	return nil
     }
+
+So what's happening here? We are essentially doing the following:
+
+1. Create a variable called `record` that allows us to decode the regular parts
+   (`Colour` and `Material`). It also decodes the _irregular_ parts into
+`json.RawMessage` objects.
+2. Iterate over each `json.RawMessage`, and extract enough information to work
+   out which type we should unmarshal into. In this case, it's easy, we just
+look for the  `"Type"` field, and switch based on that.
+3. Decode into the appropriate type as determined in step 2.
