@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Heterogeneous JSON decoding in Go
+title: Irregular JSON decoding in Go
 tags: go, golang, json, heterogeneous, homogeneous, marshal, unmarshal, regular, irregular
 ---
 
