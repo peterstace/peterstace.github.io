@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Golang on Much Ado About Much</title>
-    <link>http://localhost:1313/tags/golang/</link>
+    <link>peterstace.github.io/tags/golang/</link>
     <description>Recent content in Golang on Much Ado About Much</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
@@ -10,14 +10,14 @@
     <webMaster>peterstace@gmail.com (Peter Stace)</webMaster>
     <copyright>(c) Peter Stace</copyright>
     <lastBuildDate>Thu, 18 Jun 2015 22:03:45 +1100</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="peterstace.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Irregular JSON decoding in Go</title>
-      <link>http://localhost:1313/2015/06/18/irregular-json-decoding-in-go/</link>
+      <link>/peterstace.github.io/2015/06/18/irregular-json-decoding-in-go/</link>
       <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
       <author>peterstace@gmail.com (Peter Stace)</author>
-      <guid>http://localhost:1313/2015/06/18/irregular-json-decoding-in-go/</guid>
+      <guid>/peterstace.github.io/2015/06/18/irregular-json-decoding-in-go/</guid>
       <description>&lt;p&gt;The Go standard library has an awesome &lt;a href=&#34;http://golang.org/pkg/encoding/json/&#34;&gt;JSON encoding and decoding
 package&lt;/a&gt;, which makes handling JSON a
 breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of
@@ -153,10 +153,10 @@ look for the  &lt;code&gt;&amp;quot;Type&amp;quot;&lt;/code&gt; field, and switc
     
     <item>
       <title>Go, gofmt, and diffs</title>
-      <link>http://localhost:1313/2015/06/02/go-gofmt-and-diffs/</link>
+      <link>/peterstace.github.io/2015/06/02/go-gofmt-and-diffs/</link>
       <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
       <author>peterstace@gmail.com (Peter Stace)</author>
-      <guid>http://localhost:1313/2015/06/02/go-gofmt-and-diffs/</guid>
+      <guid>/peterstace.github.io/2015/06/02/go-gofmt-and-diffs/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://golang.org/cmd/gofmt/&#34;&gt;Gofmt&lt;/a&gt; is a Go program formatter. Its universal
 adoption by the Go community has resulted in a consistent formatting style
 among most if not all Go source code.&lt;/p&gt;
@@ -240,10 +240,10 @@ ignore-whitespace option as well.&lt;/p&gt;
     
     <item>
       <title>Where should I put my mocks in Go?</title>
-      <link>http://localhost:1313/2015/05/21/where-should-i-put-my-mocks-in-go/</link>
+      <link>/peterstace.github.io/2015/05/21/where-should-i-put-my-mocks-in-go/</link>
       <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
       <author>peterstace@gmail.com (Peter Stace)</author>
-      <guid>http://localhost:1313/2015/05/21/where-should-i-put-my-mocks-in-go/</guid>
+      <guid>/peterstace.github.io/2015/05/21/where-should-i-put-my-mocks-in-go/</guid>
       <description>
 
 &lt;h2 id=&#34;introduction:a3d7580a82f7d628d598e820061112ef&#34;&gt;Introduction&lt;/h2&gt;

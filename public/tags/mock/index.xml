@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mock on Much Ado About Much</title>
-    <link>http://localhost:1313/tags/mock/</link>
+    <link>peterstace.github.io/tags/mock/</link>
     <description>Recent content in Mock on Much Ado About Much</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
@@ -10,14 +10,14 @@
     <webMaster>peterstace@gmail.com (Peter Stace)</webMaster>
     <copyright>(c) Peter Stace</copyright>
     <lastBuildDate>Thu, 21 May 2015 21:51:39 +1100</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/mock/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="peterstace.github.io/tags/mock/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Where should I put my mocks in Go?</title>
-      <link>http://localhost:1313/2015/05/21/where-should-i-put-my-mocks-in-go/</link>
+      <link>/peterstace.github.io/2015/05/21/where-should-i-put-my-mocks-in-go/</link>
       <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
       <author>peterstace@gmail.com (Peter Stace)</author>
-      <guid>http://localhost:1313/2015/05/21/where-should-i-put-my-mocks-in-go/</guid>
+      <guid>/peterstace.github.io/2015/05/21/where-should-i-put-my-mocks-in-go/</guid>
       <description>
 
 &lt;h2 id=&#34;introduction:a3d7580a82f7d628d598e820061112ef&#34;&gt;Introduction&lt;/h2&gt;
