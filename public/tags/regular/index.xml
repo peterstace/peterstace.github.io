@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Regular on Much Ado About Much</title>
+    <link>http://localhost:1313/tags/regular/</link>
+    <description>Recent content in Regular on Much Ado About Much</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>peterstace@gmail.com (Peter Stace)</managingEditor>
+    <webMaster>peterstace@gmail.com (Peter Stace)</webMaster>
+    <copyright>(c) Peter Stace</copyright>
+    <lastBuildDate>Thu, 18 Jun 2015 22:03:45 +1100</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/regular/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Irregular JSON decoding in Go</title>
+      <link>http://localhost:1313/2015/06/18/irregular-json-decoding-in-go/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      <author>peterstace@gmail.com (Peter Stace)</author>
+      <guid>http://localhost:1313/2015/06/18/irregular-json-decoding-in-go/</guid>
+      <description>&lt;p&gt;The Go standard library has an awesome &lt;a href=&#34;http://golang.org/pkg/encoding/json/&#34;&gt;JSON encoding and decoding
+package&lt;/a&gt;, which makes handling JSON a
+breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of
+&lt;a href=&#34;http://blog.golang.org/json-and-go&#34;&gt;web&lt;/a&gt; &lt;a href=&#34;https://gobyexample.com/json&#34;&gt;pages&lt;/a&gt;
+&lt;a href=&#34;https://eager.io/blog/go-and-json/&#34;&gt;around&lt;/a&gt; that explain its basic usage.&lt;/p&gt;
+
+&lt;p&gt;Basically, if you know the structure of the JSON value you&amp;rsquo;re encoding, you
+create the zero value of the corresponding Go type, and pass a pointer to it
+into the &lt;code&gt;json.Unmarshal&lt;/code&gt; (along with the JSON value). Magic occurs, and your
+Go object is now populated. If you don&amp;rsquo;t know the structure of your JSON value
+upfront, you can instead pass in a &lt;code&gt;map[string]interface{}&lt;/code&gt;, and that will be
+populated instead. Type assertions can then be used on the empty interfaces to
+determine what actually got decoded.&lt;/p&gt;
+
+&lt;p&gt;But what if you know the precise structure of the JSON, but it&amp;rsquo;s not &lt;em&gt;regular&lt;/em&gt;?
+For example, the following JSON value represents a ray tracer scene. The array
+&lt;code&gt;&amp;quot;Objects&amp;quot;&lt;/code&gt; contains a known structure, but each element isn&amp;rsquo;t of the same
+type. Objects of type &lt;code&gt;&amp;quot;box&amp;quot;&lt;/code&gt; will always have &lt;code&gt;&amp;quot;Corner1&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;Corner2&amp;quot;&lt;/code&gt;
+fields, and objects of type &lt;code&gt;&amp;quot;sphere&amp;quot;&lt;/code&gt; will always have &lt;code&gt;&amp;quot;Centre&amp;quot;&lt;/code&gt; and
+&lt;code&gt;&amp;quot;Radius&amp;quot;&lt;/code&gt; fields.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;Colour&amp;quot;: &amp;quot;white&amp;quot;,
+    &amp;quot;Material&amp;quot;: &amp;quot;lambertian&amp;quot;,
+    &amp;quot;Objects&amp;quot;: [
+        {
+            &amp;quot;Type&amp;quot;: &amp;quot;box&amp;quot;,
+            &amp;quot;Corner1&amp;quot;: {&amp;quot;X&amp;quot;:0,&amp;quot;Y&amp;quot;:1,&amp;quot;Z&amp;quot;:2},
+            &amp;quot;Corner2&amp;quot;: {&amp;quot;X&amp;quot;:5,&amp;quot;Y&amp;quot;:6,&amp;quot;Z&amp;quot;:7}
+        },
+        {
+            &amp;quot;Type&amp;quot;: &amp;quot;sphere&amp;quot;,
+            &amp;quot;Centre&amp;quot;: {&amp;quot;X&amp;quot;:2,&amp;quot;Y&amp;quot;:2.5,&amp;quot;Z&amp;quot;:-1},
+            &amp;quot;Radius&amp;quot;: 1.0
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I want to decode the JSON value into the follow Go data structure:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type World struct {
+    Colour   string
+    Material string
+    Objects  []Object
+}
+
+type Object interface {
+    Contains(Vect) bool
+}
+
+type Box struct {
+    Corner1, Corner2 Vect
+}
+func (b Box) Contains(Vect) bool { ... }
+
+type Sphere struct {
+    Centre Vect
+    Radius float64
+}
+func (s Sphere) Contains(Vect) bool { ... }
+
+type Vect struct {
+    X, Y, Z float64
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Go can&amp;rsquo;t unmarshal the JSON value into &lt;code&gt;World&lt;/code&gt; directly. The &lt;code&gt;json.Unmarshal&lt;/code&gt;
+function will return an error &amp;ldquo;json: cannot unmarshal object into Go value of
+type main.Object&amp;rdquo;. This makes sense, since the JSON value and the &lt;code&gt;World&lt;/code&gt; Go
+type both have fields named &lt;code&gt;Objects&lt;/code&gt;, but &lt;code&gt;Object&lt;/code&gt; is a Go interface, so
+cannot be unmarshalled into.&lt;/p&gt;
+
+&lt;p&gt;We need to perform custom unmarshalling into the &lt;code&gt;World&lt;/code&gt; type by implementing
+the &lt;a href=&#34;http://golang.org/pkg/encoding/json/#Unmarshaler&#34;&gt;Unmarshaler&lt;/a&gt; interface.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (w *World) UnmarshalJSON(p []byte) error {
+
+    // Unmarshal the regular parts of the JSON value.
+    record := struct {
+        Colour   string
+        Material string
+        Objects  []json.RawMessage
+    }{}
+    if err := json.Unmarshal(p, &amp;amp;record); err != nil {
+        return err
+    }
+    w.Colour = record.Colour
+    w.Material = record.Material
+
+    // Go back to the irregular parts, find each type and unmarshal accordingly.
+    for _, rawObject := range record.Objects {
+
+        // Find the type.
+        obj := struct{ Type string }{}
+        if err := json.Unmarshal(rawObject, &amp;amp;obj); err != nil {
+            return err
+        }
+
+        // Perform type specific unmarshalling.
+        switch obj.Type {
+        case &amp;quot;box&amp;quot;:
+            var b Box
+            if err := json.Unmarshal(rawObject, &amp;amp;b); err != nil {
+                return err
+            }
+            w.Objects = append(w.Objects, b)
+        case &amp;quot;sphere&amp;quot;:
+            var s Sphere
+            if err := json.Unmarshal(rawObject, &amp;amp;s); err != nil {
+                return err
+            }
+            w.Objects = append(w.Objects, s)
+        }
+    }
+    return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So what&amp;rsquo;s happening here? We are essentially doing the following:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Create a variable called &lt;code&gt;record&lt;/code&gt; that allows us to decode the regular parts
+(&lt;code&gt;Colour&lt;/code&gt; and &lt;code&gt;Material&lt;/code&gt;). It also decodes the &lt;em&gt;irregular&lt;/em&gt; parts into
+&lt;code&gt;json.RawMessage&lt;/code&gt; objects.&lt;/li&gt;
+&lt;li&gt;Iterate over each &lt;code&gt;json.RawMessage&lt;/code&gt;, and extract enough information to work
+out which type we should unmarshal into. In this case, it&amp;rsquo;s easy, we just
+look for the  &lt;code&gt;&amp;quot;Type&amp;quot;&lt;/code&gt; field, and switch based on that.&lt;/li&gt;
+&lt;li&gt;Decode into the appropriate type as determined in step 2.&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

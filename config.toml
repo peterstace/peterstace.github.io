@@ -1,0 +1,54 @@
+languageCode = "en-us"
+title = "Much Ado About Much"
+theme = "bootstrap"
+
+baseurl = "peterstace.github.io"
+copyright = "(c) Peter Stace"
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+    code = "/:slug/"
+
+[taxonomies]
+    tag = "tags"
+    topic = "topics"
+
+[author]
+    name = "Peter Stace"
+    email = "peterstace@gmail.com"
+
+[params]
+    # You can use markdown here.
+    brand = "foobar"
+    topline = "Peter Stace's Personal Blog"
+    #footline = "code with <i class='fa fa-heart'></i>"
+
+    # Text for the top menu link, which goes the root URL for the site.
+    # Default (if omitted) is "Home".
+    home = "home"
+
+    # Select a syntax highight.
+    # Check the static/css/highlight directory for options.
+    highlight = "default"
+
+    # Google Analytics.
+    #googleAnalytics = "Your Google Analytics tracking code"
+
+    # Sidebar social links.
+    github = "peterstace" # Your Github profile ID
+    #bitbucket = "" # Your Bitbucket profile ID
+    #linkedin = "" # Your LinkedIn profile ID (from public URL)
+    #googleplus = "" # Your Google+ profile ID
+    #facebook = "" # Your Facebook profile ID
+    #twitter = "" # Your Twitter profile ID
+    #youtube = ""  # Your Youtube channel ID
+    #flattr = ""  # populate with your flattr uid
+
+#[blackfriday]
+#    angledQuotes = true
+#    fractions = false
+#    hrefTargetBlank = false
+#    latexDashes = true
+#    plainIdAnchors = true
+#    extensions = []
+#    extensionmask = []

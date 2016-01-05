@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Go, gofmt, and diffs  &middot; Much Ado About Much</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="description" content="" />
+
+<meta name="keywords" content="go, golang, gofmt, fmt, diff, git, whitespace, ignore, hg, mercurial, svn, subversion, github, ">
+
+
+<meta property="og:title" content="Go, gofmt, and diffs  &middot; Much Ado About Much ">
+<meta property="og:site_name" content="Much Ado About Much"/>
+<meta property="og:url" content="http://localhost:1313/post/go-gofmt-and-diff/" />
+<meta property="og:locale" content="en-us">
+
+
+<meta property="og:type" content="article" />
+<meta property="og:description" content=""/>
+<meta property="og:article:published_time" content="2015-06-02T22:00:15&#43;11:00" />
+<meta property="og:article:modified_time" content="2015-06-02T22:00:15&#43;11:00" />
+
+  
+    
+<meta property="og:article:tag" content="go">
+    
+<meta property="og:article:tag" content="golang">
+    
+<meta property="og:article:tag" content="gofmt">
+    
+<meta property="og:article:tag" content="fmt">
+    
+<meta property="og:article:tag" content="diff">
+    
+<meta property="og:article:tag" content="git">
+    
+<meta property="og:article:tag" content="whitespace">
+    
+<meta property="og:article:tag" content="ignore">
+    
+<meta property="og:article:tag" content="hg">
+    
+<meta property="og:article:tag" content="mercurial">
+    
+<meta property="og:article:tag" content="svn">
+    
+<meta property="og:article:tag" content="subversion">
+    
+<meta property="og:article:tag" content="github">
+    
+  
+
+  
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:creator" content="@" />
+<meta name="twitter:title" content="Go, gofmt, and diffs" />
+<meta name="twitter:description" content="" />
+<meta name="twitter:url" content="http://localhost:1313/post/go-gofmt-and-diff/" />
+<meta name="twitter:domain" content="http://localhost:1313">
+  
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Go, gofmt, and diffs",
+    "author": {
+      "@type": "Person",
+      "name": "http://profiles.google.com/+?rel=author"
+    },
+    "datePublished": "2015-06-02",
+    "description": "",
+    "wordCount":  342 
+  }
+</script>
+
+
+
+<link rel="canonical" href="http://localhost:1313/post/go-gofmt-and-diff/" />
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://localhost:1313/touch-icon-144-precomposed.png">
+<link href="http://localhost:1313/favicon.png" rel="icon">
+
+<meta name="generator" content="Hugo 0.14" />
+
+  <!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+
+    <link rel="stylesheet" href="http://localhost:1313/css/theme/default.css">
+
+
+<link rel="stylesheet" href="http://localhost:1313/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://localhost:1313/css/style.css">
+
+
+  <link rel="stylesheet" href="http://localhost:1313/css/highlight/default.css">
+
+
+</head>
+<body>
+    <header id="main-header">
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="http://localhost:1313">Much Ado About Much</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          
+        </ul>
+      </div>
+      
+    </div>
+  </nav>
+
+</header>
+
+
+<div class="container">
+<div class="row">
+
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+  <div class="text-center">
+
+    <h1>Go, gofmt, and diffs
+</h1>
+
+    <div class="metas">
+<small>
+  <i class="fa fa-calendar"></i>
+  <time datetime="2015-06-02">2 Jun, 2015</time>
+</small>
+
+
+  <small>
+  &middot; Read in about 2 min
+  &middot; (342 Words)
+</small>
+
+
+<div class="margin-10">
+  <i class="fa fa-tags"></i>
+  
+  <a href="http://localhost:1313/tags/go" class="label label-primary">go</a>
+  
+  <a href="http://localhost:1313/tags/golang" class="label label-primary">golang</a>
+  
+  <a href="http://localhost:1313/tags/gofmt" class="label label-primary">gofmt</a>
+  
+  <a href="http://localhost:1313/tags/fmt" class="label label-primary">fmt</a>
+  
+  <a href="http://localhost:1313/tags/diff" class="label label-primary">diff</a>
+  
+  <a href="http://localhost:1313/tags/git" class="label label-primary">git</a>
+  
+  <a href="http://localhost:1313/tags/whitespace" class="label label-primary">whitespace</a>
+  
+  <a href="http://localhost:1313/tags/ignore" class="label label-primary">ignore</a>
+  
+  <a href="http://localhost:1313/tags/hg" class="label label-primary">hg</a>
+  
+  <a href="http://localhost:1313/tags/mercurial" class="label label-primary">mercurial</a>
+  
+  <a href="http://localhost:1313/tags/svn" class="label label-primary">svn</a>
+  
+  <a href="http://localhost:1313/tags/subversion" class="label label-primary">subversion</a>
+  
+  <a href="http://localhost:1313/tags/github" class="label label-primary">github</a>
+  
+
+
+</div>
+<br>
+</div>
+
+  </div>
+</div>
+
+  <div class="container content">
+  <p><a href="https://golang.org/cmd/gofmt/">Gofmt</a> is a Go program formatter. Its universal
+adoption by the Go community has resulted in a consistent formatting style
+among most if not all Go source code.</p>
+
+<p>When making changes to Go code, gofmt sometimes causes changes to lines of code
+that weren&rsquo;t originally modified. This can done for example to keep indentation
+consistent. This can make diffs hard to read.</p>
+
+<p>For example, the following is a diff of a simple
+<a href="https://golang.org/ref/spec#Type_declarations">type declaration</a>:</p>
+
+<pre><code>$ git diff
+diff --git a/main.go b/main.go
+index 2c7af41..d9e59cd 100644
+--- a/main.go
++++ b/main.go
+@@ -1,13 +1,12 @@
+ type foo struct {
+-    jabberwocky  int
+-    quux         complex128
+-    galumphing   string
+-    vorpal       float64
+-    bandersnatch float64
+-    mimsy        struct {
+-        beaming  int
+-        tumtummy string
+-        brillig  float64
++    jabberwocky int
++    quux        complex64
++    tumtummy    string
++    galumphing  string
++    vorpal      float64
++    mimsy       struct {
++        beaming int
++        brillig float64
+     }
+ }
+</code></pre>
+
+<p>Because gofmt has rewritten the source code to have consistent indentation, at
+least a whitespace change has been made to every line. It can be hard to see
+what the <em>real</em> change is.</p>
+
+<p>To see the real changes, the diff algorithm should be configured to ignore
+whitespace. The diff below makes it quite obvious what the actual change is:</p>
+
+<pre><code>$ git diff -b
+diff --git a/main.go b/main.go
+index 2c7af41..d9e59cd 100644
+--- a/main.go
++++ b/main.go
+@@ -1,12 +1,11 @@
+ type foo struct {
+     jabberwocky int
+-    quux         complex128
++    quux        complex64
++    tumtummy    string
+     galumphing  string
+     vorpal      float64
+-    bandersnatch float64
+     mimsy       struct {
+         beaming int
+-        tumtummy string
+         brillig float64
+     }
+ }
+</code></pre>
+
+<p>It&rsquo;s now quite clear that <code>quux</code> has had its type modified, <code>bandersnatch</code> has
+been removed, and <code>tumtummy</code> has been moved from the inner struct, to the outer
+struct.</p>
+
+<p>This type of diff can typically be created by passing the
+<code>--ignore-space-change</code> flag (the short version is <code>-b</code>). This works with Git,
+Mercurial, Subversion, and well as the <code>diff</code> command that comes with
+<code>diffutils</code>.  GUI based diffs such as those <a href="https://github.com/blog/967-github-secrets">produced by
+Github</a> will typically have an
+ignore-whitespace option as well.</p>
+
+</div>
+
+
+  <footer>
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      
+  
+    <nav><ul class="pager">
+    
+        <li class="previous">
+          <a href="http://localhost:1313/post/where-should-i-put-my-mocks-in-go/" title="Where should I put my mocks in Go?">
+            <span aria-hidden="true">&larr;</span>Previous
+          </a>
+        </li>
+    
+
+    
+      <li class="next">
+        <a href="http://localhost:1313/post/irregular-json-decoding-in-go/" title="Irregular JSON decoding in Go">
+            Next <span aria-hidden="true">&rarr;</span>
+        </a>
+      </li>
+    
+    </ul> </nav>
+  
+
+
+</div>
+
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+  
+
+</div>
+
+</footer>
+
+
+</div>
+</div>
+      <footer class="footer">
+    <div class="container hidden-print">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+           <div class="pull-left">
+  <a class="toplink" href="#">back to top</a>
+</div>
+<div class="pull-right">
+  
+</div>
+
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+          <small>
+              
+    
+<div class="container footline">
+  
+
+</div>
+
+
+    
+
+
+          </small>
+        </div>
+     </div>
+    </div>
+</footer>
+
+    <script src="http://localhost:1313/js/jquery.min-2.1.4.js"></script>
+<script src="http://localhost:1313/js/bootstrap.min-3.3.5.js"></script>
+
+
+
+
+<script src="http://localhost:1313/js/highlight.pack.js"></script>
+<script src="http://localhost:1313/js/site.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+  <script data-no-instant>document.write('<script src="http://'
+        + (location.host || 'localhost').split(':')[0]
+		+ ':1313/livereload.js?mindelay=10"></'
+        + 'script>')</script></body>
+</html>
+
