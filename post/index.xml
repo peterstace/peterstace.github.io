@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Much Ado About Much</title>
+    <link>peterstace.github.io/post/</link>
+    <description>Recent content in Posts on Much Ado About Much</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>peterstace@gmail.com (Peter Stace)</managingEditor>
+    <webMaster>peterstace@gmail.com (Peter Stace)</webMaster>
+    <copyright>(c) Peter Stace</copyright>
+    <lastBuildDate>Thu, 18 Jun 2015 22:03:45 +1100</lastBuildDate>
+    <atom:link href="peterstace.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Irregular JSON decoding in Go</title>
+      <link>/peterstace.github.io/2015/06/18/irregular-json-decoding-in-go/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      <author>peterstace@gmail.com (Peter Stace)</author>
+      <guid>/peterstace.github.io/2015/06/18/irregular-json-decoding-in-go/</guid>
+      <description>&lt;p&gt;The Go standard library has an awesome &lt;a href=&#34;http://golang.org/pkg/encoding/json/&#34;&gt;JSON encoding and decoding
+package&lt;/a&gt;, which makes handling JSON a
+breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of
+&lt;a href=&#34;http://blog.golang.org/json-and-go&#34;&gt;web&lt;/a&gt; &lt;a href=&#34;https://gobyexample.com/json&#34;&gt;pages&lt;/a&gt;
+&lt;a href=&#34;https://eager.io/blog/go-and-json/&#34;&gt;around&lt;/a&gt; that explain its basic usage.&lt;/p&gt;
+
+&lt;p&gt;Basically, if you know the structure of the JSON value you&amp;rsquo;re encoding, you
+create the zero value of the corresponding Go type, and pass a pointer to it
+into the &lt;code&gt;json.Unmarshal&lt;/code&gt; (along with the JSON value). Magic occurs, and your
+Go object is now populated. If you don&amp;rsquo;t know the structure of your JSON value
+upfront, you can instead pass in a &lt;code&gt;map[string]interface{}&lt;/code&gt;, and that will be
+populated instead. Type assertions can then be used on the empty interfaces to
+determine what actually got decoded.&lt;/p&gt;
+
+&lt;p&gt;But what if you know the precise structure of the JSON, but it&amp;rsquo;s not &lt;em&gt;regular&lt;/em&gt;?
+For example, the following JSON value represents a ray tracer scene. The array
+&lt;code&gt;&amp;quot;Objects&amp;quot;&lt;/code&gt; contains a known structure, but each element isn&amp;rsquo;t of the same
+type. Objects of type &lt;code&gt;&amp;quot;box&amp;quot;&lt;/code&gt; will always have &lt;code&gt;&amp;quot;Corner1&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;Corner2&amp;quot;&lt;/code&gt;
+fields, and objects of type &lt;code&gt;&amp;quot;sphere&amp;quot;&lt;/code&gt; will always have &lt;code&gt;&amp;quot;Centre&amp;quot;&lt;/code&gt; and
+&lt;code&gt;&amp;quot;Radius&amp;quot;&lt;/code&gt; fields.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;Colour&amp;quot;: &amp;quot;white&amp;quot;,
+    &amp;quot;Material&amp;quot;: &amp;quot;lambertian&amp;quot;,
+    &amp;quot;Objects&amp;quot;: [
+        {
+            &amp;quot;Type&amp;quot;: &amp;quot;box&amp;quot;,
+            &amp;quot;Corner1&amp;quot;: {&amp;quot;X&amp;quot;:0,&amp;quot;Y&amp;quot;:1,&amp;quot;Z&amp;quot;:2},
+            &amp;quot;Corner2&amp;quot;: {&amp;quot;X&amp;quot;:5,&amp;quot;Y&amp;quot;:6,&amp;quot;Z&amp;quot;:7}
+        },
+        {
+            &amp;quot;Type&amp;quot;: &amp;quot;sphere&amp;quot;,
+            &amp;quot;Centre&amp;quot;: {&amp;quot;X&amp;quot;:2,&amp;quot;Y&amp;quot;:2.5,&amp;quot;Z&amp;quot;:-1},
+            &amp;quot;Radius&amp;quot;: 1.0
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I want to decode the JSON value into the follow Go data structure:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type World struct {
+    Colour   string
+    Material string
+    Objects  []Object
+}
+
+type Object interface {
+    Contains(Vect) bool
+}
+
+type Box struct {
+    Corner1, Corner2 Vect
+}
+func (b Box) Contains(Vect) bool { ... }
+
+type Sphere struct {
+    Centre Vect
+    Radius float64
+}
+func (s Sphere) Contains(Vect) bool { ... }
+
+type Vect struct {
+    X, Y, Z float64
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Go can&amp;rsquo;t unmarshal the JSON value into &lt;code&gt;World&lt;/code&gt; directly. The &lt;code&gt;json.Unmarshal&lt;/code&gt;
+function will return an error &amp;ldquo;json: cannot unmarshal object into Go value of
+type main.Object&amp;rdquo;. This makes sense, since the JSON value and the &lt;code&gt;World&lt;/code&gt; Go
+type both have fields named &lt;code&gt;Objects&lt;/code&gt;, but &lt;code&gt;Object&lt;/code&gt; is a Go interface, so
+cannot be unmarshalled into.&lt;/p&gt;
+
+&lt;p&gt;We need to perform custom unmarshalling into the &lt;code&gt;World&lt;/code&gt; type by implementing
+the &lt;a href=&#34;http://golang.org/pkg/encoding/json/#Unmarshaler&#34;&gt;Unmarshaler&lt;/a&gt; interface.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (w *World) UnmarshalJSON(p []byte) error {
+
+    // Unmarshal the regular parts of the JSON value.
+    record := struct {
+        Colour   string
+        Material string
+        Objects  []json.RawMessage
+    }{}
+    if err := json.Unmarshal(p, &amp;amp;record); err != nil {
+        return err
+    }
+    w.Colour = record.Colour
+    w.Material = record.Material
+
+    // Go back to the irregular parts, find each type and unmarshal accordingly.
+    for _, rawObject := range record.Objects {
+
+        // Find the type.
+        obj := struct{ Type string }{}
+        if err := json.Unmarshal(rawObject, &amp;amp;obj); err != nil {
+            return err
+        }
+
+        // Perform type specific unmarshalling.
+        switch obj.Type {
+        case &amp;quot;box&amp;quot;:
+            var b Box
+            if err := json.Unmarshal(rawObject, &amp;amp;b); err != nil {
+                return err
+            }
+            w.Objects = append(w.Objects, b)
+        case &amp;quot;sphere&amp;quot;:
+            var s Sphere
+            if err := json.Unmarshal(rawObject, &amp;amp;s); err != nil {
+                return err
+            }
+            w.Objects = append(w.Objects, s)
+        }
+    }
+    return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So what&amp;rsquo;s happening here? We are essentially doing the following:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Create a variable called &lt;code&gt;record&lt;/code&gt; that allows us to decode the regular parts
+(&lt;code&gt;Colour&lt;/code&gt; and &lt;code&gt;Material&lt;/code&gt;). It also decodes the &lt;em&gt;irregular&lt;/em&gt; parts into
+&lt;code&gt;json.RawMessage&lt;/code&gt; objects.&lt;/li&gt;
+&lt;li&gt;Iterate over each &lt;code&gt;json.RawMessage&lt;/code&gt;, and extract enough information to work
+out which type we should unmarshal into. In this case, it&amp;rsquo;s easy, we just
+look for the  &lt;code&gt;&amp;quot;Type&amp;quot;&lt;/code&gt; field, and switch based on that.&lt;/li&gt;
+&lt;li&gt;Decode into the appropriate type as determined in step 2.&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Go, gofmt, and diffs</title>
+      <link>/peterstace.github.io/2015/06/02/go-gofmt-and-diffs/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      <author>peterstace@gmail.com (Peter Stace)</author>
+      <guid>/peterstace.github.io/2015/06/02/go-gofmt-and-diffs/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://golang.org/cmd/gofmt/&#34;&gt;Gofmt&lt;/a&gt; is a Go program formatter. Its universal
+adoption by the Go community has resulted in a consistent formatting style
+among most if not all Go source code.&lt;/p&gt;
+
+&lt;p&gt;When making changes to Go code, gofmt sometimes causes changes to lines of code
+that weren&amp;rsquo;t originally modified. This can done for example to keep indentation
+consistent. This can make diffs hard to read.&lt;/p&gt;
+
+&lt;p&gt;For example, the following is a diff of a simple
+&lt;a href=&#34;https://golang.org/ref/spec#Type_declarations&#34;&gt;type declaration&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ git diff
+diff --git a/main.go b/main.go
+index 2c7af41..d9e59cd 100644
+--- a/main.go
++++ b/main.go
+@@ -1,13 +1,12 @@
+ type foo struct {
+-    jabberwocky  int
+-    quux         complex128
+-    galumphing   string
+-    vorpal       float64
+-    bandersnatch float64
+-    mimsy        struct {
+-        beaming  int
+-        tumtummy string
+-        brillig  float64
++    jabberwocky int
++    quux        complex64
++    tumtummy    string
++    galumphing  string
++    vorpal      float64
++    mimsy       struct {
++        beaming int
++        brillig float64
+     }
+ }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Because gofmt has rewritten the source code to have consistent indentation, at
+least a whitespace change has been made to every line. It can be hard to see
+what the &lt;em&gt;real&lt;/em&gt; change is.&lt;/p&gt;
+
+&lt;p&gt;To see the real changes, the diff algorithm should be configured to ignore
+whitespace. The diff below makes it quite obvious what the actual change is:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ git diff -b
+diff --git a/main.go b/main.go
+index 2c7af41..d9e59cd 100644
+--- a/main.go
++++ b/main.go
+@@ -1,12 +1,11 @@
+ type foo struct {
+     jabberwocky int
+-    quux         complex128
++    quux        complex64
++    tumtummy    string
+     galumphing  string
+     vorpal      float64
+-    bandersnatch float64
+     mimsy       struct {
+         beaming int
+-        tumtummy string
+         brillig float64
+     }
+ }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It&amp;rsquo;s now quite clear that &lt;code&gt;quux&lt;/code&gt; has had its type modified, &lt;code&gt;bandersnatch&lt;/code&gt; has
+been removed, and &lt;code&gt;tumtummy&lt;/code&gt; has been moved from the inner struct, to the outer
+struct.&lt;/p&gt;
+
+&lt;p&gt;This type of diff can typically be created by passing the
+&lt;code&gt;--ignore-space-change&lt;/code&gt; flag (the short version is &lt;code&gt;-b&lt;/code&gt;). This works with Git,
+Mercurial, Subversion, and well as the &lt;code&gt;diff&lt;/code&gt; command that comes with
+&lt;code&gt;diffutils&lt;/code&gt;.  GUI based diffs such as those &lt;a href=&#34;https://github.com/blog/967-github-secrets&#34;&gt;produced by
+Github&lt;/a&gt; will typically have an
+ignore-whitespace option as well.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Where should I put my mocks in Go?</title>
+      <link>/peterstace.github.io/2015/05/21/where-should-i-put-my-mocks-in-go/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      <author>peterstace@gmail.com (Peter Stace)</author>
+      <guid>/peterstace.github.io/2015/05/21/where-should-i-put-my-mocks-in-go/</guid>
+      <description>
+
+&lt;h2 id=&#34;introduction:a3d7580a82f7d628d598e820061112ef&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;Go&amp;rsquo;s toolchain provides a mechanism to help prevent test code from being
+included in production binaries. It should be obvious why this is useful; if
+stubs or mocks intended for testing make their way your production system, they
+may cause it to fail silently in catastrophic and unexpected ways. This is
+especially a concern if you don&amp;rsquo;t have automated application and integration
+tests in place. Imagine if you somehow end up with a stubbed out authentication
+manager that always returns &lt;code&gt;true&lt;/code&gt; when asked if a user has administration
+privileges. Yikes.&lt;/p&gt;
+
+&lt;p&gt;This blog post will explain this mechanism, along with some of the ways you can
+most effectively take advantage it, especially when dealing with mocks and
+stubs.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-mechanism:a3d7580a82f7d628d598e820061112ef&#34;&gt;The Mechanism&lt;/h2&gt;
+
+&lt;p&gt;It&amp;rsquo;s well known that the &lt;code&gt;go test&lt;/code&gt; tool looks in files that end in &lt;code&gt;_test.go&lt;/code&gt;
+for tests to run. What is less well known is that these &lt;code&gt;*_test.go&lt;/code&gt; files are
+&lt;em&gt;excluded&lt;/em&gt; from binaries built using &lt;code&gt;go build&lt;/code&gt; and &lt;code&gt;go install&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Excellent! This means we can put all of our testing stubs and mocks in the
+&lt;code&gt;*_test.go&lt;/code&gt; files and they will never accidentally be included in production
+binaries!&lt;/p&gt;
+
+&lt;h2 id=&#34;the-problem:a3d7580a82f7d628d598e820061112ef&#34;&gt;The Problem&lt;/h2&gt;
+
+&lt;p&gt;This works well most of the time. You have an interface &lt;code&gt;Foo&lt;/code&gt; declared in
+package &lt;code&gt;foo&lt;/code&gt;, and a mocked out implementation &lt;code&gt;MockFoo&lt;/code&gt; also in package &lt;code&gt;foo&lt;/code&gt;
+but in a file named &lt;code&gt;mock_foo_test.go&lt;/code&gt;. This works great, you can use &lt;code&gt;MockFoo&lt;/code&gt;
+instead of the real implementation for all of your tests in package &lt;code&gt;foo&lt;/code&gt;!&lt;/p&gt;
+
+&lt;p&gt;But what if you want to use &lt;code&gt;MockFoo&lt;/code&gt; for tests in packages &lt;code&gt;garply&lt;/code&gt; and
+&lt;code&gt;waldo&lt;/code&gt;? Unfortunately you can&amp;rsquo;t. Because &lt;code&gt;MockFoo&lt;/code&gt; is declared in a file
+ending in &lt;code&gt;_test.go&lt;/code&gt;, it can only be used in tests contained in the same
+package.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-solutions:a3d7580a82f7d628d598e820061112ef&#34;&gt;The Solutions&lt;/h2&gt;
+
+&lt;p&gt;There are a two obvious ways to work around this:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Rename the file containing &lt;code&gt;MockFoo&lt;/code&gt; from &lt;code&gt;mock_foo_test.go&lt;/code&gt; to
+&lt;code&gt;mock_foo.go&lt;/code&gt;. Now that it&amp;rsquo;s not a test file, it can be accessed from other
+packages.&lt;/li&gt;
+&lt;li&gt;Copy &lt;code&gt;mock_foo_test.go&lt;/code&gt; into the other packages that need it (modifying the
+package declaration to match its destination package).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There are some drawbacks to both approaches.&lt;/p&gt;
+
+&lt;p&gt;In the first approach, we lose the guarantee that &lt;code&gt;MockFoo&lt;/code&gt; won&amp;rsquo;t accidentally
+be included the production binary.  As an additional annoyance, &lt;code&gt;MockFoo&lt;/code&gt; is
+now part of the public API, and as such will appear in listings produced by the
+&lt;code&gt;godoc&lt;/code&gt; tool.&lt;/p&gt;
+
+&lt;p&gt;The second approach violates the &lt;a href=&#34;http://c2.com/cgi/wiki?DontRepeatYourself&#34;&gt;DRY
+principal&lt;/a&gt;. If the interface
+changes, you then have to go and change all of the mocks. If you&amp;rsquo;re manually
+rolling your own mocks, the process of updating them all could be error prone.&lt;/p&gt;
+
+&lt;p&gt;In my opinion, the second approach is the better of the two, especially when
+considering that mocks can be generated automatically with tools such as
+&lt;a href=&#34;https://code.google.com/p/gomock/&#34;&gt;gomock&lt;/a&gt;. If you write a small script that
+generates all of the mocks in your project using gomock, then you just have to
+run it whenever you change an interface that is being mocked out. Since the
+mocks are generated &lt;em&gt;from&lt;/em&gt; the interface, I don&amp;rsquo;t think that the DRY principal
+is of great importance here.&lt;/p&gt;
+
+&lt;p&gt;Happy testing!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
