@@ -1,0 +1,151 @@
+<!DOCTYPE>
+<html>
+<head>
+<title>Irregular JSON decoding in Go</title>
+</head>
+<body>
+
+
+<h1>Irregular JSON decoding in Go</h1>
+
+<h2>2015-06-18</h2>
+
+<!--Categories = ["Development", "GoLang"]-->
+
+<!--Tags = ["go", "golang", "json", "heterogeneous", "homogeneous", "marshal", "unmarshal", "regular", "irregular"]-->
+
+<p>The Go standard library has an awesome <a href="http://golang.org/pkg/encoding/json/">JSON encoding and decoding
+package</a>, which makes handling JSON a
+breeze. If you&rsquo;re not familiar with the package, there are plenty of
+<a href="http://blog.golang.org/json-and-go">web</a> <a href="https://gobyexample.com/json">pages</a>
+<a href="https://eager.io/blog/go-and-json/">around</a> that explain its basic usage.</p>
+
+<p>Basically, if you know the structure of the JSON value you&rsquo;re encoding, you
+create the zero value of the corresponding Go type, and pass a pointer to it
+into the <code>json.Unmarshal</code> (along with the JSON value). Magic occurs, and your
+Go object is now populated. If you don&rsquo;t know the structure of your JSON value
+upfront, you can instead pass in a <code>map[string]interface{}</code>, and that will be
+populated instead. Type assertions can then be used on the empty interfaces to
+determine what actually got decoded.</p>
+
+<p>But what if you know the precise structure of the JSON, but it&rsquo;s not <em>regular</em>?
+For example, the following JSON value represents a ray tracer scene. The array
+<code>&quot;Objects&quot;</code> contains a known structure, but each element isn&rsquo;t of the same
+type. Objects of type <code>&quot;box&quot;</code> will always have <code>&quot;Corner1&quot;</code> and <code>&quot;Corner2&quot;</code>
+fields, and objects of type <code>&quot;sphere&quot;</code> will always have <code>&quot;Centre&quot;</code> and
+<code>&quot;Radius&quot;</code> fields.</p>
+
+<pre><code>{
+    &quot;Colour&quot;: &quot;white&quot;,
+    &quot;Material&quot;: &quot;lambertian&quot;,
+    &quot;Objects&quot;: [
+        {
+            &quot;Type&quot;: &quot;box&quot;,
+            &quot;Corner1&quot;: {&quot;X&quot;:0,&quot;Y&quot;:1,&quot;Z&quot;:2},
+            &quot;Corner2&quot;: {&quot;X&quot;:5,&quot;Y&quot;:6,&quot;Z&quot;:7}
+        },
+        {
+            &quot;Type&quot;: &quot;sphere&quot;,
+            &quot;Centre&quot;: {&quot;X&quot;:2,&quot;Y&quot;:2.5,&quot;Z&quot;:-1},
+            &quot;Radius&quot;: 1.0
+        }
+    ]
+}
+</code></pre>
+
+<p>I want to decode the JSON value into the follow Go data structure:</p>
+
+<pre><code>type World struct {
+    Colour   string
+    Material string
+    Objects  []Object
+}
+
+type Object interface {
+    Contains(Vect) bool
+}
+
+type Box struct {
+    Corner1, Corner2 Vect
+}
+func (b Box) Contains(Vect) bool { ... }
+
+type Sphere struct {
+    Centre Vect
+    Radius float64
+}
+func (s Sphere) Contains(Vect) bool { ... }
+
+type Vect struct {
+    X, Y, Z float64
+}
+</code></pre>
+
+<p>Go can&rsquo;t unmarshal the JSON value into <code>World</code> directly. The <code>json.Unmarshal</code>
+function will return an error &ldquo;json: cannot unmarshal object into Go value of
+type main.Object&rdquo;. This makes sense, since the JSON value and the <code>World</code> Go
+type both have fields named <code>Objects</code>, but <code>Object</code> is a Go interface, so
+cannot be unmarshalled into.</p>
+
+<p>We need to perform custom unmarshalling into the <code>World</code> type by implementing
+the <a href="http://golang.org/pkg/encoding/json/#Unmarshaler">Unmarshaler</a> interface.</p>
+
+<pre><code>func (w *World) UnmarshalJSON(p []byte) error {
+
+    // Unmarshal the regular parts of the JSON value.
+    record := struct {
+        Colour   string
+        Material string
+        Objects  []json.RawMessage
+    }{}
+    if err := json.Unmarshal(p, &amp;record); err != nil {
+        return err
+    }
+    w.Colour = record.Colour
+    w.Material = record.Material
+
+    // Go back to the irregular parts, find each type and unmarshal accordingly.
+    for _, rawObject := range record.Objects {
+
+        // Find the type.
+        obj := struct{ Type string }{}
+        if err := json.Unmarshal(rawObject, &amp;obj); err != nil {
+            return err
+        }
+
+        // Perform type specific unmarshalling.
+        switch obj.Type {
+        case &quot;box&quot;:
+            var b Box
+            if err := json.Unmarshal(rawObject, &amp;b); err != nil {
+                return err
+            }
+            w.Objects = append(w.Objects, b)
+        case &quot;sphere&quot;:
+            var s Sphere
+            if err := json.Unmarshal(rawObject, &amp;s); err != nil {
+                return err
+            }
+            w.Objects = append(w.Objects, s)
+        }
+    }
+    return nil
+}
+</code></pre>
+
+<p>So what&rsquo;s happening here? We are essentially doing the following:</p>
+
+<ol>
+<li>Create a variable called <code>record</code> that allows us to decode the regular parts
+(<code>Colour</code> and <code>Material</code>). It also decodes the <em>irregular</em> parts into
+<code>json.RawMessage</code> objects.</li>
+<li>Iterate over each <code>json.RawMessage</code>, and extract enough information to work
+out which type we should unmarshal into. In this case, it&rsquo;s easy, we just
+look for the  <code>&quot;Type&quot;</code> field, and switch based on that.</li>
+<li>Decode into the appropriate type as determined in step 2.</li>
+</ol>
+
+
+</body>
+</html>
+
