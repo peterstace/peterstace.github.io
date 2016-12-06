@@ -27,6 +27,173 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/api/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/binary/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/bolt250/</loc>
+    <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/boltrc/</loc>
+    <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/categories/development/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/diff/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/fmt/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/fpv/</loc>
+    <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/git/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/github/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/go/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/godoc/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/gofmt/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/golang/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/categories/golang/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/gomock/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/heterogeneous/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/hg/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/homogeneous/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/ignore/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/irregular/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/json/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/marshal/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/mercurial/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/mock/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/multicopter/</loc>
+    <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/package/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/</loc>
     <lastmod>2016-12-05T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -35,6 +202,77 @@
   <url>
     <loc>http://peterstace.io/post/</loc>
     <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/production/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/quadcopter/</loc>
+    <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/categories/quadcopters/</loc>
+    <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/regular/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/stub/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/subversion/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/svn/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/test/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/testing/</loc>
+    <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/unmarshal/</loc>
+    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/whitespace/</loc>
+    <lastmod>2015-06-02T22:00:15+11:00</lastmod>
     <priority>0</priority>
   </url>
   

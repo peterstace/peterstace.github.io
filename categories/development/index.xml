@@ -1,73 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Peter Stace&#39;s Personal Blog</title>
-    <link>http://peterstace.io/post/index.xml</link>
-    <description>Recent content in Posts on Peter Stace&#39;s Personal Blog</description>
+    <title>Development on Peter Stace&#39;s Personal Blog</title>
+    <link>http://peterstace.io/categories/development/index.xml</link>
+    <description>Recent content in Development on Peter Stace&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 06 Jan 2016 22:17:35 +1100</lastBuildDate>
-    <atom:link href="http://peterstace.io/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>Bolt250 Part 1 - The Unboxing</title>
-      <link>http://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</link>
-      <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
-      
-      <guid>http://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;m building a new miniquad, the Bolt250 from &lt;a href=&#34;http://boltrc.com.au&#34;&gt;BoltRC&lt;/a&gt;.
-It&amp;rsquo;s a midpriced 250mm class racing quadcopter.&lt;/p&gt;
-
-&lt;p&gt;I went with the ARF kit rather than just getting the frame.&lt;/p&gt;
-
-&lt;p&gt;The Bolt250 comes with two different hardware versions, standard (30mm
-standoffs) and stealth (25mm standoffs). It also comes with the choice of 3mm
-or 4mm arm thickness, with clearance for either 5&amp;rdquo; or 6&amp;rdquo; props. I opted for the
-stealth hardware with 4mm/5&amp;rdquo; arms.&lt;/p&gt;
-
-&lt;p&gt;The frame pieces include:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Bottom, mid, and top plates.&lt;/li&gt;
-&lt;li&gt;4 x arms.&lt;/li&gt;
-&lt;li&gt;Plastic LED rear mount.&lt;/li&gt;
-&lt;li&gt;Front and rear carbon fibre bumpers.&lt;/li&gt;
-&lt;li&gt;Small carbon fibre wall to fit between the camera bay area and the center of
-the frame.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Also included were:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;D-SUN 3A switching voltage regulator.&lt;/li&gt;
-&lt;li&gt;Naze32.&lt;/li&gt;
-&lt;li&gt;Mini power distribution board.&lt;/li&gt;
-&lt;li&gt;Header pins for the Naze32.&lt;/li&gt;
-&lt;li&gt;HS1177 FPV Camera.&lt;/li&gt;
-&lt;li&gt;USB ESC programming link.&lt;/li&gt;
-&lt;li&gt;4 x ZTW Spider Mini 18A OPTO ESCs.&lt;/li&gt;
-&lt;li&gt;4 x Cobra 2204 2300KV motors.&lt;/li&gt;
-&lt;li&gt;50mm right-angle VTX pigtail.&lt;/li&gt;
-&lt;li&gt;2 x XT-60 male connectors.&lt;/li&gt;
-&lt;li&gt;14 and 20 AWG silicone wire.&lt;/li&gt;
-&lt;li&gt;Plenty of heatshrink.&lt;/li&gt;
-&lt;li&gt;BoltRC battery strap.&lt;/li&gt;
-&lt;li&gt;Plenty of zip ties.&lt;/li&gt;
-&lt;li&gt;M3 double sided tape.&lt;/li&gt;
-&lt;li&gt;8 x Gemfan 5030 props.&lt;/li&gt;
-&lt;li&gt;5.8GHz LHCP 3-lobe antenna.&lt;/li&gt;
-&lt;li&gt;Fibre washers.&lt;/li&gt;
-&lt;li&gt;25mm standoffs.&lt;/li&gt;
-&lt;li&gt;Lots of nuts and bolts.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The only problem that I can see so far is that the mounting bolts included with
-the motors are suited for 3mm arms instead of 4mm arms. They only engage one or
-two threads, and need to be about 1mm longer. Not a problem though, I picked up
-some different bolts from Jaycar.&lt;/p&gt;
-
-&lt;p&gt;I&amp;rsquo;m looking forward to building this thing!&lt;/p&gt;
-</description>
-    </item>
+    <atom:link href="http://peterstace.io/categories/development/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Irregular JSON decoding in Go</title>

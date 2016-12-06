@@ -28,11 +28,7 @@
       <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</guid>
-      <description>&lt;!--Tags = [&#34;boltrc&#34;, &#34;bolt250&#34;, &#34;fpv&#34;, &#34;quadcopter&#34;, &#34;multicopter&#34;]--&gt;
-
-&lt;!--Categories = [&#34;Quadcopters&#34;]--&gt;
-
-&lt;p&gt;I&amp;rsquo;m building a new miniquad, the Bolt250 from &lt;a href=&#34;http://boltrc.com.au&#34;&gt;BoltRC&lt;/a&gt;.
+      <description>&lt;p&gt;I&amp;rsquo;m building a new miniquad, the Bolt250 from &lt;a href=&#34;http://boltrc.com.au&#34;&gt;BoltRC&lt;/a&gt;.
 It&amp;rsquo;s a midpriced 250mm class racing quadcopter.&lt;/p&gt;
 
 &lt;p&gt;I went with the ARF kit rather than just getting the frame.&lt;/p&gt;
@@ -93,11 +89,7 @@ some different bolts from Jaycar.&lt;/p&gt;
       <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2015-06-18-irregular-json-decoding-in-go/</guid>
-      <description>&lt;!--Categories = [&#34;Development&#34;, &#34;GoLang&#34;]--&gt;
-
-&lt;!--Tags = [&#34;go&#34;, &#34;golang&#34;, &#34;json&#34;, &#34;heterogeneous&#34;, &#34;homogeneous&#34;, &#34;marshal&#34;, &#34;unmarshal&#34;, &#34;regular&#34;, &#34;irregular&#34;]--&gt;
-
-&lt;p&gt;The Go standard library has an awesome &lt;a href=&#34;http://golang.org/pkg/encoding/json/&#34;&gt;JSON encoding and decoding
+      <description>&lt;p&gt;The Go standard library has an awesome &lt;a href=&#34;http://golang.org/pkg/encoding/json/&#34;&gt;JSON encoding and decoding
 package&lt;/a&gt;, which makes handling JSON a
 breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of
 &lt;a href=&#34;http://blog.golang.org/json-and-go&#34;&gt;web&lt;/a&gt; &lt;a href=&#34;https://gobyexample.com/json&#34;&gt;pages&lt;/a&gt;
@@ -236,11 +228,7 @@ look for the  &lt;code&gt;&amp;quot;Type&amp;quot;&lt;/code&gt; field, and switc
       <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</guid>
-      <description>&lt;!--Categories = [&#34;Development&#34;, &#34;GoLang&#34;]--&gt;
-
-&lt;!--Tags = [&#34;go&#34;, &#34;golang&#34;, &#34;gofmt&#34;, &#34;fmt&#34;, &#34;diff&#34;, &#34;git&#34;, &#34;whitespace&#34;, &#34;ignore&#34;, &#34;hg&#34;, &#34;mercurial&#34;, &#34;svn&#34;, &#34;subversion&#34;, &#34;github&#34;]--&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://golang.org/cmd/gofmt/&#34;&gt;Gofmt&lt;/a&gt; is a Go program formatter. Its universal
+      <description>&lt;p&gt;&lt;a href=&#34;https://golang.org/cmd/gofmt/&#34;&gt;Gofmt&lt;/a&gt; is a Go program formatter. Its universal
 adoption by the Go community has resulted in a consistent formatting style
 among most if not all Go source code.&lt;/p&gt;
 
@@ -328,10 +316,6 @@ ignore-whitespace option as well.&lt;/p&gt;
       
       <guid>http://peterstace.io/post/2015-05-21-where-should-i-put-my-mocks-in-go/</guid>
       <description>
-
-&lt;!--Categories = [&#34;Development&#34;, &#34;GoLang&#34;]--&gt;
-
-&lt;!--Tags = [&#34;golang&#34;, &#34;go&#34;, &#34;mock&#34;, &#34;test&#34;, &#34;testing&#34;, &#34;production&#34;, &#34;binary&#34;, &#34;stub&#34;, &#34;package&#34;, &#34;API&#34;, &#34;godoc&#34;, &#34;gomock&#34;]--&gt;
 
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
