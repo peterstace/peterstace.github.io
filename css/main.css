@@ -1,5 +1,4 @@
 body {
-  /*padding: 1px;*/
   margin: 0;
 }
 
@@ -10,9 +9,14 @@ div.nav {
 .nav ul {
   margin: 0;
   padding: 0.3em;
+  padding-left: 3em;
 }
 
 .nav li {
   list-style: none;
   display: inline;
+}
+
+div.body {
+  margin: 3em;
 }
