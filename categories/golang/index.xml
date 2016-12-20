@@ -8,6 +8,71 @@
     <atom:link href="http://peterstace.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Path Tracing Part 1 - Initial Renders</title>
+      <link>http://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>http://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</guid>
+      <description>
+
+&lt;h2 id=&#34;enter-grayt&#34;&gt;Enter Grayt&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/peterstace/grayt&#34;&gt;Grayt&lt;/a&gt; (&lt;strong&gt;G&lt;/strong&gt;o &lt;strong&gt;Ray&lt;/strong&gt; &lt;strong&gt;T&lt;/strong&gt;racer) was a
+project that I started in mid 2014 to help me learn &lt;a href=&#34;https://golang.org&#34;&gt;Go&lt;/a&gt;.
+As the name suggests, it started out as a &lt;a href=&#34;https://en.wikipedia.org/wiki/Ray_tracing_(graphics)&#34;&gt;ray
+tracer&lt;/a&gt;. Having
+implemented ray tracers before (in C++), this was quite straight forward but
+ultimately wasn&amp;rsquo;t very satisfying.  I still wanted a side project to learn Go
+with, so I pivoted it from a ray tracer to a &lt;a href=&#34;https://en.wikipedia.org/wiki/Path_tracing&#34;&gt;path
+tracer&lt;/a&gt;.  Path tracers are much
+harder to implement, and produce more realistic renderings. The name &amp;ldquo;Grayt&amp;rdquo;
+stuck, even if it&amp;rsquo;s no longer a truly accurate name.&lt;/p&gt;
+
+&lt;p&gt;At its core, a path tracer takes a mathematical description of a 3D scene and
+renders it, producing a 2D image. They&amp;rsquo;re able to render highly photo realistic
+images by simulating light related physical phenomena that occur in the real
+wold.&lt;/p&gt;
+
+&lt;p&gt;Currently, Grayt only supports diffuse reflections. These types of reflections
+are only a tiny subset of the reflections that occur in the real world.
+However, they allow a path tracer to render matte objects with relative
+accuracy.&lt;/p&gt;
+
+&lt;h2 id=&#34;renders&#34;&gt;Renders&lt;/h2&gt;
+
+&lt;p&gt;I started out with 3 different renderings, each showing off different aspects
+of the path tracer.&lt;/p&gt;
+
+&lt;h3 id=&#34;cornell-box&#34;&gt;Cornell Box&lt;/h3&gt;
+
+&lt;p&gt;The first scene I implemented is the classic &lt;a href=&#34;https://en.wikipedia.org/wiki/Cornell_box&#34;&gt;Cornell
+Box&lt;/a&gt;, originally created at Cornell
+University as a 3D test model. My take on the Cornell Box is slightly different
+from the original. In the rendering, you can diffuse reflections from the red
+and green walls onto the center blocks. You can also see soft shadows cast by
+the blocks onto the floor.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/cornell_box.png&#34; alt=&#34;Cornell Box&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;split-box&#34;&gt;Split Box&lt;/h3&gt;
+
+&lt;p&gt;My second rendering is of a procedurally generated scene of my own design. I
+took a cube, and repeatedly split it into two pieces along a random axis,
+shifting each piece slightly against the other.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/split_box.png&#34; alt=&#34;Split Box&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;sphere-tree&#34;&gt;Sphere Tree&lt;/h3&gt;
+
+&lt;p&gt;My third rendering is also of a procedurally generated scene of my own design.
+I created a &amp;lsquo;tree&amp;rsquo; out of sphere, attaching each child sphere to its parent
+sphere at a random location.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/sphere_tree.png&#34; alt=&#34;Sphere Tree&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Irregular JSON decoding in Go</title>
       <link>http://peterstace.io/post/2015-06-18-irregular-json-decoding-in-go/</link>
       <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>

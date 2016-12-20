@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/about/</loc>
     <lastmod>2016-12-05T00:00:00+00:00</lastmod>
   </url>
@@ -56,14 +61,26 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/cornell-box/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/categories/development/</loc>
-    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://peterstace.io/tags/diff/</loc>
     <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/diffuse/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -93,7 +110,7 @@
   
   <url>
     <loc>http://peterstace.io/tags/go/</loc>
-    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -110,20 +127,26 @@
   </url>
   
   <url>
-    <loc>http://peterstace.io/tags/golang/</loc>
-    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <loc>http://peterstace.io/categories/golang/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://peterstace.io/categories/golang/</loc>
-    <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <loc>http://peterstace.io/tags/golang/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://peterstace.io/tags/gomock/</loc>
     <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/grayt/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -170,6 +193,12 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/matte/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/tags/mercurial/</loc>
     <lastmod>2015-06-02T22:00:15+11:00</lastmod>
     <priority>0</priority>
@@ -194,14 +223,26 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/path-tracer/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/</loc>
-    <lastmod>2016-12-05T00:00:00+00:00</lastmod>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/photo-realistic/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://peterstace.io/post/</loc>
-    <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -224,8 +265,32 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/ray-tracer/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/reflection/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/tags/regular/</loc>
     <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/render/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/side-project/</loc>
+    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
     <priority>0</priority>
   </url>
   
