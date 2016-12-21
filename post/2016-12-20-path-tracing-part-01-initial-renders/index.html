@@ -56,27 +56,57 @@ of the path tracer.</p>
 <p>The first scene I implemented is the classic <a href="https://en.wikipedia.org/wiki/Cornell_box">Cornell
 Box</a>, originally created at Cornell
 University as a 3D test model. My take on the Cornell Box is slightly different
-from the original. In the rendering, you can diffuse reflections from the red
-and green walls onto the center blocks. You can also see soft shadows cast by
-the blocks onto the floor.</p>
+from the original.</p>
 
-<p><img src="/static/images/cornell_box.png" alt="Cornell Box" /></p>
+<p>The rendering contains:</p>
+
+<ul>
+<li>A red &lsquo;left&rsquo; wall.</li>
+<li>A green &lsquo;right&rsquo; wall.</li>
+<li>A white floor and ceiling.</li>
+<li>A white ceiling light.</li>
+<li>Two white blocks.</li>
+</ul>
+
+<p>All surfaces are matte. A real wold example of a matte surface would be a
+non-glossy and slightly rough painted surface.</p>
+
+<p>In the rendering, you can observer:</p>
+
+<ul>
+<li>Soft shadows being cast by the blocks onto the floor.</li>
+<li>Green and red light being reflected off the green and red walls onto the
+white center blocks.</li>
+<li>Occlusion shadows, most visible in the back top corners of the room.</li>
+</ul>
+
+<p>In a traditional ray tracer, these three effects must be implemented as special
+cases (and it&rsquo;s very hard to do so accurately). In path tracing however, we get
+them &lsquo;for free&rsquo; by virtue of having implemented diffuse reflections.</p>
+
+<p><img src="/static/images/cornell_box.jpg" alt="Cornell Box" /></p>
 
 <h3 id="split-box">Split Box</h3>
 
-<p>My second rendering is of a procedurally generated scene of my own design. I
-took a cube, and repeatedly split it into two pieces along a random axis,
-shifting each piece slightly against the other.</p>
+<p>My second rendering is of a procedurally generated scene of my own design.  I
+started by taking a cube and splitting it into two pieces along a random axis.
+I then moved each piece slightly against the other. I repeated this on the
+remaining cubes over several dozen iterations. The cube stricture is white, and
+is situated underneath a white light. Like the Cornell Box, there are coloured
+walls to the left and right (off camera) that reflect coloured light into the
+scene.</p>
 
-<p><img src="/static/images/split_box.png" alt="Split Box" /></p>
+<p><img src="/static/images/split_box.jpg" alt="Split Box" /></p>
 
 <h3 id="sphere-tree">Sphere Tree</h3>
 
 <p>My third rendering is also of a procedurally generated scene of my own design.
-I created a &lsquo;tree&rsquo; out of sphere, attaching each child sphere to its parent
-sphere at a random location.</p>
+I created a &lsquo;tree&rsquo; structure out of spheres. I started with a large sphere
+centered in the floor, and randomly added two &lsquo;child&rsquo; spheres to its surface. I
+then added two more child spheres to each of the original child spheres. This
+continued until I had several hundred spheres.</p>
 
-<p><img src="/static/images/sphere_tree.png" alt="Sphere Tree" /></p>
+<p><img src="/static/images/sphere_tree.jpg" alt="Sphere Tree" /></p>
 
 
 <hr/>

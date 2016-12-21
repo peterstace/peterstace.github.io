@@ -48,27 +48,57 @@ of the path tracer.&lt;/p&gt;
 &lt;p&gt;The first scene I implemented is the classic &lt;a href=&#34;https://en.wikipedia.org/wiki/Cornell_box&#34;&gt;Cornell
 Box&lt;/a&gt;, originally created at Cornell
 University as a 3D test model. My take on the Cornell Box is slightly different
-from the original. In the rendering, you can diffuse reflections from the red
-and green walls onto the center blocks. You can also see soft shadows cast by
-the blocks onto the floor.&lt;/p&gt;
+from the original.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/cornell_box.png&#34; alt=&#34;Cornell Box&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The rendering contains:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A red &amp;lsquo;left&amp;rsquo; wall.&lt;/li&gt;
+&lt;li&gt;A green &amp;lsquo;right&amp;rsquo; wall.&lt;/li&gt;
+&lt;li&gt;A white floor and ceiling.&lt;/li&gt;
+&lt;li&gt;A white ceiling light.&lt;/li&gt;
+&lt;li&gt;Two white blocks.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All surfaces are matte. A real wold example of a matte surface would be a
+non-glossy and slightly rough painted surface.&lt;/p&gt;
+
+&lt;p&gt;In the rendering, you can observer:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Soft shadows being cast by the blocks onto the floor.&lt;/li&gt;
+&lt;li&gt;Green and red light being reflected off the green and red walls onto the
+white center blocks.&lt;/li&gt;
+&lt;li&gt;Occlusion shadows, most visible in the back top corners of the room.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In a traditional ray tracer, these three effects must be implemented as special
+cases (and it&amp;rsquo;s very hard to do so accurately). In path tracing however, we get
+them &amp;lsquo;for free&amp;rsquo; by virtue of having implemented diffuse reflections.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/cornell_box.jpg&#34; alt=&#34;Cornell Box&#34; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;split-box&#34;&gt;Split Box&lt;/h3&gt;
 
-&lt;p&gt;My second rendering is of a procedurally generated scene of my own design. I
-took a cube, and repeatedly split it into two pieces along a random axis,
-shifting each piece slightly against the other.&lt;/p&gt;
+&lt;p&gt;My second rendering is of a procedurally generated scene of my own design.  I
+started by taking a cube and splitting it into two pieces along a random axis.
+I then moved each piece slightly against the other. I repeated this on the
+remaining cubes over several dozen iterations. The cube stricture is white, and
+is situated underneath a white light. Like the Cornell Box, there are coloured
+walls to the left and right (off camera) that reflect coloured light into the
+scene.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/split_box.png&#34; alt=&#34;Split Box&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/split_box.jpg&#34; alt=&#34;Split Box&#34; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;sphere-tree&#34;&gt;Sphere Tree&lt;/h3&gt;
 
 &lt;p&gt;My third rendering is also of a procedurally generated scene of my own design.
-I created a &amp;lsquo;tree&amp;rsquo; out of sphere, attaching each child sphere to its parent
-sphere at a random location.&lt;/p&gt;
+I created a &amp;lsquo;tree&amp;rsquo; structure out of spheres. I started with a large sphere
+centered in the floor, and randomly added two &amp;lsquo;child&amp;rsquo; spheres to its surface. I
+then added two more child spheres to each of the original child spheres. This
+continued until I had several hundred spheres.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/sphere_tree.png&#34; alt=&#34;Sphere Tree&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/sphere_tree.jpg&#34; alt=&#34;Sphere Tree&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
