@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Programming on Peter Stace&#39;s Personal Blog</title>
+    <link>http://peterstace.io/categories/programming/index.xml</link>
+    <description>Recent content in Programming on Peter Stace&#39;s Personal Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <atom:link href="http://peterstace.io/categories/programming/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Path Tracing Part 2 - Depth of Field</title>
+      <link>http://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>http://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</guid>
+      <description>&lt;p&gt;Real world cameras can only focus on objects that are a set distance away from
+them. This distance is known as the &lt;em&gt;subject distance&lt;/em&gt;. Objects at other
+distances will appear more or less out of focus, depending on how far away they
+are from this point. Objects closer to the camera than the subject distance
+will appear out of focus, as will objects beyond the subject distance. Objects
+closer to the subject distance (but still not precisely at it) will still be
+out of focus, but to a much lesser degree.&lt;/p&gt;
+
+&lt;p&gt;Real world cameras can also control the degree to which parts of the image are
+out of focus. Typically this is done by adjusting the &lt;em&gt;focal ratio&lt;/em&gt; of the
+camera lens. This is the ratio between the focal length of the lens (distance
+from lens to image sensor or film) and the lens&amp;rsquo; aperture diameter. The focal
+ratio is also known as the &lt;em&gt;f-stop&lt;/em&gt; or &lt;em&gt;f-number&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Depth of field effects can be simulated in a path tracer by modifying how rays
+are cast out of the virtual camera. The rays can be perturbed randomly to
+simulate light passing through the camera aperture at different points.&lt;/p&gt;
+
+&lt;p&gt;Depth of field effects have now been implemented in my path tracer,
+&lt;a href=&#34;https://github.com/peterstace/grayt&#34;&gt;Grayt&lt;/a&gt;. It generated the 9 images below.
+Each image is a rendering of the same scene, but with varying subject distances
+and focal ratios.&lt;/p&gt;
+
+&lt;table style=&#34;border:1px solid black;border-collapse:collapse;text-align:center&#34;&gt;
+  &lt;tr&gt;
+    &lt;td rowspan=&#34;2&#34; style=&#34;border:1px solid black&#34;&gt;Focal Ratio&lt;/td&gt;
+    &lt;td colspan=&#34;3&#34; style=&#34;border:1px solid black&#34;&gt;Subject Distance&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;/td&gt;
+    &lt;td style=&#34;border:1px solid black&#34;&gt;Close&lt;/td&gt;
+    &lt;td style=&#34;border:1px solid black&#34;&gt;Mid&lt;/td&gt;
+    &lt;td style=&#34;border:1px solid black&#34;&gt;Far&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td style=&#34;border:1px solid black&#34;&gt;Shallow&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/near_50.jpg&#34; /&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/mid_50.jpg&#34; /&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/far_50.jpg&#34; /&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td style=&#34;border:1px solid black&#34;&gt;Medium&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/near_15.jpg&#34; /&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/mid_15.jpg&#34; /&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/far_15.jpg&#34; /&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td style=&#34;border:1px solid black&#34;&gt;Deep&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/near_5.jpg&#34; /&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/mid_5.jpg&#34; /&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/far_5.jpg&#34; /&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

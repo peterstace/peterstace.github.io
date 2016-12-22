@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</loc>
     <lastmod>2016-12-20T19:55:41+11:00</lastmod>
   </url>
@@ -32,6 +37,12 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/aperture/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/tags/api/</loc>
     <lastmod>2015-05-21T21:51:39+11:00</lastmod>
     <priority>0</priority>
@@ -56,6 +67,12 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/camera/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/categories/</loc>
     <priority>0</priority>
   </url>
@@ -63,6 +80,12 @@
   <url>
     <loc>http://peterstace.io/tags/cornell-box/</loc>
     <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/depth-of-field/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -85,8 +108,32 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/f-number/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/f-stop/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/tags/fmt/</loc>
     <lastmod>2015-06-02T22:00:15+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/focal-ratio/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/focus/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -134,7 +181,7 @@
   
   <url>
     <loc>http://peterstace.io/categories/golang/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -224,13 +271,13 @@
   
   <url>
     <loc>http://peterstace.io/tags/path-tracer/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://peterstace.io/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -242,13 +289,19 @@
   
   <url>
     <loc>http://peterstace.io/post/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://peterstace.io/tags/production/</loc>
     <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/categories/programming/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -261,6 +314,12 @@
   <url>
     <loc>http://peterstace.io/categories/quadcopters/</loc>
     <lastmod>2016-01-06T22:17:35+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/ray/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -297,6 +356,12 @@
   <url>
     <loc>http://peterstace.io/tags/stub/</loc>
     <lastmod>2015-05-21T21:51:39+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/subject-distance/</loc>
+    <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
   </url>
   
