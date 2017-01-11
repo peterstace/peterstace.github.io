@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://peterstace.io/post/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/post/2017-01-04-path-tracing-part-03-acceleration-structure/</loc>
     <lastmod>2017-01-04T09:21:37+11:00</lastmod>
   </url>
@@ -107,6 +112,12 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/decoder/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/tags/depth-of-field/</loc>
     <lastmod>2016-12-21T19:03:38+11:00</lastmod>
     <priority>0</priority>
@@ -114,7 +125,7 @@
   
   <url>
     <loc>http://peterstace.io/categories/development/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -127,6 +138,12 @@
   <url>
     <loc>http://peterstace.io/tags/diffuse/</loc>
     <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/error/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -180,7 +197,7 @@
   
   <url>
     <loc>http://peterstace.io/tags/go/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -197,14 +214,14 @@
   </url>
   
   <url>
-    <loc>http://peterstace.io/tags/golang/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <loc>http://peterstace.io/categories/golang/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://peterstace.io/categories/golang/</loc>
-    <lastmod>2017-01-04T09:21:37+11:00</lastmod>
+    <loc>http://peterstace.io/tags/golang/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -247,6 +264,12 @@
   <url>
     <loc>http://peterstace.io/tags/homogeneous/</loc>
     <lastmod>2015-06-18T22:03:45+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/idiomatic/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -348,7 +371,7 @@
   
   <url>
     <loc>http://peterstace.io/</loc>
-    <lastmod>2017-01-04T09:21:37+11:00</lastmod>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -360,7 +383,7 @@
   
   <url>
     <loc>http://peterstace.io/post/</loc>
-    <lastmod>2017-01-04T09:21:37+11:00</lastmod>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -466,8 +489,20 @@
   </url>
   
   <url>
+    <loc>http://peterstace.io/tags/torrent/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://peterstace.io/tags/traversal/</loc>
     <lastmod>2017-01-04T09:21:37+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://peterstace.io/tags/type-assertion/</loc>
+    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
     <priority>0</priority>
   </url>
   
