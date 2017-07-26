@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://peterstace.io/post/2017-07-26-path-tracing-part-04-reflections/</loc>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
+  </url>
   
   <url>
     <loc>http://peterstace.io/post/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</loc>
@@ -221,7 +227,7 @@
   
   <url>
     <loc>http://peterstace.io/categories/golang/</loc>
-    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -359,7 +365,7 @@
   
   <url>
     <loc>http://peterstace.io/tags/path-tracer/</loc>
-    <lastmod>2017-01-04T09:21:37+11:00</lastmod>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -371,7 +377,7 @@
   
   <url>
     <loc>http://peterstace.io/</loc>
-    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -383,7 +389,7 @@
   
   <url>
     <loc>http://peterstace.io/post/</loc>
-    <lastmod>2017-01-11T21:14:51+11:00</lastmod>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -395,7 +401,7 @@
   
   <url>
     <loc>http://peterstace.io/categories/programming/</loc>
-    <lastmod>2017-01-04T09:21:37+11:00</lastmod>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -413,7 +419,7 @@
   
   <url>
     <loc>http://peterstace.io/tags/ray/</loc>
-    <lastmod>2017-01-04T09:21:37+11:00</lastmod>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -425,7 +431,7 @@
   
   <url>
     <loc>http://peterstace.io/tags/reflection/</loc>
-    <lastmod>2016-12-20T19:55:41+11:00</lastmod>
+    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -473,6 +479,7 @@
   
   <url>
     <loc>http://peterstace.io/tags/</loc>
+    <lastmod>2017-01-04T09:21:37+11:00</lastmod>
     <priority>0</priority>
   </url>
   

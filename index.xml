@@ -2,11 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Peter Stace&#39;s Personal Blog</title>
-    <link>http://peterstace.io/index.xml</link>
+    <link>http://peterstace.io/</link>
     <description>Recent content on Peter Stace&#39;s Personal Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 11 Jan 2017 21:14:51 +1100</lastBuildDate>
-    <atom:link href="http://peterstace.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 26 Jul 2017 13:52:57 +1000</lastBuildDate>
+    
+	<atom:link href="http://peterstace.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Path Tracing Part 4 - Reflections</title>
+      <link>http://peterstace.io/post/2017-07-26-path-tracing-part-04-reflections/</link>
+      <pubDate>Wed, 26 Jul 2017 13:52:57 +1000</pubDate>
+      
+      <guid>http://peterstace.io/post/2017-07-26-path-tracing-part-04-reflections/</guid>
+      <description>The mathematics behind specular reflection in path tracing (or ray tracing) is simple.
+When a ray encounters a reflective surface, the ray has to be recast following the rule &amp;ldquo;the angle of incidence is equal to the angle of reflection&amp;rdquo;.
+Where d_r is the (unit) reflection ray direction, d_i is the (unit) incident ray direction, and n is the unit normal:
+d_r = d_i - 2 * n . d_i  I recently added specular reflections to my path tracer, Grayt.</description>
+    </item>
     
     <item>
       <title>Panic and Recover as Error Handling Mechanisms in Go</title>
@@ -14,123 +28,9 @@
       <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</guid>
-      <description>
-
-&lt;p&gt;In Go, the generally accepted idiomatic way to handle error conditions is via
-the builtin &lt;code&gt;error&lt;/code&gt; type. In most situations, this leads to clear and easy to
-understand error handling code.&lt;/p&gt;
-
-&lt;p&gt;This isn&amp;rsquo;t always the case though. When dealing with a large number of type
-assertions, panic and recover can lead to elegant and easy to understand code.&lt;/p&gt;
-
-&lt;p&gt;I recently came across this sort of situation while writing a decoder for
-&lt;code&gt;.torrent&lt;/code&gt; files.&lt;/p&gt;
-
-&lt;p&gt;This blog post will go through a simplified version of the problem, exhibiting
-how and why panic and recover allow better code to be crafted in this
-particular situation.&lt;/p&gt;
-
-&lt;h2 id=&#34;the-problem&#34;&gt;The Problem&lt;/h2&gt;
-
-&lt;p&gt;A &lt;code&gt;.torrent&lt;/code&gt; file consists of an encoded &lt;code&gt;Value&lt;/code&gt;. In general, a &lt;code&gt;Value&lt;/code&gt; can
-either be an &lt;code&gt;int&lt;/code&gt;, a &lt;code&gt;string&lt;/code&gt;, or a &lt;code&gt;map[string]Value&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;// Value is either `int`, `string`, or `map[string]Value`.
-type Value interface{}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;However, &lt;code&gt;Value&lt;/code&gt;s that are encoded inside &lt;code&gt;.torrent&lt;/code&gt; files will contain very
-specific structures (the &lt;code&gt;.torrent&lt;/code&gt; structure given here is a simplified
-version of reality. For the full details of real &lt;code&gt;.torrent&lt;/code&gt; files, the spec can
-be found &lt;a href=&#34;http://bittorrent.org/beps/bep_0003.html&#34;&gt;here&lt;/a&gt;).&lt;/p&gt;
-
-&lt;p&gt;The top level &lt;code&gt;Value&lt;/code&gt; in a &lt;code&gt;.torrent&lt;/code&gt; file is a &lt;code&gt;map[string]Value&lt;/code&gt;. It has two
-keys, &lt;code&gt;&amp;quot;announce&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;info&amp;quot;&lt;/code&gt;. The &lt;code&gt;&amp;quot;announce&amp;quot;&lt;/code&gt; value is a &lt;code&gt;string&lt;/code&gt;, which is
-the announce URL of the torrent&amp;rsquo;s tracker. The &lt;code&gt;&amp;quot;info&amp;quot;&lt;/code&gt; value is another
-&lt;code&gt;map[string]Value&lt;/code&gt;. This map also has two keys, &lt;code&gt;&amp;quot;name&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;piece length&amp;quot;&lt;/code&gt;.
-The &lt;code&gt;&amp;quot;name&amp;quot;&lt;/code&gt; value contains a &lt;code&gt;string&lt;/code&gt;, which is the suggested name of the
-torrent.  The &lt;code&gt;&amp;quot;piece length&amp;quot;&lt;/code&gt; value contains an &lt;code&gt;int&lt;/code&gt;, which is the number of
-bytes in each torrent piece.&lt;/p&gt;
-
-&lt;p&gt;The task is to take the top level &lt;code&gt;Value&lt;/code&gt;, and extract it into the following
-type:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type MetaInfo struct {
-    AnnounceURL string
-    Name        string
-    PieceLength int
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Missing keys or incorrect types are errors. Extra keys should be ignored (since
-they might be file format extensions).&lt;/p&gt;
-
-&lt;h2 id=&#34;solution-a-traditional-error-handling&#34;&gt;Solution A (traditional error handling)&lt;/h2&gt;
-
-&lt;p&gt;The traditional approach is to use checked type assertions, returning an error
-if the type assertion fails.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func DecodeMetaInfo(v Value) (MetaInfo, error) {
-
-    var m MetaInfo
-    err := errors.New(&amp;quot;invalid meta info&amp;quot;)
-
-    topLevelMap, ok := v.(map[string]Value)
-    if !ok {
-        return m, err
-    }
-    if m.AnnounceURL, ok = topLevelMap[&amp;quot;announce&amp;quot;].(string); !ok {
-        return m, err
-    }
-    infoMap, ok := topLevelMap[&amp;quot;info&amp;quot;].(map[string]Value)
-    if !ok {
-        return m, err
-    }
-    if m.Name, ok = infoMap[&amp;quot;name&amp;quot;].(string); !ok {
-        return m, err
-    }
-    if m.PieceLength, ok = infoMap[&amp;quot;piece length&amp;quot;].(int); !ok {
-        return m, err
-    }
-    return m, nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;solution-b-panic-and-recover&#34;&gt;Solution B (panic and recover)&lt;/h2&gt;
-
-&lt;p&gt;An alternate solution is to use &lt;code&gt;recover()&lt;/code&gt; to check for any panics, and then
-use non-checked type assertions. This automatically takes care of the error
-cases if the type assertions fail.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func DecodeMetaInfo(v Value) (m MetaInfo, err error) {
-
-    defer func() {
-        if r := recover(); r != nil {
-            err = errors.New(&amp;quot;invalid meta info&amp;quot;)
-        }
-    }()
-
-    topLevelMap := v.(map[string]Value)
-    m.AnnounceURL = topLevelMap[&amp;quot;announce&amp;quot;].(string)
-    infoMap := topLevelMap[&amp;quot;info&amp;quot;].(map[string]Value)
-    m.Name = infoMap[&amp;quot;name&amp;quot;].(string)
-    m.PieceLength = infoMap[&amp;quot;piece length&amp;quot;].(int)
-    return m, nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;comparison&#34;&gt;Comparison&lt;/h2&gt;
-
-&lt;p&gt;While the line count between the two solutions isn&amp;rsquo;t dramatically different, I
-think the second is much easier to read once familiar with the panic and
-recover pattern. The logic isn&amp;rsquo;t cluttered with error handling like it is in
-the first solution.&lt;/p&gt;
-
-&lt;p&gt;The downside to the second solution is that it&amp;rsquo;s impossible to provide a custom
-error value for each error case. For my purposes, this didn&amp;rsquo;t really matter.
-The end user of the program isn&amp;rsquo;t going to be able to &amp;lsquo;fix&amp;rsquo; a torrent if it&amp;rsquo;s
-not well formed, they just need to know that it cannot be loaded.&lt;/p&gt;
-</description>
+      <description>In Go, the generally accepted idiomatic way to handle error conditions is via the builtin error type. In most situations, this leads to clear and easy to understand error handling code.
+This isn&amp;rsquo;t always the case though. When dealing with a large number of type assertions, panic and recover can lead to elegant and easy to understand code.
+I recently came across this sort of situation while writing a decoder for .</description>
     </item>
     
     <item>
@@ -139,212 +39,10 @@ not well formed, they just need to know that it cannot be loaded.&lt;/p&gt;
       <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2017-01-04-path-tracing-part-03-acceleration-structure/</guid>
-      <description>
-
-&lt;p&gt;I recently added an acceleration data structure to my &lt;a href=&#34;https://github.com/peterstace/grayt&#34;&gt;path
-tracer&lt;/a&gt;. This resulted in a large
-performance improvement.&lt;/p&gt;
-
-&lt;p&gt;The acceleration structure improves the speed of the &lt;em&gt;global ray intersection
-test&lt;/em&gt;, an integral part of any path tracer.&lt;/p&gt;
-
-&lt;p&gt;The source code can be found
-&lt;a href=&#34;https://github.com/peterstace/grayt/blob/master/grayt/grid.go&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;global-ray-intersection-test&#34;&gt;Global Ray Intersection Test&lt;/h2&gt;
-
-&lt;p&gt;The global ray intersection test is the most computationally expensive part of
-a path tracer. The test takes a ray, and checks to see if it intersects with
-any of the objects in the scene.&lt;/p&gt;
-
-&lt;p&gt;A &lt;code&gt;ray&lt;/code&gt; is defined as an origin &lt;code&gt;vector&lt;/code&gt; and a (unit) direction &lt;code&gt;vector&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type vector { x, y, z float64 }
-
-type ray { origin, dir float64 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Objects in the scene are defined as:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type object interface {
-    intersect(ray) (unitNormal vector, distance float64, hit bool)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If the &lt;code&gt;ray&lt;/code&gt; intersects the object, then &lt;code&gt;intersect(ray)&lt;/code&gt; will return the unit
-normal at the hit site, along with the distance to the hit site from the ray
-origin.&lt;/p&gt;
-
-&lt;p&gt;To calculate the intersection between a ray and all objects in the scene, we
-must complete the following code:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type dataStructure struct {
-    // ...
-}
-
-func newDataStructure([]object) *dataStructure {
-    // ...
-}
-
-func (d *dataStructure) intersect(r ray) (unitNormal vector, distance float64, hit bool) {
-    // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;There are lots of different ways to implement the global ray intersection test,
-and performance will always be an important consideration. This is because:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;The global ray intersection test has to be executed a large number of times.
-In a path tracer, each ray cast from the camera may spawn 10s of secondary
-rays (e.g. reflection rays). So even with a modest image resolution (1000 by
-1000 pixels) and a modest sample rate (1000 samples per pixel), it&amp;rsquo;s possible
-that upwards to 10 billion ray intersection will be required to render a single
-image.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;A single global ray intersection test itself is computationally expensive. It
-must consider all of the objects in the scene. There may be 100s of thousands
-of objects in the scene.&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;naive-implementation&#34;&gt;Naive Implementation&lt;/h2&gt;
-
-&lt;p&gt;The naive implementation sequentially checks each object in the scene, keeping
-track of the closest intersection found so far. This is easy to implement, but
-has the worst possible performance.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type objectList struct {
-    objs []object
-}
-
-func newObjectList(objs []object) *objectList {
-    return &amp;amp;objectList{objs}
-}
-
-func (o *objectList) intersect(r ray) (unitNormal vector, distance float64, hit bool) {
-
-    closest struct {
-        unitNormal vector
-        distance   float64
-        hit        bool
-    }
-
-    for _, obj := range o.objs {
-        unitNormal, distance, hit := obj.intersect(r)
-        if !hit {
-            continue
-        }
-        if !closest.hit || distance &amp;lt; closest.distance {
-            closest.unitNormal = unitNormal
-            closest.distance = distance
-            closest.hit = true
-        }
-    }
-
-    return closest.unitNormal, closest.distance, closest.hit
-}
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The main problem with the naive implementation is that it has to check each
-object in the scene for an intersection. If we can reduce the amount of
-intersection tests with individual objects, we can increase the overall
-performance.&lt;/p&gt;
-
-&lt;h2 id=&#34;fast-implementation&#34;&gt;Fast Implementation&lt;/h2&gt;
-
-&lt;p&gt;A &amp;ldquo;grid&amp;rdquo; data structure can allow us to dramatically increase the speed of the
-global ray intersection test. It does this by cleverly reducing the number of
-individual object intersections tests we have to perform.&lt;/p&gt;
-
-&lt;p&gt;The algorithm is split into two parts:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;The data structure is populated using the set of objects in the scene.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;The data structure is then traversed to solve the global ray intersection
-test.&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&#34;grid-population&#34;&gt;Grid Population&lt;/h3&gt;
-
-&lt;p&gt;First a 3D grid created, the same size as the scene. Each object in the scene
-is checked to see which grid cell(s) it falls into. The objects are then stored
-into an array representing the grid for fast access. This data structure allows
-the list of scene objects in a given grid cell to be accessed in constant
-time.&lt;/p&gt;
-
-&lt;p&gt;A 2D example is shown below:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/grid/grid.svg&#34; alt=&#34;Grid Population&#34; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;grid-traversal&#34;&gt;Grid Traversal&lt;/h3&gt;
-
-&lt;p&gt;When performing the global ray intersection test, the first step is the find
-the cell in the grid that is first hit by the ray. Each scene object in that
-cell is then tested for a ray intersection. If any of the objects in that cell
-intersect with the ray, then the result of the global ray intersection test is
-the intersection with the individual object that&amp;rsquo;s closest to the start of the
-ray. If no object is detected, then we continue to the next cell and repeat.
-The global ray intersection check finishes when an intersection has been found
-or we have traversed all the way to the other side of the grid.&lt;/p&gt;
-
-&lt;p&gt;There&amp;rsquo;s a non-obvious edge case that must be accounted for. An object may be
-partially inside a particular cell, and also intersect with a ray. However, if the
-intersection doesn&amp;rsquo;t occur inside that cell, then we shouldn&amp;rsquo;t count this
-intersection.&lt;/p&gt;
-
-&lt;p&gt;The algorithm is fast because it&amp;rsquo;s computationally cheap to iterate through the
-cells in the grid that intersect with the ray. This is done using the
-&lt;a href=&#34;https://en.wikipedia.org/wiki/Digital_differential_analyzer_(graphics_algorithm)&#34;&gt;DAA&lt;/a&gt;
-method.&lt;/p&gt;
-
-&lt;p&gt;The following is an example of the grid traversal:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/grid/traverse.svg&#34; alt=&#34;Grid Traversal&#34; /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;The first cell the ray enters is &lt;em&gt;(0, 3)&lt;/em&gt;. There is a single object in the
-cell, but it doesn&amp;rsquo;t intersect with the ray. So we continue to the next
-cell.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;The next cell the ray enters is &lt;em&gt;(1, 3)&lt;/em&gt;. There are two objects in the cell.
-The ray doesn&amp;rsquo;t intersect with the circle. However, there is also a triangle
-in the cell (just a small part of its corner). The ray &lt;em&gt;does&lt;/em&gt; intersect with
-the triangle, but &lt;em&gt;not&lt;/em&gt; inside the cell we are currently in (this is the edge case
-describe previously). We ignore this intersection and continue on to the next cell.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;The next cell the ray enters is &lt;em&gt;(1, 2)&lt;/em&gt;. There are no objects in this cell,
-so we continue to the next cell.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;The next cell is &lt;em&gt;(2, 2)&lt;/em&gt;. There are two objects in this cell, both
-intersecting with the ray. The closest intersection is the circle. Since we
-have found a valid intersection, the global ray intersection check is complete.&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&#34;performance-improvements-and-computational-complexity&#34;&gt;Performance Improvements and Computational Complexity&lt;/h2&gt;
-
-&lt;p&gt;The rendering time for my existing scenes was decreased by a factor between 1.5
-and 100 (depending on the size scene being rendered). Anecdotally, I found that
-the acceleration structure had a bigger impact on scenes containing more
-objects (10s or 100s of thousands). For scenes with only a few dozen objects,
-the acceleration structure had only a minor effect.&lt;/p&gt;
-
-&lt;p&gt;The computational complexity of the naive global ray intersection test is
-linear in the number of objects in the scene. This is fairly obvious, since we
-iterate through each object in the scene, checking for an intersection. Each
-object ray intersection test is constant time on its own.&lt;/p&gt;
-
-&lt;p&gt;I haven&amp;rsquo;t performed any formal computational complexity analysis of the grid
-algorithm. Assuming that the objects in the scene are evenly distributed, I
-suspect that the computational complexity is &lt;code&gt;O(n^(1/3))&lt;/code&gt; (where &lt;code&gt;n&lt;/code&gt; is the
-number of objects in the scene). We are essentially iterating through a one
-dimensional sequence of grid cells in a 3 dimensional grid. So we only need to
-visit &lt;code&gt;O(m^(1/3))&lt;/code&gt; cells (where &lt;code&gt;m&lt;/code&gt; is the total number of cells). It follows
-that if there are &lt;code&gt;n&lt;/code&gt; objects in the scene, then we would only have to perform
-&lt;code&gt;O(n^(1/3))&lt;/code&gt; individual object ray intersect test per global ray intersection
-test.&lt;/p&gt;
-</description>
+      <description>I recently added an acceleration data structure to my path tracer. This resulted in a large performance improvement.
+The acceleration structure improves the speed of the global ray intersection test, an integral part of any path tracer.
+The source code can be found here.
+Global Ray Intersection Test The global ray intersection test is the most computationally expensive part of a path tracer. The test takes a ray, and checks to see if it intersects with any of the objects in the scene.</description>
     </item>
     
     <item>
@@ -353,60 +51,7 @@ test.&lt;/p&gt;
       <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</guid>
-      <description>&lt;p&gt;Real world cameras can only focus on objects that are a set distance away from
-them. This distance is known as the &lt;em&gt;subject distance&lt;/em&gt;. Objects at other
-distances will appear more or less out of focus, depending on how far away they
-are from this point. Objects closer to the camera than the subject distance
-will appear out of focus, as will objects beyond the subject distance. Objects
-closer to the subject distance (but still not precisely at it) will still be
-out of focus, but to a much lesser degree.&lt;/p&gt;
-
-&lt;p&gt;Real world cameras can also control the degree to which parts of the image are
-out of focus. Typically this is done by adjusting the &lt;em&gt;focal ratio&lt;/em&gt; of the
-camera lens. This is the ratio between the focal length of the lens (distance
-from lens to image sensor or film) and the lens&amp;rsquo; aperture diameter. The focal
-ratio is also known as the &lt;em&gt;f-stop&lt;/em&gt; or &lt;em&gt;f-number&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Depth of field effects can be simulated in a path tracer by modifying how rays
-are cast out of the virtual camera. The rays can be perturbed randomly to
-simulate light passing through the camera aperture at different points.&lt;/p&gt;
-
-&lt;p&gt;Depth of field effects have now been implemented in my path tracer,
-&lt;a href=&#34;https://github.com/peterstace/grayt&#34;&gt;Grayt&lt;/a&gt;. It generated the 9 images below.
-Each image is a rendering of the same scene, but with varying subject distances
-and focal ratios.&lt;/p&gt;
-
-&lt;table style=&#34;border:1px solid black;border-collapse:collapse;text-align:center&#34;&gt;
-  &lt;tr&gt;
-    &lt;td rowspan=&#34;2&#34; style=&#34;border:1px solid black&#34;&gt;Focal Ratio&lt;/td&gt;
-    &lt;td colspan=&#34;3&#34; style=&#34;border:1px solid black&#34;&gt;Subject Distance&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;/td&gt;
-    &lt;td style=&#34;border:1px solid black&#34;&gt;Close&lt;/td&gt;
-    &lt;td style=&#34;border:1px solid black&#34;&gt;Mid&lt;/td&gt;
-    &lt;td style=&#34;border:1px solid black&#34;&gt;Far&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td style=&#34;border:1px solid black&#34;&gt;Shallow&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/near_50.jpg&#34; /&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/mid_50.jpg&#34; /&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/far_50.jpg&#34; /&gt;&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td style=&#34;border:1px solid black&#34;&gt;Medium&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/near_15.jpg&#34; /&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/mid_15.jpg&#34; /&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/far_15.jpg&#34; /&gt;&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td style=&#34;border:1px solid black&#34;&gt;Deep&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/near_5.jpg&#34; /&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/mid_5.jpg&#34; /&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;img src=&#34;http://peterstace.io/static/images/focus/far_5.jpg&#34; /&gt;&lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/table&gt;
-</description>
+      <description>Real world cameras can only focus on objects that are a set distance away from them. This distance is known as the subject distance. Objects at other distances will appear more or less out of focus, depending on how far away they are from this point. Objects closer to the camera than the subject distance will appear out of focus, as will objects beyond the subject distance. Objects closer to the subject distance (but still not precisely at it) will still be out of focus, but to a much lesser degree.</description>
     </item>
     
     <item>
@@ -415,93 +60,7 @@ and focal ratios.&lt;/p&gt;
       <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</guid>
-      <description>
-
-&lt;h2 id=&#34;enter-grayt&#34;&gt;Enter Grayt&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/peterstace/grayt&#34;&gt;Grayt&lt;/a&gt; (&lt;strong&gt;G&lt;/strong&gt;o &lt;strong&gt;Ray&lt;/strong&gt; &lt;strong&gt;T&lt;/strong&gt;racer) was a
-project that I started in mid 2014 to help me learn &lt;a href=&#34;https://golang.org&#34;&gt;Go&lt;/a&gt;.
-As the name suggests, it started out as a &lt;a href=&#34;https://en.wikipedia.org/wiki/Ray_tracing_(graphics)&#34;&gt;ray
-tracer&lt;/a&gt;. Having
-implemented ray tracers before (in C++), this was quite straight forward but
-ultimately wasn&amp;rsquo;t very satisfying.  I still wanted a side project to learn Go
-with, so I pivoted it from a ray tracer to a &lt;a href=&#34;https://en.wikipedia.org/wiki/Path_tracing&#34;&gt;path
-tracer&lt;/a&gt;.  Path tracers are much
-harder to implement, and produce more realistic renderings. The name &amp;ldquo;Grayt&amp;rdquo;
-stuck, even if it&amp;rsquo;s no longer a truly accurate name.&lt;/p&gt;
-
-&lt;p&gt;At its core, a path tracer takes a mathematical description of a 3D scene and
-renders it, producing a 2D image. They&amp;rsquo;re able to render highly photo realistic
-images by simulating light related physical phenomena that occur in the real
-wold.&lt;/p&gt;
-
-&lt;p&gt;Currently, Grayt only supports diffuse reflections. These types of reflections
-are only a tiny subset of the reflections that occur in the real world.
-However, they allow a path tracer to render matte objects with relative
-accuracy.&lt;/p&gt;
-
-&lt;h2 id=&#34;renders&#34;&gt;Renders&lt;/h2&gt;
-
-&lt;p&gt;I started out with 3 different renderings, each showing off different aspects
-of the path tracer.&lt;/p&gt;
-
-&lt;h3 id=&#34;cornell-box&#34;&gt;Cornell Box&lt;/h3&gt;
-
-&lt;p&gt;The first scene I implemented is the classic &lt;a href=&#34;https://en.wikipedia.org/wiki/Cornell_box&#34;&gt;Cornell
-Box&lt;/a&gt;, originally created at Cornell
-University as a 3D test model. My take on the Cornell Box is slightly different
-from the original.&lt;/p&gt;
-
-&lt;p&gt;The rendering contains:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;A red &amp;lsquo;left&amp;rsquo; wall.&lt;/li&gt;
-&lt;li&gt;A green &amp;lsquo;right&amp;rsquo; wall.&lt;/li&gt;
-&lt;li&gt;A white floor and ceiling.&lt;/li&gt;
-&lt;li&gt;A white ceiling light.&lt;/li&gt;
-&lt;li&gt;Two white blocks.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;All surfaces are matte. A real wold example of a matte surface would be a
-non-glossy and slightly rough painted surface.&lt;/p&gt;
-
-&lt;p&gt;In the rendering, you can observer:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Soft shadows being cast by the blocks onto the floor.&lt;/li&gt;
-&lt;li&gt;Green and red light being reflected off the green and red walls onto the
-white center blocks.&lt;/li&gt;
-&lt;li&gt;Occlusion shadows, most visible in the back top corners of the room.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;In a traditional ray tracer, these three effects must be implemented as special
-cases (and it&amp;rsquo;s very hard to do so accurately). In path tracing however, we get
-them &amp;lsquo;for free&amp;rsquo; by virtue of having implemented diffuse reflections.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/initial_render/classic.jpg&#34; alt=&#34;Cornell Box&#34; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;split-box&#34;&gt;Split Box&lt;/h3&gt;
-
-&lt;p&gt;My second rendering is of a procedurally generated scene of my own design.  I
-started by taking a cube and splitting it into two pieces along a random axis.
-I then moved each piece slightly against the other. I repeated this on the
-remaining cubes over several dozen iterations. The cube stricture is white, and
-is situated underneath a white light. Like the Cornell Box, there are coloured
-walls to the left and right (off camera) that reflect coloured light into the
-scene.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/initial_render/splitbox.jpg&#34; alt=&#34;Split Box&#34; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;sphere-tree&#34;&gt;Sphere Tree&lt;/h3&gt;
-
-&lt;p&gt;My third rendering is also of a procedurally generated scene of my own design.
-I created a &amp;lsquo;tree&amp;rsquo; structure out of spheres. I started with a large sphere
-centered in the floor, and randomly added two &amp;lsquo;child&amp;rsquo; spheres to its surface. I
-then added two more child spheres to each of the original child spheres. This
-continued until I had several hundred spheres.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://peterstace.io/static/images/initial_render/sphere_tree.jpg&#34; alt=&#34;Sphere Tree&#34; /&gt;&lt;/p&gt;
-</description>
+      <description>Enter Grayt Grayt (Go Ray Tracer) was a project that I started in mid 2014 to help me learn Go. As the name suggests, it started out as a ray tracer. Having implemented ray tracers before (in C++), this was quite straight forward but ultimately wasn&amp;rsquo;t very satisfying. I still wanted a side project to learn Go with, so I pivoted it from a ray tracer to a path tracer.</description>
     </item>
     
     <item>
@@ -510,12 +69,7 @@ continued until I had several hundred spheres.&lt;/p&gt;
       <pubDate>Mon, 05 Dec 2016 00:00:00 +0000</pubDate>
       
       <guid>http://peterstace.io/about/</guid>
-      <description>
-
-&lt;h2 id=&#34;about-us&#34;&gt;About Us&lt;/h2&gt;
-
-&lt;p&gt;I&amp;rsquo;m speechless.&lt;/p&gt;
-</description>
+      <description>About Us I&amp;rsquo;m speechless.</description>
     </item>
     
     <item>
@@ -524,59 +78,9 @@ continued until I had several hundred spheres.&lt;/p&gt;
       <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;m building a new miniquad, the Bolt250 from &lt;a href=&#34;http://boltrc.com.au&#34;&gt;BoltRC&lt;/a&gt;.
-It&amp;rsquo;s a midpriced 250mm class racing quadcopter.&lt;/p&gt;
-
-&lt;p&gt;I went with the ARF kit rather than just getting the frame.&lt;/p&gt;
-
-&lt;p&gt;The Bolt250 comes with two different hardware versions, standard (30mm
-standoffs) and stealth (25mm standoffs). It also comes with the choice of 3mm
-or 4mm arm thickness, with clearance for either 5&amp;rdquo; or 6&amp;rdquo; props. I opted for the
-stealth hardware with 4mm/5&amp;rdquo; arms.&lt;/p&gt;
-
-&lt;p&gt;The frame pieces include:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Bottom, mid, and top plates.&lt;/li&gt;
-&lt;li&gt;4 x arms.&lt;/li&gt;
-&lt;li&gt;Plastic LED rear mount.&lt;/li&gt;
-&lt;li&gt;Front and rear carbon fibre bumpers.&lt;/li&gt;
-&lt;li&gt;Small carbon fibre wall to fit between the camera bay area and the center of
-the frame.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Also included were:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;D-SUN 3A switching voltage regulator.&lt;/li&gt;
-&lt;li&gt;Naze32.&lt;/li&gt;
-&lt;li&gt;Mini power distribution board.&lt;/li&gt;
-&lt;li&gt;Header pins for the Naze32.&lt;/li&gt;
-&lt;li&gt;HS1177 FPV Camera.&lt;/li&gt;
-&lt;li&gt;USB ESC programming link.&lt;/li&gt;
-&lt;li&gt;4 x ZTW Spider Mini 18A OPTO ESCs.&lt;/li&gt;
-&lt;li&gt;4 x Cobra 2204 2300KV motors.&lt;/li&gt;
-&lt;li&gt;50mm right-angle VTX pigtail.&lt;/li&gt;
-&lt;li&gt;2 x XT-60 male connectors.&lt;/li&gt;
-&lt;li&gt;14 and 20 AWG silicone wire.&lt;/li&gt;
-&lt;li&gt;Plenty of heatshrink.&lt;/li&gt;
-&lt;li&gt;BoltRC battery strap.&lt;/li&gt;
-&lt;li&gt;Plenty of zip ties.&lt;/li&gt;
-&lt;li&gt;M3 double sided tape.&lt;/li&gt;
-&lt;li&gt;8 x Gemfan 5030 props.&lt;/li&gt;
-&lt;li&gt;5.8GHz LHCP 3-lobe antenna.&lt;/li&gt;
-&lt;li&gt;Fibre washers.&lt;/li&gt;
-&lt;li&gt;25mm standoffs.&lt;/li&gt;
-&lt;li&gt;Lots of nuts and bolts.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The only problem that I can see so far is that the mounting bolts included with
-the motors are suited for 3mm arms instead of 4mm arms. They only engage one or
-two threads, and need to be about 1mm longer. Not a problem though, I picked up
-some different bolts from Jaycar.&lt;/p&gt;
-
-&lt;p&gt;I&amp;rsquo;m looking forward to building this thing!&lt;/p&gt;
-</description>
+      <description>I&amp;rsquo;m building a new miniquad, the Bolt250 from BoltRC. It&amp;rsquo;s a midpriced 250mm class racing quadcopter.
+I went with the ARF kit rather than just getting the frame.
+The Bolt250 comes with two different hardware versions, standard (30mm standoffs) and stealth (25mm standoffs). It also comes with the choice of 3mm or 4mm arm thickness, with clearance for either 5&amp;rdquo; or 6&amp;rdquo; props. I opted for the stealth hardware with 4mm/5&amp;rdquo; arms.</description>
     </item>
     
     <item>
@@ -585,137 +89,8 @@ some different bolts from Jaycar.&lt;/p&gt;
       <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2015-06-18-irregular-json-decoding-in-go/</guid>
-      <description>&lt;p&gt;The Go standard library has an awesome &lt;a href=&#34;http://golang.org/pkg/encoding/json/&#34;&gt;JSON encoding and decoding
-package&lt;/a&gt;, which makes handling JSON a
-breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of
-&lt;a href=&#34;http://blog.golang.org/json-and-go&#34;&gt;web&lt;/a&gt; &lt;a href=&#34;https://gobyexample.com/json&#34;&gt;pages&lt;/a&gt;
-&lt;a href=&#34;https://eager.io/blog/go-and-json/&#34;&gt;around&lt;/a&gt; that explain its basic usage.&lt;/p&gt;
-
-&lt;p&gt;Basically, if you know the structure of the JSON value you&amp;rsquo;re encoding, you
-create the zero value of the corresponding Go type, and pass a pointer to it
-into the &lt;code&gt;json.Unmarshal&lt;/code&gt; (along with the JSON value). Magic occurs, and your
-Go object is now populated. If you don&amp;rsquo;t know the structure of your JSON value
-upfront, you can instead pass in a &lt;code&gt;map[string]interface{}&lt;/code&gt;, and that will be
-populated instead. Type assertions can then be used on the empty interfaces to
-determine what actually got decoded.&lt;/p&gt;
-
-&lt;p&gt;But what if you know the precise structure of the JSON, but it&amp;rsquo;s not &lt;em&gt;regular&lt;/em&gt;?
-For example, the following JSON value represents a ray tracer scene. The array
-&lt;code&gt;&amp;quot;Objects&amp;quot;&lt;/code&gt; contains a known structure, but each element isn&amp;rsquo;t of the same
-type. Objects of type &lt;code&gt;&amp;quot;box&amp;quot;&lt;/code&gt; will always have &lt;code&gt;&amp;quot;Corner1&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;Corner2&amp;quot;&lt;/code&gt;
-fields, and objects of type &lt;code&gt;&amp;quot;sphere&amp;quot;&lt;/code&gt; will always have &lt;code&gt;&amp;quot;Centre&amp;quot;&lt;/code&gt; and
-&lt;code&gt;&amp;quot;Radius&amp;quot;&lt;/code&gt; fields.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-    &amp;quot;Colour&amp;quot;: &amp;quot;white&amp;quot;,
-    &amp;quot;Material&amp;quot;: &amp;quot;lambertian&amp;quot;,
-    &amp;quot;Objects&amp;quot;: [
-        {
-            &amp;quot;Type&amp;quot;: &amp;quot;box&amp;quot;,
-            &amp;quot;Corner1&amp;quot;: {&amp;quot;X&amp;quot;:0,&amp;quot;Y&amp;quot;:1,&amp;quot;Z&amp;quot;:2},
-            &amp;quot;Corner2&amp;quot;: {&amp;quot;X&amp;quot;:5,&amp;quot;Y&amp;quot;:6,&amp;quot;Z&amp;quot;:7}
-        },
-        {
-            &amp;quot;Type&amp;quot;: &amp;quot;sphere&amp;quot;,
-            &amp;quot;Centre&amp;quot;: {&amp;quot;X&amp;quot;:2,&amp;quot;Y&amp;quot;:2.5,&amp;quot;Z&amp;quot;:-1},
-            &amp;quot;Radius&amp;quot;: 1.0
-        }
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I want to decode the JSON value into the follow Go data structure:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type World struct {
-    Colour   string
-    Material string
-    Objects  []Object
-}
-
-type Object interface {
-    Contains(Vect) bool
-}
-
-type Box struct {
-    Corner1, Corner2 Vect
-}
-func (b Box) Contains(Vect) bool { ... }
-
-type Sphere struct {
-    Centre Vect
-    Radius float64
-}
-func (s Sphere) Contains(Vect) bool { ... }
-
-type Vect struct {
-    X, Y, Z float64
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Go can&amp;rsquo;t unmarshal the JSON value into &lt;code&gt;World&lt;/code&gt; directly. The &lt;code&gt;json.Unmarshal&lt;/code&gt;
-function will return an error &amp;ldquo;json: cannot unmarshal object into Go value of
-type main.Object&amp;rdquo;. This makes sense, since the JSON value and the &lt;code&gt;World&lt;/code&gt; Go
-type both have fields named &lt;code&gt;Objects&lt;/code&gt;, but &lt;code&gt;Object&lt;/code&gt; is a Go interface, so
-cannot be unmarshalled into.&lt;/p&gt;
-
-&lt;p&gt;We need to perform custom unmarshalling into the &lt;code&gt;World&lt;/code&gt; type by implementing
-the &lt;a href=&#34;http://golang.org/pkg/encoding/json/#Unmarshaler&#34;&gt;Unmarshaler&lt;/a&gt; interface.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func (w *World) UnmarshalJSON(p []byte) error {
-
-    // Unmarshal the regular parts of the JSON value.
-    record := struct {
-        Colour   string
-        Material string
-        Objects  []json.RawMessage
-    }{}
-    if err := json.Unmarshal(p, &amp;amp;record); err != nil {
-        return err
-    }
-    w.Colour = record.Colour
-    w.Material = record.Material
-
-    // Go back to the irregular parts, find each type and unmarshal accordingly.
-    for _, rawObject := range record.Objects {
-
-        // Find the type.
-        obj := struct{ Type string }{}
-        if err := json.Unmarshal(rawObject, &amp;amp;obj); err != nil {
-            return err
-        }
-
-        // Perform type specific unmarshalling.
-        switch obj.Type {
-        case &amp;quot;box&amp;quot;:
-            var b Box
-            if err := json.Unmarshal(rawObject, &amp;amp;b); err != nil {
-                return err
-            }
-            w.Objects = append(w.Objects, b)
-        case &amp;quot;sphere&amp;quot;:
-            var s Sphere
-            if err := json.Unmarshal(rawObject, &amp;amp;s); err != nil {
-                return err
-            }
-            w.Objects = append(w.Objects, s)
-        }
-    }
-    return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So what&amp;rsquo;s happening here? We are essentially doing the following:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Create a variable called &lt;code&gt;record&lt;/code&gt; that allows us to decode the regular parts
-(&lt;code&gt;Colour&lt;/code&gt; and &lt;code&gt;Material&lt;/code&gt;). It also decodes the &lt;em&gt;irregular&lt;/em&gt; parts into
-&lt;code&gt;json.RawMessage&lt;/code&gt; objects.&lt;/li&gt;
-&lt;li&gt;Iterate over each &lt;code&gt;json.RawMessage&lt;/code&gt;, and extract enough information to work
-out which type we should unmarshal into. In this case, it&amp;rsquo;s easy, we just
-look for the  &lt;code&gt;&amp;quot;Type&amp;quot;&lt;/code&gt; field, and switch based on that.&lt;/li&gt;
-&lt;li&gt;Decode into the appropriate type as determined in step 2.&lt;/li&gt;
-&lt;/ol&gt;
-</description>
+      <description>The Go standard library has an awesome JSON encoding and decoding package, which makes handling JSON a breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of web pages around that explain its basic usage.
+Basically, if you know the structure of the JSON value you&amp;rsquo;re encoding, you create the zero value of the corresponding Go type, and pass a pointer to it into the json.Unmarshal (along with the JSON value).</description>
     </item>
     
     <item>
@@ -724,85 +99,9 @@ look for the  &lt;code&gt;&amp;quot;Type&amp;quot;&lt;/code&gt; field, and switc
       <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://golang.org/cmd/gofmt/&#34;&gt;Gofmt&lt;/a&gt; is a Go program formatter. Its universal
-adoption by the Go community has resulted in a consistent formatting style
-among most if not all Go source code.&lt;/p&gt;
-
-&lt;p&gt;When making changes to Go code, gofmt sometimes causes changes to lines of code
-that weren&amp;rsquo;t originally modified. This can done for example to keep indentation
-consistent. This can make diffs hard to read.&lt;/p&gt;
-
-&lt;p&gt;For example, the following is a diff of a simple
-&lt;a href=&#34;https://golang.org/ref/spec#Type_declarations&#34;&gt;type declaration&lt;/a&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ git diff
-diff --git a/main.go b/main.go
-index 2c7af41..d9e59cd 100644
---- a/main.go
-+++ b/main.go
-@@ -1,13 +1,12 @@
- type foo struct {
--    jabberwocky  int
--    quux         complex128
--    galumphing   string
--    vorpal       float64
--    bandersnatch float64
--    mimsy        struct {
--        beaming  int
--        tumtummy string
--        brillig  float64
-+    jabberwocky int
-+    quux        complex64
-+    tumtummy    string
-+    galumphing  string
-+    vorpal      float64
-+    mimsy       struct {
-+        beaming int
-+        brillig float64
-     }
- }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Because gofmt has rewritten the source code to have consistent indentation, at
-least a whitespace change has been made to every line. It can be hard to see
-what the &lt;em&gt;real&lt;/em&gt; change is.&lt;/p&gt;
-
-&lt;p&gt;To see the real changes, the diff algorithm should be configured to ignore
-whitespace. The diff below makes it quite obvious what the actual change is:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ git diff -b
-diff --git a/main.go b/main.go
-index 2c7af41..d9e59cd 100644
---- a/main.go
-+++ b/main.go
-@@ -1,12 +1,11 @@
- type foo struct {
-     jabberwocky int
--    quux         complex128
-+    quux        complex64
-+    tumtummy    string
-     galumphing  string
-     vorpal      float64
--    bandersnatch float64
-     mimsy       struct {
-         beaming int
--        tumtummy string
-         brillig float64
-     }
- }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It&amp;rsquo;s now quite clear that &lt;code&gt;quux&lt;/code&gt; has had its type modified, &lt;code&gt;bandersnatch&lt;/code&gt; has
-been removed, and &lt;code&gt;tumtummy&lt;/code&gt; has been moved from the inner struct, to the outer
-struct.&lt;/p&gt;
-
-&lt;p&gt;This type of diff can typically be created by passing the
-&lt;code&gt;--ignore-space-change&lt;/code&gt; flag (the short version is &lt;code&gt;-b&lt;/code&gt;). This works with Git,
-Mercurial, Subversion, and well as the &lt;code&gt;diff&lt;/code&gt; command that comes with
-&lt;code&gt;diffutils&lt;/code&gt;.  GUI based diffs such as those &lt;a href=&#34;https://github.com/blog/967-github-secrets&#34;&gt;produced by
-Github&lt;/a&gt; will typically have an
-ignore-whitespace option as well.&lt;/p&gt;
-</description>
+      <description>Gofmt is a Go program formatter. Its universal adoption by the Go community has resulted in a consistent formatting style among most if not all Go source code.
+When making changes to Go code, gofmt sometimes causes changes to lines of code that weren&amp;rsquo;t originally modified. This can done for example to keep indentation consistent. This can make diffs hard to read.
+For example, the following is a diff of a simple type declaration:</description>
     </item>
     
     <item>
@@ -811,79 +110,7 @@ ignore-whitespace option as well.&lt;/p&gt;
       <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
       
       <guid>http://peterstace.io/post/2015-05-21-where-should-i-put-my-mocks-in-go/</guid>
-      <description>
-
-&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-
-&lt;p&gt;Go&amp;rsquo;s toolchain provides a mechanism to help prevent test code from being
-included in production binaries. It should be obvious why this is useful; if
-stubs or mocks intended for testing make their way your production system, they
-may cause it to fail silently in catastrophic and unexpected ways. This is
-especially a concern if you don&amp;rsquo;t have automated application and integration
-tests in place. Imagine if you somehow end up with a stubbed out authentication
-manager that always returns &lt;code&gt;true&lt;/code&gt; when asked if a user has administration
-privileges. Yikes.&lt;/p&gt;
-
-&lt;p&gt;This blog post will explain this mechanism, along with some of the ways you can
-most effectively take advantage it, especially when dealing with mocks and
-stubs.&lt;/p&gt;
-
-&lt;h2 id=&#34;the-mechanism&#34;&gt;The Mechanism&lt;/h2&gt;
-
-&lt;p&gt;It&amp;rsquo;s well known that the &lt;code&gt;go test&lt;/code&gt; tool looks in files that end in &lt;code&gt;_test.go&lt;/code&gt;
-for tests to run. What is less well known is that these &lt;code&gt;*_test.go&lt;/code&gt; files are
-&lt;em&gt;excluded&lt;/em&gt; from binaries built using &lt;code&gt;go build&lt;/code&gt; and &lt;code&gt;go install&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Excellent! This means we can put all of our testing stubs and mocks in the
-&lt;code&gt;*_test.go&lt;/code&gt; files and they will never accidentally be included in production
-binaries!&lt;/p&gt;
-
-&lt;h2 id=&#34;the-problem&#34;&gt;The Problem&lt;/h2&gt;
-
-&lt;p&gt;This works well most of the time. You have an interface &lt;code&gt;Foo&lt;/code&gt; declared in
-package &lt;code&gt;foo&lt;/code&gt;, and a mocked out implementation &lt;code&gt;MockFoo&lt;/code&gt; also in package &lt;code&gt;foo&lt;/code&gt;
-but in a file named &lt;code&gt;mock_foo_test.go&lt;/code&gt;. This works great, you can use &lt;code&gt;MockFoo&lt;/code&gt;
-instead of the real implementation for all of your tests in package &lt;code&gt;foo&lt;/code&gt;!&lt;/p&gt;
-
-&lt;p&gt;But what if you want to use &lt;code&gt;MockFoo&lt;/code&gt; for tests in packages &lt;code&gt;garply&lt;/code&gt; and
-&lt;code&gt;waldo&lt;/code&gt;? Unfortunately you can&amp;rsquo;t. Because &lt;code&gt;MockFoo&lt;/code&gt; is declared in a file
-ending in &lt;code&gt;_test.go&lt;/code&gt;, it can only be used in tests contained in the same
-package.&lt;/p&gt;
-
-&lt;h2 id=&#34;the-solutions&#34;&gt;The Solutions&lt;/h2&gt;
-
-&lt;p&gt;There are a two obvious ways to work around this:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Rename the file containing &lt;code&gt;MockFoo&lt;/code&gt; from &lt;code&gt;mock_foo_test.go&lt;/code&gt; to
-&lt;code&gt;mock_foo.go&lt;/code&gt;. Now that it&amp;rsquo;s not a test file, it can be accessed from other
-packages.&lt;/li&gt;
-&lt;li&gt;Copy &lt;code&gt;mock_foo_test.go&lt;/code&gt; into the other packages that need it (modifying the
-package declaration to match its destination package).&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;There are some drawbacks to both approaches.&lt;/p&gt;
-
-&lt;p&gt;In the first approach, we lose the guarantee that &lt;code&gt;MockFoo&lt;/code&gt; won&amp;rsquo;t accidentally
-be included the production binary.  As an additional annoyance, &lt;code&gt;MockFoo&lt;/code&gt; is
-now part of the public API, and as such will appear in listings produced by the
-&lt;code&gt;godoc&lt;/code&gt; tool.&lt;/p&gt;
-
-&lt;p&gt;The second approach violates the &lt;a href=&#34;http://c2.com/cgi/wiki?DontRepeatYourself&#34;&gt;DRY
-principal&lt;/a&gt;. If the interface
-changes, you then have to go and change all of the mocks. If you&amp;rsquo;re manually
-rolling your own mocks, the process of updating them all could be error prone.&lt;/p&gt;
-
-&lt;p&gt;In my opinion, the second approach is the better of the two, especially when
-considering that mocks can be generated automatically with tools such as
-&lt;a href=&#34;https://code.google.com/p/gomock/&#34;&gt;gomock&lt;/a&gt;. If you write a small script that
-generates all of the mocks in your project using gomock, then you just have to
-run it whenever you change an interface that is being mocked out. Since the
-mocks are generated &lt;em&gt;from&lt;/em&gt; the interface, I don&amp;rsquo;t think that the DRY principal
-is of great importance here.&lt;/p&gt;
-
-&lt;p&gt;Happy testing!&lt;/p&gt;
-</description>
+      <description>Introduction Go&amp;rsquo;s toolchain provides a mechanism to help prevent test code from being included in production binaries. It should be obvious why this is useful; if stubs or mocks intended for testing make their way your production system, they may cause it to fail silently in catastrophic and unexpected ways. This is especially a concern if you don&amp;rsquo;t have automated application and integration tests in place. Imagine if you somehow end up with a stubbed out authentication manager that always returns true when asked if a user has administration privileges.</description>
     </item>
     
   </channel>
