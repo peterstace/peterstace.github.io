@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Peter Stace</title>
+    <link>https://peterstace.io/tags/</link>
+    <description>Recent content in Tags on Peter Stace</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 26 Jul 2017 13:52:57 +1000</lastBuildDate>
+    
+	<atom:link href="https://peterstace.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>path tracer</title>
+      <link>https://peterstace.io/tags/path-tracer/</link>
+      <pubDate>Wed, 26 Jul 2017 13:52:57 +1000</pubDate>
+      
+      <guid>https://peterstace.io/tags/path-tracer/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ray</title>
+      <link>https://peterstace.io/tags/ray/</link>
+      <pubDate>Wed, 26 Jul 2017 13:52:57 +1000</pubDate>
+      
+      <guid>https://peterstace.io/tags/ray/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>reflection</title>
+      <link>https://peterstace.io/tags/reflection/</link>
+      <pubDate>Wed, 26 Jul 2017 13:52:57 +1000</pubDate>
+      
+      <guid>https://peterstace.io/tags/reflection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>decoder</title>
+      <link>https://peterstace.io/tags/decoder/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/decoder/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>error</title>
+      <link>https://peterstace.io/tags/error/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/error/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go</title>
+      <link>https://peterstace.io/tags/go/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>https://peterstace.io/tags/golang/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>idiomatic</title>
+      <link>https://peterstace.io/tags/idiomatic/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/idiomatic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>torrent</title>
+      <link>https://peterstace.io/tags/torrent/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/torrent/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>type assertion</title>
+      <link>https://peterstace.io/tags/type-assertion/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/type-assertion/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>acceleration</title>
+      <link>https://peterstace.io/tags/acceleration/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/acceleration/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>computational complexity</title>
+      <link>https://peterstace.io/tags/computational-complexity/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/computational-complexity/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DAA</title>
+      <link>https://peterstace.io/tags/daa/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/daa/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>grid</title>
+      <link>https://peterstace.io/tags/grid/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/grid/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hit</title>
+      <link>https://peterstace.io/tags/hit/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/hit/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>image</title>
+      <link>https://peterstace.io/tags/image/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/image/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>intersect</title>
+      <link>https://peterstace.io/tags/intersect/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/intersect/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>intersection</title>
+      <link>https://peterstace.io/tags/intersection/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/intersection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>naive</title>
+      <link>https://peterstace.io/tags/naive/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/naive/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>object</title>
+      <link>https://peterstace.io/tags/object/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/object/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>performance</title>
+      <link>https://peterstace.io/tags/performance/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/performance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>traversal</title>
+      <link>https://peterstace.io/tags/traversal/</link>
+      <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/traversal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>aperture</title>
+      <link>https://peterstace.io/tags/aperture/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/aperture/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>camera</title>
+      <link>https://peterstace.io/tags/camera/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/camera/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>depth of field</title>
+      <link>https://peterstace.io/tags/depth-of-field/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/depth-of-field/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>f-number</title>
+      <link>https://peterstace.io/tags/f-number/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/f-number/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>f-stop</title>
+      <link>https://peterstace.io/tags/f-stop/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/f-stop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>focal ratio</title>
+      <link>https://peterstace.io/tags/focal-ratio/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/focal-ratio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>focus</title>
+      <link>https://peterstace.io/tags/focus/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/focus/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>subject distance</title>
+      <link>https://peterstace.io/tags/subject-distance/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/subject-distance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cornell box</title>
+      <link>https://peterstace.io/tags/cornell-box/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/cornell-box/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>diffuse</title>
+      <link>https://peterstace.io/tags/diffuse/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/diffuse/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>grayt</title>
+      <link>https://peterstace.io/tags/grayt/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/grayt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>matte</title>
+      <link>https://peterstace.io/tags/matte/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/matte/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>photo realistic</title>
+      <link>https://peterstace.io/tags/photo-realistic/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/photo-realistic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ray tracer</title>
+      <link>https://peterstace.io/tags/ray-tracer/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/ray-tracer/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>render</title>
+      <link>https://peterstace.io/tags/render/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/render/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>side project</title>
+      <link>https://peterstace.io/tags/side-project/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/side-project/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bolt250</title>
+      <link>https://peterstace.io/tags/bolt250/</link>
+      <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/bolt250/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>boltrc</title>
+      <link>https://peterstace.io/tags/boltrc/</link>
+      <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/boltrc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fpv</title>
+      <link>https://peterstace.io/tags/fpv/</link>
+      <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/fpv/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>multicopter</title>
+      <link>https://peterstace.io/tags/multicopter/</link>
+      <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/multicopter/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>quadcopter</title>
+      <link>https://peterstace.io/tags/quadcopter/</link>
+      <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/quadcopter/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>heterogeneous</title>
+      <link>https://peterstace.io/tags/heterogeneous/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/heterogeneous/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>homogeneous</title>
+      <link>https://peterstace.io/tags/homogeneous/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/homogeneous/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>irregular</title>
+      <link>https://peterstace.io/tags/irregular/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/irregular/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>json</title>
+      <link>https://peterstace.io/tags/json/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/json/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>marshal</title>
+      <link>https://peterstace.io/tags/marshal/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/marshal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>regular</title>
+      <link>https://peterstace.io/tags/regular/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/regular/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>unmarshal</title>
+      <link>https://peterstace.io/tags/unmarshal/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/unmarshal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>diff</title>
+      <link>https://peterstace.io/tags/diff/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/diff/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fmt</title>
+      <link>https://peterstace.io/tags/fmt/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/fmt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>git</title>
+      <link>https://peterstace.io/tags/git/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/git/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>github</title>
+      <link>https://peterstace.io/tags/github/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/github/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gofmt</title>
+      <link>https://peterstace.io/tags/gofmt/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/gofmt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hg</title>
+      <link>https://peterstace.io/tags/hg/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/hg/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ignore</title>
+      <link>https://peterstace.io/tags/ignore/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/ignore/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mercurial</title>
+      <link>https://peterstace.io/tags/mercurial/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/mercurial/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>subversion</title>
+      <link>https://peterstace.io/tags/subversion/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/subversion/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>svn</title>
+      <link>https://peterstace.io/tags/svn/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/svn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>whitespace</title>
+      <link>https://peterstace.io/tags/whitespace/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/whitespace/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>API</title>
+      <link>https://peterstace.io/tags/api/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/api/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>binary</title>
+      <link>https://peterstace.io/tags/binary/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/binary/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>godoc</title>
+      <link>https://peterstace.io/tags/godoc/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/godoc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gomock</title>
+      <link>https://peterstace.io/tags/gomock/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/gomock/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mock</title>
+      <link>https://peterstace.io/tags/mock/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/mock/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>package</title>
+      <link>https://peterstace.io/tags/package/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/package/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>production</title>
+      <link>https://peterstace.io/tags/production/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/production/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>stub</title>
+      <link>https://peterstace.io/tags/stub/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/stub/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>test</title>
+      <link>https://peterstace.io/tags/test/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/test/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>testing</title>
+      <link>https://peterstace.io/tags/testing/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://peterstace.io/tags/testing/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

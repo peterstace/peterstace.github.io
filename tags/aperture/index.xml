@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>aperture on Peter Stace</title>
+    <link>https://peterstace.io/tags/aperture/</link>
+    <description>Recent content in aperture on Peter Stace</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 21 Dec 2016 19:03:38 +1100</lastBuildDate>
+    
+	<atom:link href="https://peterstace.io/tags/aperture/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Path Tracing Part 2 - Depth of Field</title>
+      <link>https://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</link>
+      <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
+      
+      <guid>https://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</guid>
+      <description>Real world cameras can only focus on objects that are a set distance away from them. This distance is known as the subject distance. Objects at other distances will appear more or less out of focus, depending on how far away they are from this point. Objects closer to the camera than the subject distance will appear out of focus, as will objects beyond the subject distance. Objects closer to the subject distance (but still not precisely at it) will still be out of focus, but to a much lesser degree.</description>
+    </item>
+    
+  </channel>
+</rss>

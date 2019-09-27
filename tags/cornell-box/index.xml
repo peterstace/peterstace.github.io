@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cornell box on Peter Stace</title>
+    <link>https://peterstace.io/tags/cornell-box/</link>
+    <description>Recent content in cornell box on Peter Stace</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 20 Dec 2016 19:55:41 +1100</lastBuildDate>
+    
+	<atom:link href="https://peterstace.io/tags/cornell-box/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Path Tracing Part 1 - Initial Renders</title>
+      <link>https://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</guid>
+      <description>Enter Grayt Grayt (Go Ray Tracer) was a project that I started in mid 2014 to help me learn Go. As the name suggests, it started out as a ray tracer. Having implemented ray tracers before (in C++), this was quite straight forward but ultimately wasn&amp;rsquo;t very satisfying. I still wanted a side project to learn Go with, so I pivoted it from a ray tracer to a path tracer.</description>
+    </item>
+    
+  </channel>
+</rss>
