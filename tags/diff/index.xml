@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>diff on Peter Stace</title>
-    <link>https://peterstace.io/tags/diff/</link>
+    <link>http://peterstace.io/tags/diff/</link>
     <description>Recent content in diff on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 02 Jun 2015 22:00:15 +1100</lastBuildDate>
     
-	<atom:link href="https://peterstace.io/tags/diff/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://peterstace.io/tags/diff/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Go, gofmt, and diffs</title>
-      <link>https://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</link>
+      <link>http://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</link>
       <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</guid>
+      <guid>http://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</guid>
       <description>Gofmt is a Go program formatter. Its universal adoption by the Go community has resulted in a consistent formatting style among most if not all Go source code.
 When making changes to Go code, gofmt sometimes causes changes to lines of code that weren&amp;rsquo;t originally modified. This can done for example to keep indentation consistent. This can make diffs hard to read.
 For example, the following is a diff of a simple type declaration:</description>

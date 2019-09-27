@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Peter Stace</title>
-    <link>https://peterstace.io/</link>
+    <link>http://peterstace.io/</link>
     <description>Recent content on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 26 Jul 2017 13:52:57 +1000</lastBuildDate>
     
-	<atom:link href="https://peterstace.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://peterstace.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Path Tracing Part 4 - Reflections</title>
-      <link>https://peterstace.io/post/2017-07-26-path-tracing-part-04-reflections/</link>
+      <link>http://peterstace.io/post/2017-07-26-path-tracing-part-04-reflections/</link>
       <pubDate>Wed, 26 Jul 2017 13:52:57 +1000</pubDate>
       
-      <guid>https://peterstace.io/post/2017-07-26-path-tracing-part-04-reflections/</guid>
+      <guid>http://peterstace.io/post/2017-07-26-path-tracing-part-04-reflections/</guid>
       <description>The mathematics behind specular reflection in path tracing (or ray tracing) is simple.
 When a ray encounters a reflective surface, the ray has to be recast following the rule &amp;ldquo;the angle of incidence is equal to the angle of reflection&amp;rdquo;.
 Where d_r is the (unit) reflection ray direction, d_i is the (unit) incident ray direction, and n is the unit normal:
@@ -25,10 +25,10 @@ d_r = d_i - 2 * n . d_i  I recently added specular reflections to my path tracer
     
     <item>
       <title>Panic and Recover as Error Handling Mechanisms in Go</title>
-      <link>https://peterstace.io/post/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</link>
+      <link>http://peterstace.io/post/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</link>
       <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</guid>
+      <guid>http://peterstace.io/post/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</guid>
       <description>In Go, the generally accepted idiomatic way to handle error conditions is via the builtin error type. In most situations, this leads to clear and easy to understand error handling code.
 This isn&amp;rsquo;t always the case though. When dealing with a large number of type assertions, panic and recover can lead to elegant and easy to understand code.
 I recently came across this sort of situation while writing a decoder for .</description>
@@ -36,10 +36,10 @@ I recently came across this sort of situation while writing a decoder for .</des
     
     <item>
       <title>Path Tracing Part 3 - Acceleration Structure</title>
-      <link>https://peterstace.io/post/2017-01-04-path-tracing-part-03-acceleration-structure/</link>
+      <link>http://peterstace.io/post/2017-01-04-path-tracing-part-03-acceleration-structure/</link>
       <pubDate>Wed, 04 Jan 2017 09:21:37 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2017-01-04-path-tracing-part-03-acceleration-structure/</guid>
+      <guid>http://peterstace.io/post/2017-01-04-path-tracing-part-03-acceleration-structure/</guid>
       <description>I recently added an acceleration data structure to my path tracer. This resulted in a large performance improvement.
 The acceleration structure improves the speed of the global ray intersection test, an integral part of any path tracer.
 The source code can be found here.
@@ -48,37 +48,37 @@ Global Ray Intersection Test The global ray intersection test is the most comput
     
     <item>
       <title>Path Tracing Part 2 - Depth of Field</title>
-      <link>https://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</link>
+      <link>http://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</link>
       <pubDate>Wed, 21 Dec 2016 19:03:38 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</guid>
+      <guid>http://peterstace.io/post/2016-12-21-path-tracing-part-02-depth-of-field/</guid>
       <description>Real world cameras can only focus on objects that are a set distance away from them. This distance is known as the subject distance. Objects at other distances will appear more or less out of focus, depending on how far away they are from this point. Objects closer to the camera than the subject distance will appear out of focus, as will objects beyond the subject distance. Objects closer to the subject distance (but still not precisely at it) will still be out of focus, but to a much lesser degree.</description>
     </item>
     
     <item>
       <title>Path Tracing Part 1 - Initial Renders</title>
-      <link>https://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</link>
+      <link>http://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</link>
       <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</guid>
+      <guid>http://peterstace.io/post/2016-12-20-path-tracing-part-01-initial-renders/</guid>
       <description>Enter Grayt Grayt (Go Ray Tracer) was a project that I started in mid 2014 to help me learn Go. As the name suggests, it started out as a ray tracer. Having implemented ray tracers before (in C++), this was quite straight forward but ultimately wasn&amp;rsquo;t very satisfying. I still wanted a side project to learn Go with, so I pivoted it from a ray tracer to a path tracer.</description>
     </item>
     
     <item>
       <title>About</title>
-      <link>https://peterstace.io/about/</link>
+      <link>http://peterstace.io/about/</link>
       <pubDate>Mon, 05 Dec 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://peterstace.io/about/</guid>
+      <guid>http://peterstace.io/about/</guid>
       <description>I&amp;rsquo;m speechless.</description>
     </item>
     
     <item>
       <title>Bolt250 Part 1 - The Unboxing</title>
-      <link>https://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</link>
+      <link>http://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</link>
       <pubDate>Wed, 06 Jan 2016 22:17:35 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</guid>
+      <guid>http://peterstace.io/post/2016-01-06-bolt250-part01-unboxing/</guid>
       <description>I&amp;rsquo;m building a new miniquad, the Bolt250 from BoltRC. It&amp;rsquo;s a midpriced 250mm class racing quadcopter.
 I went with the ARF kit rather than just getting the frame.
 The Bolt250 comes with two different hardware versions, standard (30mm standoffs) and stealth (25mm standoffs). It also comes with the choice of 3mm or 4mm arm thickness, with clearance for either 5&amp;rdquo; or 6&amp;rdquo; props. I opted for the stealth hardware with 4mm/5&amp;rdquo; arms.</description>
@@ -86,20 +86,20 @@ The Bolt250 comes with two different hardware versions, standard (30mm standoffs
     
     <item>
       <title>Irregular JSON decoding in Go</title>
-      <link>https://peterstace.io/post/2015-06-18-irregular-json-decoding-in-go/</link>
+      <link>http://peterstace.io/post/2015-06-18-irregular-json-decoding-in-go/</link>
       <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2015-06-18-irregular-json-decoding-in-go/</guid>
+      <guid>http://peterstace.io/post/2015-06-18-irregular-json-decoding-in-go/</guid>
       <description>The Go standard library has an awesome JSON encoding and decoding package, which makes handling JSON a breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of web pages around that explain its basic usage.
 Basically, if you know the structure of the JSON value you&amp;rsquo;re encoding, you create the zero value of the corresponding Go type, and pass a pointer to it into the json.Unmarshal (along with the JSON value).</description>
     </item>
     
     <item>
       <title>Go, gofmt, and diffs</title>
-      <link>https://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</link>
+      <link>http://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</link>
       <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</guid>
+      <guid>http://peterstace.io/post/2015-06-02-go-gofmt-and-diff/</guid>
       <description>Gofmt is a Go program formatter. Its universal adoption by the Go community has resulted in a consistent formatting style among most if not all Go source code.
 When making changes to Go code, gofmt sometimes causes changes to lines of code that weren&amp;rsquo;t originally modified. This can done for example to keep indentation consistent. This can make diffs hard to read.
 For example, the following is a diff of a simple type declaration:</description>
@@ -107,10 +107,10 @@ For example, the following is a diff of a simple type declaration:</description>
     
     <item>
       <title>Where should I put my mocks in Go?</title>
-      <link>https://peterstace.io/post/2015-05-21-where-should-i-put-my-mocks-in-go/</link>
+      <link>http://peterstace.io/post/2015-05-21-where-should-i-put-my-mocks-in-go/</link>
       <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
       
-      <guid>https://peterstace.io/post/2015-05-21-where-should-i-put-my-mocks-in-go/</guid>
+      <guid>http://peterstace.io/post/2015-05-21-where-should-i-put-my-mocks-in-go/</guid>
       <description>Introduction Go&amp;rsquo;s toolchain provides a mechanism to help prevent test code from being included in production binaries. It should be obvious why this is useful; if stubs or mocks intended for testing make their way your production system, they may cause it to fail silently in catastrophic and unexpected ways. This is especially a concern if you don&amp;rsquo;t have automated application and integration tests in place. Imagine if you somehow end up with a stubbed out authentication manager that always returns true when asked if a user has administration privileges.</description>
     </item>
     
