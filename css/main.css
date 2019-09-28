@@ -10,3 +10,9 @@ h2 {
 h3 {
   font-size: 120%
 }
+body {
+  font-family: "Computer Modern Sans";
+}
+code {
+  font-family: "Computer Modern Typewriter";
+}
