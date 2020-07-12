@@ -1,9 +1,9 @@
 #title_link {
 	color: black;
-	text-decoration: none
+	text-decoration: none;
 }
 
 #title_link:hover {
 	color: blue;
-	text-decoration: underline
+	text-decoration: underline;
 }
