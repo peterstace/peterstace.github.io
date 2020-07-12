@@ -11,6 +11,16 @@
     
     
     <item>
+      <title>About</title>
+      <link>https://petsta.net/about/</link>
+      <pubDate>Mon, 06 Jul 2020 20:13:00 +0000</pubDate>
+      
+      <guid>https://petsta.net/about/</guid>
+      <description>This is my personal website, it contains posts and notes about the things that I&amp;rsquo;m interested in. This includes:
+ Go 3D Graphics Programming Algorithms and Data Structures  </description>
+    </item>
+    
+    <item>
       <title>Path Tracing Part 4 - Reflections</title>
       <link>https://petsta.net/posts/2017-07-26-path-tracing-part-04-reflections/</link>
       <pubDate>Wed, 26 Jul 2017 13:52:57 +1000</pubDate>
