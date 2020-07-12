@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Abouts on Peter Stace</title>
+    <link>https://petsta.net/about/</link>
+    <description>Recent content in Abouts on Peter Stace</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 06 Jul 2020 20:13:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://petsta.net/about/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>https://petsta.net/about/about/</link>
+      <pubDate>Mon, 06 Jul 2020 20:13:00 +0000</pubDate>
+      
+      <guid>https://petsta.net/about/about/</guid>
+      <description>This is my personal website, it contains posts and notes about the things that I&amp;rsquo;m interested in. This includes:
+ Go 3D Graphics Programming Algorithms and Data Structures  </description>
+    </item>
+    
+  </channel>
+</rss>

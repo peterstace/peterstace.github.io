@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go on Peter Stace</title>
+    <link>https://petsta.net/tags/go/</link>
+    <description>Recent content in go on Peter Stace</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 11 Jan 2017 21:14:51 +1100</lastBuildDate>
+    
+	<atom:link href="https://petsta.net/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Panic and Recover as Error Handling Mechanisms in Go</title>
+      <link>https://petsta.net/posts/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</link>
+      <pubDate>Wed, 11 Jan 2017 21:14:51 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/2017-01-11-panic-and-recover-as-error-handling-mechanisms/</guid>
+      <description>In Go, the generally accepted idiomatic way to handle error conditions is via the builtin error type. In most situations, this leads to clear and easy to understand error handling code.
+This isn&amp;rsquo;t always the case though. When dealing with a large number of type assertions, panic and recover can lead to elegant and easy to understand code.
+I recently came across this sort of situation while writing a decoder for .</description>
+    </item>
+    
+    <item>
+      <title>Path Tracing Part 1 - Initial Renders</title>
+      <link>https://petsta.net/posts/2016-12-20-path-tracing-part-01-initial-renders/</link>
+      <pubDate>Tue, 20 Dec 2016 19:55:41 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/2016-12-20-path-tracing-part-01-initial-renders/</guid>
+      <description>Enter Grayt Grayt (Go Ray Tracer) was a project that I started in mid 2014 to help me learn Go. As the name suggests, it started out as a ray tracer. Having implemented ray tracers before (in C++), this was quite straight forward but ultimately wasn&amp;rsquo;t very satisfying. I still wanted a side project to learn Go with, so I pivoted it from a ray tracer to a path tracer. Path tracers are much harder to implement, and produce more realistic renderings.</description>
+    </item>
+    
+    <item>
+      <title>Irregular JSON decoding in Go</title>
+      <link>https://petsta.net/posts/2015-06-18-irregular-json-decoding-in-go/</link>
+      <pubDate>Thu, 18 Jun 2015 22:03:45 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/2015-06-18-irregular-json-decoding-in-go/</guid>
+      <description>The Go standard library has an awesome JSON encoding and decoding package, which makes handling JSON a breeze. If you&amp;rsquo;re not familiar with the package, there are plenty of web pages around that explain its basic usage.
+Basically, if you know the structure of the JSON value you&amp;rsquo;re encoding, you create the zero value of the corresponding Go type, and pass a pointer to it into the json.Unmarshal (along with the JSON value).</description>
+    </item>
+    
+    <item>
+      <title>Go, gofmt, and diffs</title>
+      <link>https://petsta.net/posts/2015-06-02-go-gofmt-and-diff/</link>
+      <pubDate>Tue, 02 Jun 2015 22:00:15 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/2015-06-02-go-gofmt-and-diff/</guid>
+      <description>Gofmt is a Go program formatter. Its universal adoption by the Go community has resulted in a consistent formatting style among most if not all Go source code.
+When making changes to Go code, gofmt sometimes causes changes to lines of code that weren&amp;rsquo;t originally modified. This can done for example to keep indentation consistent. This can make diffs hard to read.
+For example, the following is a diff of a simple type declaration:</description>
+    </item>
+    
+    <item>
+      <title>Where should I put my mocks in Go?</title>
+      <link>https://petsta.net/posts/2015-05-21-where-should-i-put-my-mocks-in-go/</link>
+      <pubDate>Thu, 21 May 2015 21:51:39 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/2015-05-21-where-should-i-put-my-mocks-in-go/</guid>
+      <description>Introduction Go&amp;rsquo;s toolchain provides a mechanism to help prevent test code from being included in production binaries. It should be obvious why this is useful; if stubs or mocks intended for testing make their way your production system, they may cause it to fail silently in catastrophic and unexpected ways. This is especially a concern if you don&amp;rsquo;t have automated application and integration tests in place. Imagine if you somehow end up with a stubbed out authentication manager that always returns true when asked if a user has administration privileges.</description>
+    </item>
+    
+  </channel>
+</rss>

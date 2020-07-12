@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="600" height="500">
+
+  <circle cx="300" cy="300" r="25" style="fill:lightpink" />
+  <polygon points="240,440, 345,290 300,440" style="fill:lightpink" />
+  <circle cx="100" cy="430" r="10" style="fill:lightpink" />
+  <circle cx="200" cy="410" r="10" style="fill:lightpink" />
+  <polygon points="530,70, 520,85 540,85" style="fill:lightpink" />
+  <polygon points="200,70, 190,85 210,85" style="fill:lightpink" />
+  <polygon points="180,100, 170,115 190,115" style="fill:lightpink" />
+  <polygon points="220,100, 210,115 230,115" style="fill:lightpink" />
+  <circle cx="400" cy="290" r="25" style="fill:lightpink" />
+
+  <line x1="50" y1= "50" x2="550" y2= "50" style="stroke:black" />
+  <line x1="50" y1="150" x2="550" y2="150" style="stroke:black" />
+  <line x1="50" y1="250" x2="550" y2="250" style="stroke:black" />
+  <line x1="50" y1="350" x2="550" y2="350" style="stroke:black" />
+  <line x1="50" y1="450" x2="550" y2="450" style="stroke:black" />
+
+  <line x1= "50" y1="50" x2= "50" y2="450" style="stroke:black" />
+  <line x1="150" y1="50" x2="150" y2="450" style="stroke:black" />
+  <line x1="250" y1="50" x2="250" y2="450" style="stroke:black" />
+  <line x1="350" y1="50" x2="350" y2="450" style="stroke:black" />
+  <line x1="450" y1="50" x2="450" y2="450" style="stroke:black" />
+  <line x1="550" y1="50" x2="550" y2="450" style="stroke:black" />
+
+  <text x="15" y="100" text-anchor="middle">0</text>
+  <text x="15" y="200" text-anchor="middle">1</text>
+  <text x="15" y="300" text-anchor="middle">2</text>
+  <text x="15" y="400" text-anchor="middle">3</text>
+
+  <text x="100" y="25" text-anchor="middle">0</text>
+  <text x="200" y="25" text-anchor="middle">1</text>
+  <text x="300" y="25" text-anchor="middle">2</text>
+  <text x="400" y="25" text-anchor="middle">3</text>
+  <text x="500" y="25" text-anchor="middle">4</text>
+
+</svg>

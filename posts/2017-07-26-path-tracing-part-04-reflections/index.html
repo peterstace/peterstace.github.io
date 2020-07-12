@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Path Tracing Part 4 - Reflections</title>
+    <link href="/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="page" style="max-width: 50em; margin: auto">
+      <div>
+        <h1><a id="title_link" href="/">Peter Stace</a></h1>
+      </div>
+      <hr/>
+      <div>
+        <a href="/about">About</a>
+        
+        |
+        <a href="https://github.com/peterstace">Github</a>
+        |
+        <a href="https://twitter.com/peterjohnstace">Twitter</a>
+        
+      </div>
+      <hr/>
+      <div>
+        
+<h1>Path Tracing Part 4 - Reflections</h1>
+<div>2017-07-26</div>
+<div><p>The mathematics behind specular reflection in path tracing (or ray tracing) is
+simple.</p>
+<p>When a ray encounters a reflective surface, the ray has to be recast
+following the rule &ldquo;the angle of incidence is equal to the angle of
+reflection&rdquo;.</p>
+<p>Where <code>d_r</code> is the (unit) reflection ray direction, <code>d_i</code> is the (unit) incident
+ray direction, and <code>n</code> is the unit normal:</p>
+<pre><code>d_r = d_i - 2 * n . d_i
+</code></pre><p>I recently added specular reflections to my path tracer,
+<a href="https://github.com/peterstace/grayt">Grayt</a>. The following scene exhibits reflection,
+and contains 3 reflective mirrors (back and side walls), and 3 reflective
+spheres):</p>
+<p><img src="reflect.jpg" alt="Reflection scene"></p>
+</div>
+
+      </div>
+    </div>
+  </body>
+</html>
