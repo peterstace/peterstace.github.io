@@ -1,3 +1,7 @@
+html {
+	overflow-y: scroll;
+}
+
 #title_link {
 	color: black;
 	text-decoration: none;
