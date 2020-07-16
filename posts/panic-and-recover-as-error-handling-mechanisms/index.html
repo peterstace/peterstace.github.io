@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Panic and Recover as Error Handling Mechanisms in Go</title>
+    <link href="/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="page" style="max-width: 50em; margin: auto">
+      
+      <div style="font-size: smaller">
+        <a href="/">Peter Stace</a>
+        
+        
+          
+        
+          
+            
+            :: <a href="/posts">posts</a>
+          
+        
+          
+            
+            :: <a href="/posts/panic-and-recover-as-error-handling-mechanisms">panic-and-recover-as-error-handling-mechanisms</a>
+          
+        
+          
+        
+      </div>
+      <div>
+        
+<h1>Panic and Recover as Error Handling Mechanisms in Go</h1>
+<div>2017-01-11</div>
+<div><p>In Go, the generally accepted idiomatic way to handle error conditions is via
+the builtin <code>error</code> type. In most situations, this leads to clear and easy to
+understand error handling code.</p>
+<p>This isn&rsquo;t always the case though. When dealing with a large number of type
+assertions, panic and recover can lead to elegant and easy to understand code.</p>
+<p>I recently came across this sort of situation while writing a decoder for
+<code>.torrent</code> files.</p>
+<p>This blog post will go through a simplified version of the problem, exhibiting
+how and why panic and recover allow better code to be crafted in this
+particular situation.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>A <code>.torrent</code> file consists of an encoded <code>Value</code>. In general, a <code>Value</code> can
+either be an <code>int</code>, a <code>string</code>, or a <code>map[string]Value</code>:</p>
+<pre><code>// Value is either `int`, `string`, or `map[string]Value`.
+type Value interface{}
+</code></pre><p>However, <code>Value</code>s that are encoded inside <code>.torrent</code> files will contain very
+specific structures (the <code>.torrent</code> structure given here is a simplified
+version of reality. For the full details of real <code>.torrent</code> files, the spec can
+be found <a href="http://bittorrent.org/beps/bep_0003.html">here</a>).</p>
+<p>The top level <code>Value</code> in a <code>.torrent</code> file is a <code>map[string]Value</code>. It has two
+keys, <code>&quot;announce&quot;</code> and <code>&quot;info&quot;</code>. The <code>&quot;announce&quot;</code> value is a <code>string</code>, which is
+the announce URL of the torrent&rsquo;s tracker. The <code>&quot;info&quot;</code> value is another
+<code>map[string]Value</code>. This map also has two keys, <code>&quot;name&quot;</code> and <code>&quot;piece length&quot;</code>.
+The <code>&quot;name&quot;</code> value contains a <code>string</code>, which is the suggested name of the
+torrent.  The <code>&quot;piece length&quot;</code> value contains an <code>int</code>, which is the number of
+bytes in each torrent piece.</p>
+<p>The task is to take the top level <code>Value</code>, and extract it into the following
+type:</p>
+<pre><code>type MetaInfo struct {
+    AnnounceURL string
+    Name        string
+    PieceLength int
+}
+</code></pre><p>Missing keys or incorrect types are errors. Extra keys should be ignored (since
+they might be file format extensions).</p>
+<h2 id="solution-a-traditional-error-handling">Solution A (traditional error handling)</h2>
+<p>The traditional approach is to use checked type assertions, returning an error
+if the type assertion fails.</p>
+<pre><code>func DecodeMetaInfo(v Value) (MetaInfo, error) {
+
+    var m MetaInfo
+    err := errors.New(&quot;invalid meta info&quot;)
+
+    topLevelMap, ok := v.(map[string]Value)
+    if !ok {
+        return m, err
+    }
+    if m.AnnounceURL, ok = topLevelMap[&quot;announce&quot;].(string); !ok {
+        return m, err
+    }
+    infoMap, ok := topLevelMap[&quot;info&quot;].(map[string]Value)
+    if !ok {
+        return m, err
+    }
+    if m.Name, ok = infoMap[&quot;name&quot;].(string); !ok {
+        return m, err
+    }
+    if m.PieceLength, ok = infoMap[&quot;piece length&quot;].(int); !ok {
+        return m, err
+    }
+    return m, nil
+}
+</code></pre><h2 id="solution-b-panic-and-recover">Solution B (panic and recover)</h2>
+<p>An alternate solution is to use <code>recover()</code> to check for any panics, and then
+use non-checked type assertions. This automatically takes care of the error
+cases if the type assertions fail.</p>
+<pre><code>func DecodeMetaInfo(v Value) (m MetaInfo, err error) {
+
+    defer func() {
+        if r := recover(); r != nil {
+            err = errors.New(&quot;invalid meta info&quot;)
+        }
+    }()
+
+    topLevelMap := v.(map[string]Value)
+    m.AnnounceURL = topLevelMap[&quot;announce&quot;].(string)
+    infoMap := topLevelMap[&quot;info&quot;].(map[string]Value)
+    m.Name = infoMap[&quot;name&quot;].(string)
+    m.PieceLength = infoMap[&quot;piece length&quot;].(int)
+    return m, nil
+}
+</code></pre><h2 id="comparison">Comparison</h2>
+<p>While the line count between the two solutions isn&rsquo;t dramatically different, I
+think the second is much easier to read once familiar with the panic and
+recover pattern. The logic isn&rsquo;t cluttered with error handling like it is in
+the first solution.</p>
+<p>The downside to the second solution is that it&rsquo;s impossible to provide a custom
+error value for each error case. For my purposes, this didn&rsquo;t really matter.
+The end user of the program isn&rsquo;t going to be able to &lsquo;fix&rsquo; a torrent if it&rsquo;s
+not well formed, they just need to know that it cannot be loaded.</p>
+</div>
+
+      </div>
+    </div>
+  </body>
+</html>
