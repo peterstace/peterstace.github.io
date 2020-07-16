@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://petsta.net/posts/</loc>
+    <lastmod>2020-07-14T20:20:44+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://petsta.net/posts/using-github-actions-for-hugo-cicd/</loc>
+    <lastmod>2020-07-14T20:20:44+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://petsta.net/</loc>
     <lastmod>2020-07-06T20:13:00+00:00</lastmod>
   </url>
@@ -14,11 +24,6 @@
   
   <url>
     <loc>https://petsta.net/posts/2017-07-26-path-tracing-part-04-reflections/</loc>
-    <lastmod>2017-07-26T13:52:57+10:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://petsta.net/posts/</loc>
     <lastmod>2017-07-26T13:52:57+10:00</lastmod>
   </url>
   

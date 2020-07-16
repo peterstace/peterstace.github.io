@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Using GitHub Actions for Hugo CICD</title>
+    <link href="/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="page" style="max-width: 50em; margin: auto">
+      
+      <div style="font-size: smaller">
+        <a href="/">Peter Stace</a>
+        
+        
+          
+        
+          
+            
+            :: <a href="/posts">posts</a>
+          
+        
+          
+            
+            :: <a href="/posts/using-github-actions-for-hugo-cicd">using-github-actions-for-hugo-cicd</a>
+          
+        
+          
+        
+      </div>
+      <div>
+        
+<h1>Using GitHub Actions for Hugo CICD</h1>
+<div>2020-07-14</div>
+<div><h2 id="background">Background</h2>
+<ul>
+<li>
+<p>This website is written using <a href="https://gohugo.io/">Hugo</a>, a static site
+generator similar to Jekyll and others.</p>
+</li>
+<li>
+<p>I keep the source for the website in a private repo. The source consists of
+markdown files and HTML templates.</p>
+</li>
+<li>
+<p>I serve the website from a public <a href="https://pages.github.com/">GitHub Pages</a>
+repo.</p>
+</li>
+<li>
+<p>When Hugo builds the site, it populates a <code>/public</code> directory in the private
+repo with the final assets that are ready to be served to site visitors.</p>
+</li>
+<li>
+<p>Up until now, I&rsquo;ve performed a manual step to bridge the gap between the two.
+This involves copying the assets from the private repo to the public repo,
+committing, then pushing the change live.</p>
+</li>
+<li>
+<p>This blog post explains how I automated this process using GitHub Actions.</p>
+</li>
+</ul>
+<h2 id="automation">Automation</h2>
+<ul>
+<li>
+<p>First I created a GitHub Personal Access Token. This is needed later for
+pushing to the public GitHub Pages repo. GitHub <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">provides some decent
+documentation</a>
+for how to do this. It&rsquo;s all done through the GitHub website. Since it&rsquo;s a one
+off step, there isn&rsquo;t much point automating it.</p>
+</li>
+<li>
+<p>Then I added the newly created Personal Access Token as a secret for the
+private website source repo. GitHub also <a href="https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets">provides some
+documentation</a>
+for how to do this. Adding the secret to the repo will allow us to use use the
+secret in its GitHub Actions workflows. Again, this is done as a manual step
+via the GitHub website.</p>
+</li>
+<li>
+<p>Finally, we can add the GitHub Actions workflow. The workflow is defined as a
+YAML file, stored in <code>.github/worflows/deploy.yaml</code>. It has a few interesting
+aspects.</p>
+<pre><code>  name: build
+  on:
+    push:
+      branches:
+        - master
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: deploy
+          shell: bash
+          env: 
+            GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          run: |
+            set -exo pipefail
+            git config --global user.email &quot;ci@ci&quot;
+            git config --global user.name &quot;CI&quot;
+            commit_msg=&quot;$(git log --pretty='%h %s' -n1)&quot;
+            git clone https://$GH_TOKEN@github.com/peterstace/peterstace.github.io.git
+            cd peterstace.github.io
+            rm -r *
+            echo petsta.net &gt; CNAME
+            cp -r ../site/public/* .
+            git add -A
+            git status
+            git commit -m &quot;$commit_msg&quot;
+            git push
+</code></pre>
+</li>
+<li>
+<p>It only executes when changes are pushed to the master branch. This is
+controlled by:</p>
+<pre><code>  on:
+    push:
+      branches:
+        - master
+</code></pre>
+</li>
+<li>
+<p>When it runs, it first checks out the source repo. This uses a predefined
+step (provided by GitHub):</p>
+<pre><code>  - uses: actions/checkout@v2
+</code></pre>
+</li>
+<li>
+<p>Then it runs a custom bash script step. This step needs to use the secret,
+which is imported as an environment variable named <code>GH_TOKEN</code> from a secret
+also named <code>GH_TOKEN</code>:</p>
+<pre><code>  env: 
+    GH_TOKEN: ${{ secrets.GH_TOKEN }}
+</code></pre>
+</li>
+<li>
+<p>The actual bash script clones the public GitHub Pages repo
+(<code>peterstace.github.io</code>), deletes its content, then adds the <code>/public</code>
+directory from the source repo.  It makes the assumption that Hugo has already
+been run on the markdown and HTML templates and the result committed to the
+private repo. This is a reasonable workflow, since Hugo is run as part of the
+regular development cycle anyway (as part of creating a new blog post or
+tweaking a template).</p>
+<pre><code>  set -exo pipefail
+  git config --global user.email &quot;ci@ci&quot;
+  git config --global user.name &quot;CI&quot;
+  commit_msg=&quot;$(git log --pretty='%h %s' -n1)&quot;
+  git clone https://$GH_TOKEN@github.com/peterstace/peterstace.github.io.git
+  cd peterstace.github.io
+  rm -r *
+  echo petsta.net &gt; CNAME
+  cp -r ../site/public/* .
+  git add -A
+  git status
+  git commit -m &quot;$commit_msg&quot;
+  git push
+</code></pre>
+</li>
+</ul>
+</div>
+
+      </div>
+    </div>
+  </body>
+</html>
