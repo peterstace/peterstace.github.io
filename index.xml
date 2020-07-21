@@ -11,6 +11,21 @@
     
     
     <item>
+      <title>Deep Work</title>
+      <link>https://petsta.net/notes/deep-work/</link>
+      <pubDate>Tue, 21 Jul 2020 20:45:13 +0000</pubDate>
+      
+      <guid>https://petsta.net/notes/deep-work/</guid>
+      <description>The following are notes that I took while reading Cal Newport&amp;rsquo;s Deep Work.
+Part 1 The defining characteristics of Deep Work are:
+  Work performed while in a distraction-free state.
+  Pushes your cognitive abilities to their limit.
+  Must either improve your skills, or create new value (or both).
+  Must be hard for others (en masse) to emulate.
+  The Deep Work Hypothesis asserts the following are true:</description>
+    </item>
+    
+    <item>
       <title>Using GitHub Actions for Hugo CICD</title>
       <link>https://petsta.net/posts/using-github-actions-for-hugo-cicd/</link>
       <pubDate>Tue, 14 Jul 2020 20:20:44 +0000</pubDate>
