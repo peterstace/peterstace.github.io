@@ -11,6 +11,16 @@
     
     
     <item>
+      <title>Fast Random Number Generation in Go</title>
+      <link>https://petsta.net/posts/fast-random-number-generation-in-go/</link>
+      <pubDate>Sat, 25 Jul 2020 07:09:37 +0000</pubDate>
+      
+      <guid>https://petsta.net/posts/fast-random-number-generation-in-go/</guid>
+      <description>Background Some algorithms rely on a stream of random numbers in order to meet their (average) time complexity class. One such famous algorithm is Quicksort.
+I recently worked on some performance optimisations for simplefeatures&amp;rsquo; R-Tree bulk loading algorithm. This bulk loading algorithm also utilises random numbers in order to meet its (average) time complexity class. It actually uses random numbers in a very similar way compared to Quicksort: to select random pivot indices to sort around.</description>
+    </item>
+    
+    <item>
       <title>Deep Work</title>
       <link>https://petsta.net/notes/deep-work/</link>
       <pubDate>Tue, 21 Jul 2020 20:45:13 +0000</pubDate>
