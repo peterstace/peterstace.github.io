@@ -5,11 +5,7 @@
     <link>https://petsta.net/tags/stub/</link>
     <description>Recent content in stub on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 21 May 2015 21:51:39 +1100</lastBuildDate>
-    
-	<atom:link href="https://petsta.net/tags/stub/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Thu, 21 May 2015 21:51:39 +1100</lastBuildDate><atom:link href="https://petsta.net/tags/stub/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Where should I put my mocks in Go?</title>
       <link>https://petsta.net/posts/where-should-i-put-my-mocks-in-go/</link>

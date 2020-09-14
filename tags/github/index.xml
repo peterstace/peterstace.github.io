@@ -5,11 +5,7 @@
     <link>https://petsta.net/tags/github/</link>
     <description>Recent content in github on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 02 Jun 2015 22:00:15 +1100</lastBuildDate>
-    
-	<atom:link href="https://petsta.net/tags/github/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 02 Jun 2015 22:00:15 +1100</lastBuildDate><atom:link href="https://petsta.net/tags/github/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go, gofmt, and diffs</title>
       <link>https://petsta.net/posts/go-gofmt-and-diff/</link>

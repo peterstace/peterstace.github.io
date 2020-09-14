@@ -5,11 +5,7 @@
     <link>https://petsta.net/posts/</link>
     <description>Recent content in Posts on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 25 Jul 2020 07:09:37 +0000</lastBuildDate>
-    
-	<atom:link href="https://petsta.net/posts/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 25 Jul 2020 07:09:37 +0000</lastBuildDate><atom:link href="https://petsta.net/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Fast Random Number Generation in Go</title>
       <link>https://petsta.net/posts/fast-random-number-generation-in-go/</link>
@@ -17,7 +13,7 @@
       
       <guid>https://petsta.net/posts/fast-random-number-generation-in-go/</guid>
       <description>Background Some algorithms rely on a stream of random numbers in order to meet their (average) time complexity class. One such famous algorithm is Quicksort.
-I recently worked on some performance optimisations for simplefeatures&amp;rsquo; R-Tree bulk loading algorithm. This bulk loading algorithm also utilises random numbers in order to meet its (average) time complexity class. It actually uses random numbers in a very similar way compared to Quicksort: to select random pivot indices to sort around.</description>
+I recently worked on some performance optimisations for simplefeatures&#39; R-Tree bulk loading algorithm. This bulk loading algorithm also utilises random numbers in order to meet its (average) time complexity class. It actually uses random numbers in a very similar way compared to Quicksort: to select random pivot indices to sort around.</description>
     </item>
     
     <item>
@@ -93,7 +89,7 @@ Global Ray Intersection Test The global ray intersection test is the most comput
       <guid>https://petsta.net/posts/bolt250-part01-unboxing/</guid>
       <description>I&amp;rsquo;m building a new miniquad, the Bolt250 from BoltRC. It&amp;rsquo;s a midpriced 250mm class racing quadcopter.
 I went with the ARF kit rather than just getting the frame.
-The Bolt250 comes with two different hardware versions, standard (30mm standoffs) and stealth (25mm standoffs). It also comes with the choice of 3mm or 4mm arm thickness, with clearance for either 5&amp;rdquo; or 6&amp;rdquo; props. I opted for the stealth hardware with 4mm/5&amp;rdquo; arms.</description>
+The Bolt250 comes with two different hardware versions, standard (30mm standoffs) and stealth (25mm standoffs). It also comes with the choice of 3mm or 4mm arm thickness, with clearance for either 5&amp;quot; or 6&amp;quot; props. I opted for the stealth hardware with 4mm/5&amp;quot; arms.</description>
     </item>
     
     <item>

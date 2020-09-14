@@ -5,11 +5,7 @@
     <link>https://petsta.net/tags/</link>
     <description>Recent content in Tags on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 26 Jul 2017 13:52:57 +1000</lastBuildDate>
-    
-	<atom:link href="https://petsta.net/tags/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 26 Jul 2017 13:52:57 +1000</lastBuildDate><atom:link href="https://petsta.net/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>path tracer</title>
       <link>https://petsta.net/tags/path-tracer/</link>

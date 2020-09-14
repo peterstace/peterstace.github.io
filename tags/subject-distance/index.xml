@@ -5,11 +5,7 @@
     <link>https://petsta.net/tags/subject-distance/</link>
     <description>Recent content in subject distance on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 21 Dec 2016 19:03:38 +1100</lastBuildDate>
-    
-	<atom:link href="https://petsta.net/tags/subject-distance/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 21 Dec 2016 19:03:38 +1100</lastBuildDate><atom:link href="https://petsta.net/tags/subject-distance/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Path Tracing Part 2 - Depth of Field</title>
       <link>https://petsta.net/posts/path-tracing-part-02-depth-of-field/</link>
