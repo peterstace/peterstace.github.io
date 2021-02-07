@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://petsta.net/chess/</loc>
+    <lastmod>2021-02-07T03:49:31+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://petsta.net/chess/bot_750_zara/</loc>
+    <lastmod>2021-02-07T03:49:31+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://petsta.net/posts/fast-random-number-generation-in-go/</loc>
     <lastmod>2020-07-25T07:09:37+00:00</lastmod>
   </url>

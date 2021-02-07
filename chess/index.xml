@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Chesses on Peter Stace</title>
+    <link>https://petsta.net/chess/</link>
+    <description>Recent content in Chesses on Peter Stace</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sun, 07 Feb 2021 03:49:31 +0000</lastBuildDate><atom:link href="https://petsta.net/chess/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Game Analysis: Zara (Bot 750)</title>
+      <link>https://petsta.net/chess/bot_750_zara/</link>
+      <pubDate>Sun, 07 Feb 2021 03:49:31 +0000</pubDate>
+      
+      <guid>https://petsta.net/chess/bot_750_zara/</guid>
+      <description>Score sheet  d4 b5 Bf4 e5 Bxe5 Ba6 Nf3 h5 e3 Rh6 Bf4 Be7 Bxh6 gxh6 Bd3 Kf8 O-O Bb4 c3 Ba5 b4 h4 bxa5 Ke8 Ne5 Ne7 Qh5 Qc8 Nxf7 Nbc6 Nd6+ Kd8 Qe8#  Analysis  d4  White intends the London system.
+ &amp;hellip;b5  Black uses the Polish defence.
+Bf4  Dark squared Bishop is developed as per the London system.
+&amp;hellip; e5  Black hangs the King&amp;rsquo;s pawn.</description>
+    </item>
+    
+  </channel>
+</rss>
