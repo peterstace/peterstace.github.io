@@ -50,9 +50,9 @@ type. Objects of type <code>&quot;box&quot;</code> will always have <code>&quot;
 fields, and objects of type <code>&quot;sphere&quot;</code> will always have <code>&quot;Centre&quot;</code> and
 <code>&quot;Radius&quot;</code> fields.</p>
 <pre><code>{
-    &quot;Colour&quot;: &quot;white&quot;,
-    &quot;Material&quot;: &quot;lambertian&quot;,
-    &quot;Objects&quot;: [
+	&quot;Colour&quot;: &quot;white&quot;,
+	&quot;Material&quot;: &quot;lambertian&quot;,
+	&quot;Objects&quot;: [
         {
             &quot;Type&quot;: &quot;box&quot;,
             &quot;Corner1&quot;: {&quot;X&quot;:0,&quot;Y&quot;:1,&quot;Z&quot;:2},
@@ -63,33 +63,33 @@ fields, and objects of type <code>&quot;sphere&quot;</code> will always have <co
             &quot;Centre&quot;: {&quot;X&quot;:2,&quot;Y&quot;:2.5,&quot;Z&quot;:-1},
             &quot;Radius&quot;: 1.0
         }
-    ]
+	]
 }
 </code></pre>
 <p>I want to decode the JSON value into the follow Go data structure:</p>
 <pre><code>type World struct {
-    Colour   string
-    Material string
-    Objects  []Object
+	Colour   string
+	Material string
+	Objects  []Object
 }
 
 type Object interface {
-    Contains(Vect) bool
+	Contains(Vect) bool
 }
 
 type Box struct {
-    Corner1, Corner2 Vect
+	Corner1, Corner2 Vect
 }
 func (b Box) Contains(Vect) bool { ... }
 
 type Sphere struct {
-    Centre Vect
-    Radius float64
+	Centre Vect
+	Radius float64
 }
 func (s Sphere) Contains(Vect) bool { ... }
 
 type Vect struct {
-    X, Y, Z float64
+	X, Y, Z float64
 }
 </code></pre>
 <p>Go can&rsquo;t unmarshal the JSON value into <code>World</code> directly. The <code>json.Unmarshal</code>
@@ -101,20 +101,20 @@ cannot be unmarshalled into.</p>
 the <a href="http://golang.org/pkg/encoding/json/#Unmarshaler">Unmarshaler</a> interface.</p>
 <pre><code>func (w *World) UnmarshalJSON(p []byte) error {
 
-    // Unmarshal the regular parts of the JSON value.
-    record := struct {
+	// Unmarshal the regular parts of the JSON value.
+	record := struct {
         Colour   string
         Material string
         Objects  []json.RawMessage
-    }{}
-    if err := json.Unmarshal(p, &amp;record); err != nil {
+	}{}
+	if err := json.Unmarshal(p, &amp;record); err != nil {
         return err
-    }
-    w.Colour = record.Colour
-    w.Material = record.Material
+	}
+	w.Colour = record.Colour
+	w.Material = record.Material
 
-    // Go back to the irregular parts, find each type and unmarshal accordingly.
-    for _, rawObject := range record.Objects {
+	// Go back to the irregular parts, find each type and unmarshal accordingly.
+	for _, rawObject := range record.Objects {
 
         // Find the type.
         obj := struct{ Type string }{}
@@ -137,8 +137,8 @@ the <a href="http://golang.org/pkg/encoding/json/#Unmarshaler">Unmarshaler</a> i
             }
             w.Objects = append(w.Objects, s)
         }
-    }
-    return nil
+	}
+	return nil
 }
 </code></pre>
 <p>So what&rsquo;s happening here? We are essentially doing the following:</p>
