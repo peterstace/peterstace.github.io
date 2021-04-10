@@ -5,7 +5,21 @@
     <link>https://petsta.net/notes/</link>
     <description>Recent content in Notes on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 21 Jul 2020 20:45:13 +0000</lastBuildDate><atom:link href="https://petsta.net/notes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 16 Mar 2021 18:31:04 +0000</lastBuildDate><atom:link href="https://petsta.net/notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Network Fundamentals</title>
+      <link>https://petsta.net/notes/network-fundamentals/</link>
+      <pubDate>Tue, 16 Mar 2021 18:31:04 +0000</pubDate>
+      
+      <guid>https://petsta.net/notes/network-fundamentals/</guid>
+      <description>The following are notes that I took while watching Network Direction&amp;rsquo;s Network Fundamentals playlist.
+Part 1 - Introduction to Networking (no notes)
+Part 2 - Cabling Devices (no notes)
+Part 3 - How the OSI Model Works   Hosts need to communicate with each other in ways that they both understand.
+  This is done via languages known as protocols.
+  Several protocols need to work together, and are layered on top of each other.</description>
+    </item>
+    
     <item>
       <title>Deep Work</title>
       <link>https://petsta.net/notes/deep-work/</link>

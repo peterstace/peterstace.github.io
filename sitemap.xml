@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://petsta.net/notes/network-fundamentals/</loc>
+    <lastmod>2021-03-16T18:31:04+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://petsta.net/notes/</loc>
+    <lastmod>2021-03-16T18:31:04+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://petsta.net/chess/</loc>
     <lastmod>2021-02-07T03:49:31+00:00</lastmod>
   </url>
@@ -24,11 +34,6 @@
   
   <url>
     <loc>https://petsta.net/notes/deep-work/</loc>
-    <lastmod>2020-07-21T20:45:13+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://petsta.net/notes/</loc>
     <lastmod>2020-07-21T20:45:13+00:00</lastmod>
   </url>
   
