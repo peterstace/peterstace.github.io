@@ -7,7 +7,6 @@
   </head>
   <body>
     <div id="page" style="max-width: 50em; margin: auto">
-      
       <div style="font-size: smaller">
         <a href="/">Peter Stace</a>
         
@@ -44,7 +43,7 @@ particular situation.</p>
 <h2 id="the-problem">The Problem</h2>
 <p>A <code>.torrent</code> file consists of an encoded <code>Value</code>. In general, a <code>Value</code> can
 either be an <code>int</code>, a <code>string</code>, or a <code>map[string]Value</code>:</p>
-<pre><code>// Value is either `int`, `string`, or `map[string]Value`.
+<pre tabindex="0"><code>// Value is either `int`, `string`, or `map[string]Value`.
 type Value interface{}
 </code></pre><p>However, <code>Value</code>s that are encoded inside <code>.torrent</code> files will contain very
 specific structures (the <code>.torrent</code> structure given here is a simplified
@@ -59,7 +58,7 @@ torrent.  The <code>&quot;piece length&quot;</code> value contains an <code>int<
 bytes in each torrent piece.</p>
 <p>The task is to take the top level <code>Value</code>, and extract it into the following
 type:</p>
-<pre><code>type MetaInfo struct {
+<pre tabindex="0"><code>type MetaInfo struct {
     AnnounceURL string
     Name        string
     PieceLength int
@@ -69,26 +68,26 @@ they might be file format extensions).</p>
 <h2 id="solution-a-traditional-error-handling">Solution A (traditional error handling)</h2>
 <p>The traditional approach is to use checked type assertions, returning an error
 if the type assertion fails.</p>
-<pre><code>func DecodeMetaInfo(v Value) (MetaInfo, error) {
+<pre tabindex="0"><code>func DecodeMetaInfo(v Value) (MetaInfo, error) {
 
     var m MetaInfo
-    err := errors.New(&quot;invalid meta info&quot;)
+    err := errors.New(&#34;invalid meta info&#34;)
 
     topLevelMap, ok := v.(map[string]Value)
     if !ok {
         return m, err
     }
-    if m.AnnounceURL, ok = topLevelMap[&quot;announce&quot;].(string); !ok {
+    if m.AnnounceURL, ok = topLevelMap[&#34;announce&#34;].(string); !ok {
         return m, err
     }
-    infoMap, ok := topLevelMap[&quot;info&quot;].(map[string]Value)
+    infoMap, ok := topLevelMap[&#34;info&#34;].(map[string]Value)
     if !ok {
         return m, err
     }
-    if m.Name, ok = infoMap[&quot;name&quot;].(string); !ok {
+    if m.Name, ok = infoMap[&#34;name&#34;].(string); !ok {
         return m, err
     }
-    if m.PieceLength, ok = infoMap[&quot;piece length&quot;].(int); !ok {
+    if m.PieceLength, ok = infoMap[&#34;piece length&#34;].(int); !ok {
         return m, err
     }
     return m, nil
@@ -97,19 +96,19 @@ if the type assertion fails.</p>
 <p>An alternate solution is to use <code>recover()</code> to check for any panics, and then
 use non-checked type assertions. This automatically takes care of the error
 cases if the type assertions fail.</p>
-<pre><code>func DecodeMetaInfo(v Value) (m MetaInfo, err error) {
+<pre tabindex="0"><code>func DecodeMetaInfo(v Value) (m MetaInfo, err error) {
 
     defer func() {
         if r := recover(); r != nil {
-            err = errors.New(&quot;invalid meta info&quot;)
+            err = errors.New(&#34;invalid meta info&#34;)
         }
     }()
 
     topLevelMap := v.(map[string]Value)
-    m.AnnounceURL = topLevelMap[&quot;announce&quot;].(string)
-    infoMap := topLevelMap[&quot;info&quot;].(map[string]Value)
-    m.Name = infoMap[&quot;name&quot;].(string)
-    m.PieceLength = infoMap[&quot;piece length&quot;].(int)
+    m.AnnounceURL = topLevelMap[&#34;announce&#34;].(string)
+    infoMap := topLevelMap[&#34;info&#34;].(map[string]Value)
+    m.Name = infoMap[&#34;name&#34;].(string)
+    m.PieceLength = infoMap[&#34;piece length&#34;].(int)
     return m, nil
 }
 </code></pre><h2 id="comparison">Comparison</h2>

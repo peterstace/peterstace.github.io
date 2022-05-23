@@ -7,7 +7,6 @@
   </head>
   <body>
     <div id="page" style="max-width: 50em; margin: auto">
-      
       <div style="font-size: smaller">
         <a href="/">Peter Stace</a>
         
@@ -43,11 +42,11 @@ test</em>, an integral part of any path tracer.</p>
 a path tracer. The test takes a ray, and checks to see if it intersects with
 any of the objects in the scene.</p>
 <p>A <code>ray</code> is defined as an origin <code>vector</code> and a (unit) direction <code>vector</code>:</p>
-<pre><code>type vector { x, y, z float64 }
+<pre tabindex="0"><code>type vector { x, y, z float64 }
 
 type ray { origin, dir float64 }
 </code></pre><p>Objects in the scene are defined as:</p>
-<pre><code>type object interface {
+<pre tabindex="0"><code>type object interface {
     intersect(ray) (unitNormal vector, distance float64, hit bool)
 }
 </code></pre><p>If the <code>ray</code> intersects the object, then <code>intersect(ray)</code> will return the unit
@@ -55,7 +54,7 @@ normal at the hit site, along with the distance to the hit site from the ray
 origin.</p>
 <p>To calculate the intersection between a ray and all objects in the scene, we
 must complete the following code:</p>
-<pre><code>type dataStructure struct {
+<pre tabindex="0"><code>type dataStructure struct {
     // ...
 }
 
@@ -87,7 +86,7 @@ of objects in the scene.</p>
 <p>The naive implementation sequentially checks each object in the scene, keeping
 track of the closest intersection found so far. This is easy to implement, but
 has the worst possible performance.</p>
-<pre><code>type objectList struct {
+<pre tabindex="0"><code>type objectList struct {
     objs []object
 }
 
@@ -117,7 +116,6 @@ func (o *objectList) intersect(r ray) (unitNormal vector, distance float64, hit 
 
     return closest.unitNormal, closest.distance, closest.hit
 }
-
 </code></pre><p>The main problem with the naive implementation is that it has to check each
 object in the scene for an intersection. If we can reduce the amount of
 intersection tests with individual objects, we can increase the overall

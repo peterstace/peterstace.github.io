@@ -7,7 +7,6 @@
   </head>
   <body>
     <div id="page" style="max-width: 50em; margin: auto">
-      
       <div style="font-size: smaller">
         <a href="/">Peter Stace</a>
         
@@ -53,16 +52,16 @@ fields, and objects of type <code>&quot;sphere&quot;</code> will always have <co
 	&quot;Colour&quot;: &quot;white&quot;,
 	&quot;Material&quot;: &quot;lambertian&quot;,
 	&quot;Objects&quot;: [
-        {
-            &quot;Type&quot;: &quot;box&quot;,
-            &quot;Corner1&quot;: {&quot;X&quot;:0,&quot;Y&quot;:1,&quot;Z&quot;:2},
-            &quot;Corner2&quot;: {&quot;X&quot;:5,&quot;Y&quot;:6,&quot;Z&quot;:7}
-        },
-        {
-            &quot;Type&quot;: &quot;sphere&quot;,
-            &quot;Centre&quot;: {&quot;X&quot;:2,&quot;Y&quot;:2.5,&quot;Z&quot;:-1},
-            &quot;Radius&quot;: 1.0
-        }
+		{
+			&quot;Type&quot;: &quot;box&quot;,
+			&quot;Corner1&quot;: {&quot;X&quot;:0,&quot;Y&quot;:1,&quot;Z&quot;:2},
+			&quot;Corner2&quot;: {&quot;X&quot;:5,&quot;Y&quot;:6,&quot;Z&quot;:7}
+		},
+		{
+			&quot;Type&quot;: &quot;sphere&quot;,
+			&quot;Centre&quot;: {&quot;X&quot;:2,&quot;Y&quot;:2.5,&quot;Z&quot;:-1},
+			&quot;Radius&quot;: 1.0
+		}
 	]
 }
 </code></pre>
@@ -103,12 +102,12 @@ the <a href="http://golang.org/pkg/encoding/json/#Unmarshaler">Unmarshaler</a> i
 
 	// Unmarshal the regular parts of the JSON value.
 	record := struct {
-        Colour   string
-        Material string
-        Objects  []json.RawMessage
+		Colour   string
+		Material string
+		Objects  []json.RawMessage
 	}{}
 	if err := json.Unmarshal(p, &amp;record); err != nil {
-        return err
+		return err
 	}
 	w.Colour = record.Colour
 	w.Material = record.Material
@@ -116,27 +115,27 @@ the <a href="http://golang.org/pkg/encoding/json/#Unmarshaler">Unmarshaler</a> i
 	// Go back to the irregular parts, find each type and unmarshal accordingly.
 	for _, rawObject := range record.Objects {
 
-        // Find the type.
-        obj := struct{ Type string }{}
-        if err := json.Unmarshal(rawObject, &amp;obj); err != nil {
-            return err
-        }
+		// Find the type.
+		obj := struct{ Type string }{}
+		if err := json.Unmarshal(rawObject, &amp;obj); err != nil {
+			return err
+		}
 
-        // Perform type specific unmarshalling.
-        switch obj.Type {
-        case &quot;box&quot;:
-            var b Box
-            if err := json.Unmarshal(rawObject, &amp;b); err != nil {
-                return err
-            }
-            w.Objects = append(w.Objects, b)
-        case &quot;sphere&quot;:
-            var s Sphere
-            if err := json.Unmarshal(rawObject, &amp;s); err != nil {
-                return err
-            }
-            w.Objects = append(w.Objects, s)
-        }
+		// Perform type specific unmarshalling.
+		switch obj.Type {
+		case &quot;box&quot;:
+			var b Box
+			if err := json.Unmarshal(rawObject, &amp;b); err != nil {
+				return err
+			}
+			w.Objects = append(w.Objects, b)
+		case &quot;sphere&quot;:
+			var s Sphere
+			if err := json.Unmarshal(rawObject, &amp;s); err != nil {
+				return err
+			}
+			w.Objects = append(w.Objects, s)
+		}
 	}
 	return nil
 }

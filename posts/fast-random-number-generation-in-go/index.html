@@ -7,7 +7,6 @@
   </head>
   <body>
     <div id="page" style="max-width: 50em; margin: auto">
-      
       <div style="font-size: smaller">
         <a href="/">Peter Stace</a>
         
@@ -56,9 +55,9 @@ doesn&rsquo;t have an impact on performance.</p>
 <h3 id="go-standard-library">Go Standard Library</h3>
 <p>First, let&rsquo;s benchmark Go&rsquo;s built in random number generator. This serves as a
 baseline, and was used in my initial R-Tree bulk loading implementation.</p>
-<pre><code>import (
-    &quot;math/rand&quot;
-    &quot;testing&quot;
+<pre tabindex="0"><code>import (
+    &#34;math/rand&#34;
+    &#34;testing&#34;
 )
 
 var k = 100
@@ -70,13 +69,13 @@ func BenchmarkMathRand(b *testing.B) {
 }
 </code></pre><p>This is already pretty fast (~18 ns per random number). It just goes to show
 that even fast operations can slow you down if they&rsquo;re in a tight loop.</p>
-<pre><code>BenchmarkMathRand-4             56426527                17.8 ns/op
+<pre tabindex="0"><code>BenchmarkMathRand-4             56426527                17.8 ns/op
 </code></pre><h3 id="local-random-number-generator">Local Random Number Generator</h3>
 <p>Note that we&rsquo;re using the global <code>rand.Intn</code> function, which internally uses a
 shared random number source.  That source is protected by a mutex, so we&rsquo;re
 locking and unlocking each time we get a new number. Let&rsquo;s try using a local
 <code>*rand.Rand</code> instance rather than using the global <code>rand.Intn</code> function.</p>
-<pre><code>func BenchmarkMathRandLocal(b *testing.B) {
+<pre tabindex="0"><code>func BenchmarkMathRandLocal(b *testing.B) {
     rnd := rand.New(rand.NewSource(0))
     b.ResetTimer()
     for i := 0; i &lt; b.N; i++ {
@@ -84,25 +83,25 @@ locking and unlocking each time we get a new number. Let&rsquo;s try using a loc
     }
 }
 </code></pre><p>That made quite a large difference, an improvement of ~40% over the original.</p>
-<pre><code>BenchmarkMathRandLocal-4        100000000               10.2 ns/op
+<pre tabindex="0"><code>BenchmarkMathRandLocal-4        100000000               10.2 ns/op
 </code></pre><p>But wait&hellip; We&rsquo;re not measuring the cost of setting up the local <code>*rand.Rand</code>
 instance because it occurs before the call to <code>b.ResetTimer()</code>. This isn&rsquo;t
 really a fair test. To find out how expensive it is to set up a local <code>*rand.Rand</code>
 instance, we can benchmark that operation in isolation.</p>
-<pre><code>func BenchmarkCreateLocalRand(b *testing.B) {
+<pre tabindex="0"><code>func BenchmarkCreateLocalRand(b *testing.B) {
     for i := 0; i &lt; b.N; i++ {
         rand.New(rand.NewSource(0))
     }
 }
 </code></pre><p>It turns out the cost is significant! The startup cost for a <code>*rand.Rand</code> is
 approximately 3 orders of magnitude slower than generating each random number!</p>
-<pre><code>BenchmarkCreateLocalRand-4        149104              7868 ns/op
+<pre tabindex="0"><code>BenchmarkCreateLocalRand-4        149104              7868 ns/op
 </code></pre><p>We can use some back of the envelope calculations to determine how many random
 numbers we would have to generate from the local <code>*rand.Rand</code> is order to break even
 against using the global <code>rand</code> functions.</p>
 <p>Assume each random number from <code>rand.Intn</code> takes ~18ns, and each random number
 from a local <code>*rand.Rand</code> instance takes ~10ns (with a setup of ~7,800ns).</p>
-<pre><code>18x = 10x + 7,800
+<pre tabindex="0"><code>18x = 10x + 7,800
  8x = 7,800
   x = 975
 </code></pre><p>So we need to be generating around 1,000 random numbers per local <code>*rand.Rand</code>
@@ -129,7 +128,7 @@ works by generating a chain of random values, each based on the previous.  For
 each new random number, the previous number is multiplied by a constant, and
 then another constant is added. This value is then reduced modulo another
 constant (otherwise is will increase forever).</p>
-<pre><code>RND_next := (RND_prev * CONST_MUL + CONST_ADD) % CONST_MOD
+<pre tabindex="0"><code>RND_next := (RND_prev * CONST_MUL + CONST_ADD) % CONST_MOD
 </code></pre><p>Note that Linear Congruential Generators as described above don&rsquo;t emit high
 quality random numbers. That may or may not matter depending on your
 application. For my use case (choosing random pivots), it&rsquo;s fine.</p>
@@ -142,7 +141,7 @@ unsigned integer and ignore the modulo aspect  entirely.</p>
 <p>Be wary of Go compiler optimisations when benchmarking. If you&rsquo;re not careful,
 the compiler can optimise everything away. An easy way to avoid this is to
 store the results in a global variable.</p>
-<pre><code>var result int
+<pre tabindex="0"><code>var result int
 
 func BenchmarkLCG(b *testing.B) {
     var cumulative int
@@ -157,14 +156,14 @@ func BenchmarkLCG(b *testing.B) {
 </code></pre><p>This performance isn&rsquo;t <em>that</em> much better compared to what we saw previously
 when using a local instance of <code>*rand.Rand</code>. But at least we don&rsquo;t have to pay
 the expensive setup cost.</p>
-<pre><code>BenchmarkLCG-4                  152581359                7.95 ns/op
+<pre tabindex="0"><code>BenchmarkLCG-4                  152581359                7.95 ns/op
 </code></pre><h3 id="deeper-profiling">Deeper Profiling</h3>
 <p>It&rsquo;s hard to know where to go from here&hellip; We only have two lines of code left,
 and they aren&rsquo;t doing much other than arithmetic operations.</p>
 <p>We&rsquo;ll need to use some profiling techniques in order to work out what part of
 the remaining code is the hotspot. If we generate a CPU profile while running
 the benchmark, the results are enlightening:</p>
-<pre><code>(flat)   
+<pre tabindex="0"><code>(flat)   
      .    func BenchmarkLCG(b *testing.B) { 
      .        var cumulative, state int 
      .        for i := 0; i &lt; b.N; i++ { 
@@ -185,7 +184,7 @@ and <code>k</code>&hellip;</p>
 number state into a number between 0 and <code>k</code>. It&rsquo;s possible instead to use a
 multiplication and a shift, which are much cheaper operations.</p>
 <p>The full code is:</p>
-<pre><code>var result int
+<pre tabindex="0"><code>var result int
 
 func BenchmarkFastLCG(b *testing.B) {
     var cumulative int
@@ -198,7 +197,7 @@ func BenchmarkFastLCG(b *testing.B) {
     result = cumulative
 }
 </code></pre><p>The benchmark results are very promising!</p>
-<pre><code>BenchmarkFastLCG-4              1000000000               1.04 ns/op
+<pre tabindex="0"><code>BenchmarkFastLCG-4              1000000000               1.04 ns/op
 </code></pre><p>If you haven&rsquo;t seen this trick before, (despite its simplicity) it can be a bit
 hard to digest. It&rsquo;s basically just a different way to split up <code>state</code> into
 <code>k</code> different buckets.</p>

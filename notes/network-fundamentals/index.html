@@ -7,7 +7,6 @@
   </head>
   <body>
     <div id="page" style="max-width: 50em; margin: auto">
-      
       <div style="font-size: smaller">
         <a href="/">Peter Stace</a>
         
@@ -155,9 +154,9 @@ subnets (in which each can contain 256 hosts).</p>
 <li>
 <p>VLSM - Variable Length Subnet Mask. This allows us to break a network into
 subnets, each of which could have a different size. E.g. The 172.16.0.0/16
-network could be broken into the following:</p>
+network could be broken into the following:
+- /16 subnets: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24</p>
 <ul>
-<li>/16 subnets: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24</li>
 <li>/30 subnets: 172.16.200.0/30, 172.16.200.4/30, 172.16.200.8/30.</li>
 </ul>
 </li>
@@ -253,9 +252,9 @@ customers, or ISPs. The ISPs will assign IP addresses to smaller customers.</p>
 <li>
 <p>Private Addresses are defined by RFC 1918. They are IP address ranges that
 can be used for any purpose within local networks. There are only 3:</p>
+<p>- 10.0.0.0/8
+- 172.16.0.0/12</p>
 <ul>
-<li>10.0.0.0/8</li>
-<li>172.16.0.0/12</li>
 <li>192.168.0.0/16</li>
 </ul>
 </li>
