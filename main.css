@@ -8,12 +8,16 @@ hr {
 	border: none;
 }
 
-#title_link {
-	color: black;
-	text-decoration: none;
+.bookend {
+  font-size: smaller;
 }
 
-#title_link:hover {
-	color: blue;
-	text-decoration: underline;
+.bookend ul {
+  padding-left: 0;
+}
+
+.bookend li {
+  display: inline;
+  list-style-type: none;
+  margin-right: 0.5em;
 }
