@@ -15,9 +15,9 @@
       <description>The following are notes that I took while watching Network Direction&amp;rsquo;s Network Fundamentals playlist.
 Part 1 - Introduction to Networking (no notes)
 Part 2 - Cabling Devices (no notes)
-Part 3 - How the OSI Model Works   Hosts need to communicate with each other in ways that they both understand.
-  This is done via languages known as protocols.
-  Several protocols need to work together, and are layered on top of each other.</description>
+Part 3 - How the OSI Model Works Hosts need to communicate with each other in ways that they both understand.
+This is done via languages known as protocols.
+Several protocols need to work together, and are layered on top of each other.</description>
     </item>
     
     <item>
@@ -26,10 +26,10 @@ Part 3 - How the OSI Model Works   Hosts need to communicate with each other in 
       <pubDate>Sun, 07 Feb 2021 03:49:31 +0000</pubDate>
       
       <guid>https://petsta.net/chess/bot_750_zara/</guid>
-      <description>Score sheet  d4 b5 Bf4 e5 Bxe5 Ba6 Nf3 h5 e3 Rh6 Bf4 Be7 Bxh6 gxh6 Bd3 Kf8 O-O Bb4 c3 Ba5 b4 h4 bxa5 Ke8 Ne5 Ne7 Qh5 Qc8 Nxf7 Nbc6 Nd6+ Kd8 Qe8#  Analysis  d4  White intends the London system.
- &amp;hellip;b5  Black uses the Polish defence.
-Bf4  Dark squared Bishop is developed as per the London system.
-&amp;hellip; e5  Black hangs the King&amp;rsquo;s pawn.</description>
+      <description>Score sheet d4 b5 Bf4 e5 Bxe5 Ba6 Nf3 h5 e3 Rh6 Bf4 Be7 Bxh6 gxh6 Bd3 Kf8 O-O Bb4 c3 Ba5 b4 h4 bxa5 Ke8 Ne5 Ne7 Qh5 Qc8 Nxf7 Nbc6 Nd6+ Kd8 Qe8# Analysis d4 White intends the London system.
+&amp;hellip;b5 Black uses the Polish defence.
+Bf4 Dark squared Bishop is developed as per the London system.
+&amp;hellip; e5 Black hangs the King&amp;rsquo;s pawn. It&amp;rsquo;s attacked twice but is undefended.</description>
     </item>
     
     <item>
@@ -50,11 +50,12 @@ I recently worked on some performance optimisations for simplefeatures&#39; R-Tr
       <guid>https://petsta.net/notes/deep-work/</guid>
       <description>The following are notes that I took while reading Cal Newport&amp;rsquo;s Deep Work.
 Part 1 The defining characteristics of Deep Work are:
-  Work performed while in a distraction-free state.
-  Pushes your cognitive abilities to their limit.
-  Must either improve your skills, or create new value (or both).
-  Must be hard for others (en masse) to emulate.
-  The Deep Work Hypothesis asserts the following are true:</description>
+Work performed while in a distraction-free state.
+Pushes your cognitive abilities to their limit.
+Must either improve your skills, or create new value (or both).
+Must be hard for others (en masse) to emulate.
+The Deep Work Hypothesis asserts the following are true:
+Deep work is becoming increasingly valuable over time.</description>
     </item>
     
     <item>
@@ -63,10 +64,10 @@ Part 1 The defining characteristics of Deep Work are:
       <pubDate>Tue, 14 Jul 2020 20:20:44 +0000</pubDate>
       
       <guid>https://petsta.net/posts/using-github-actions-for-hugo-cicd/</guid>
-      <description>Background   This website is written using Hugo, a static site generator similar to Jekyll and others.
-  I keep the source for the website in a private repo. The source consists of markdown files and HTML templates.
-  I serve the website from a public GitHub Pages repo.
-  When Hugo builds the site, it populates a /public directory in the private repo with the final assets that are ready to be served to site visitors.</description>
+      <description>Background This website is written using Hugo, a static site generator similar to Jekyll and others.
+I keep the source for the website in a private repo. The source consists of markdown files and HTML templates.
+I serve the website from a public GitHub Pages repo.
+When Hugo builds the site, it populates a /public directory in the private repo with the final assets that are ready to be served to site visitors.</description>
     </item>
     
     <item>
@@ -76,9 +77,9 @@ Part 1 The defining characteristics of Deep Work are:
       
       <guid>https://petsta.net/useful-resources/</guid>
       <description>References This is a collection of useful references and documentation that I keep coming back to.
-  Google&amp;rsquo;s shell style guide
-  HTTP Statuses
-  Blog Posts This is a list of excellent blog posts by others. I consider them to be written to a very high quality quality standard, express a rarely communicated but useful idea, or be something that I should come back to and think about from time to time.</description>
+Google&amp;rsquo;s shell style guide
+HTTP Statuses
+Blog Posts This is a list of excellent blog posts by others. I consider them to be written to a very high quality quality standard, express a rarely communicated but useful idea, or be something that I should come back to and think about from time to time.</description>
     </item>
     
     <item>

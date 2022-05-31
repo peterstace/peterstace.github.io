@@ -22,10 +22,10 @@ I recently worked on some performance optimisations for simplefeatures&#39; R-Tr
       <pubDate>Tue, 14 Jul 2020 20:20:44 +0000</pubDate>
       
       <guid>https://petsta.net/posts/using-github-actions-for-hugo-cicd/</guid>
-      <description>Background   This website is written using Hugo, a static site generator similar to Jekyll and others.
-  I keep the source for the website in a private repo. The source consists of markdown files and HTML templates.
-  I serve the website from a public GitHub Pages repo.
-  When Hugo builds the site, it populates a /public directory in the private repo with the final assets that are ready to be served to site visitors.</description>
+      <description>Background This website is written using Hugo, a static site generator similar to Jekyll and others.
+I keep the source for the website in a private repo. The source consists of markdown files and HTML templates.
+I serve the website from a public GitHub Pages repo.
+When Hugo builds the site, it populates a /public directory in the private repo with the final assets that are ready to be served to site visitors.</description>
     </item>
     
     <item>
