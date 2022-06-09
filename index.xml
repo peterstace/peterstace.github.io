@@ -78,6 +78,7 @@ When Hugo builds the site, it populates a /public directory in the private repo 
       <guid>https://petsta.net/useful-resources/</guid>
       <description>References This is a collection of useful references and documentation that I keep coming back to.
 Google&amp;rsquo;s shell style guide
+TLDP Advanced Bash-Scripting Guide
 HTTP Statuses
 Naming Schemes
 Blog Posts This is a list of excellent blog posts by others. I consider them to be written to a very high quality quality standard, express a rarely communicated but useful idea, or be something that I should come back to and think about from time to time.</description>
