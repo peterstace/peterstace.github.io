@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://petsta.net/posts/bash-indirect-expansion/</loc>
+    <lastmod>2022-07-21T19:29:28+00:00</lastmod>
+  </url><url>
+    <loc>https://petsta.net/posts/</loc>
+    <lastmod>2022-07-21T19:29:28+00:00</lastmod>
+  </url><url>
     <loc>https://petsta.net/notes/network-fundamentals/</loc>
     <lastmod>2021-03-16T18:31:04+00:00</lastmod>
   </url><url>
@@ -15,9 +21,6 @@
     <lastmod>2021-02-07T03:49:31+00:00</lastmod>
   </url><url>
     <loc>https://petsta.net/posts/fast-random-number-generation-in-go/</loc>
-    <lastmod>2020-07-25T07:09:37+00:00</lastmod>
-  </url><url>
-    <loc>https://petsta.net/posts/</loc>
     <lastmod>2020-07-25T07:09:37+00:00</lastmod>
   </url><url>
     <loc>https://petsta.net/notes/deep-work/</loc>

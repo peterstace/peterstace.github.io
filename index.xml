@@ -7,6 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 06 Jul 2020 20:13:00 +0000</lastBuildDate><atom:link href="https://petsta.net/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Indirect Expansion in Bash</title>
+      <link>https://petsta.net/posts/bash-indirect-expansion/</link>
+      <pubDate>Thu, 21 Jul 2022 19:29:28 +0000</pubDate>
+      
+      <guid>https://petsta.net/posts/bash-indirect-expansion/</guid>
+      <description>I recently came across a useful feature in bash that I hadn&amp;rsquo;t seen before. The feature is called &amp;ldquo;indirect expansion&amp;rdquo;. It&amp;rsquo;s documented in the bash man pages1, although not prominently.
+Indirect expansion allows a parameter to be expanded twice. First, the parameter is expanded in the regular way. Then, the result of the first expansion is expanded. This allows you to store the name of a parameter within another parameter, and perform the full expansion in a single step.</description>
+    </item>
+    
+    <item>
       <title>Network Fundamentals</title>
       <link>https://petsta.net/notes/network-fundamentals/</link>
       <pubDate>Tue, 16 Mar 2021 18:31:04 +0000</pubDate>

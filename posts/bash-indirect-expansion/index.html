@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Indirect Expansion in Bash</title>
+    <link href="/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="page" style="max-width: 50em; margin: auto">
+      <div class="bookend">
+        <ul>
+          <li><a href="/">About</a></li>
+          <li><a href="/posts">Posts</a></li>
+          
+        </ul>
+      </div>
+      <hr/>
+      <div>
+        
+<h1>Indirect Expansion in Bash</h1>
+<div>2022-07-21</div>
+<div><p>I recently came across a useful feature in bash that I hadn&rsquo;t seen before. The
+feature is called &ldquo;indirect expansion&rdquo;. It&rsquo;s documented in the bash man
+pages<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>, although not prominently.</p>
+<p>Indirect expansion allows a parameter to be expanded <em>twice</em>. First, the
+parameter is expanded in the regular way. Then, the result of the first
+expansion is expanded. This allows you to store the name of a parameter within
+another parameter, and perform the full expansion in a single step. It works by
+adding a <code>!</code> prefix to the parameter to be expanded.</p>
+<p>For example:</p>
+<pre tabindex="0"><code>foo=42
+bar=foo
+echo ${bar}   # regular parameter expansion, prints foo
+echo ${!bar}  # indirect expansion, prints 42
+</code></pre><p>What is this actually useful for? When I needed it, I was writing a bash script
+where user input caused different bash variables to be evaluated. The general
+outline of the script looked like this:</p>
+<pre tabindex="0"><code># Initialise some variables that hold filenames. Note
+# that the variable names follow a particular structure.
+foo_x_filename=&#34;...&#34;
+foo_y_filename=&#34;...&#34;
+bar_x_filename=&#34;...&#34;
+bar_y_filename=&#34;...&#34;
+baz_x_filename=&#34;...&#34;
+baz_y_filename=&#34;...&#34;
+
+# Read input from the user, which will
+# be used to select one of the variables:
+read -p &#34;resource &gt; &#34; resource  # user inputs foo, bar, or baz
+read -p &#34;xy &gt; &#34; xy              # user inputs x or y
+
+# ... validation of $resource and $xy omitted for clarity ...
+
+# Construct a variable name programatically based on the input from the user:
+var_name=&#34;${resource}_${xy}_filename&#34;
+
+# Use **indirect expansion** to expand var_name
+# to the filename in a single step.
+filename=&#34;${!var_name}&#34;
+
+# Do something with the filename.
+$EDITOR &#34;$filename&#34;
+</code></pre><p>The actual script was much more complicated, but the excerpt above gives the
+general idea. Indirect expansion is a useful tool in these sorts of scenarios,
+because the mapping from the user input to the variable to expand becomes short
+and concise.</p>
+<p>An alternative to indirect expansion would be to use an associative array,
+mapping strings such as <code>'bar_x_path'</code> to their corresponding paths.</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Search for the section titled &ldquo;Parameter Expansion&rdquo; in <code>man 1 bash</code>.
+Indirect expansion is described in the paragraph starting with &ldquo;If the first
+character of parameter is an exclamation  point  (!)&quot;…&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+</div>
+
+      </div>
+      <hr/>
+      <div class="bookend" style="display: flex">
+        <div style="width: 50%; text-align: left">
+          <ul>
+            <li><a href="https://github.com/peterstace">Github</a></li>
+            <li><a href="https://twitter.com/peterjohnstace">Twitter</a></li>
+            <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+          </ul>
+        </div>
+        <div style="width: 50%; text-align: right">
+          
+&copy; Peter Stace 2022
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
