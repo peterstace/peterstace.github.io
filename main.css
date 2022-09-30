@@ -21,6 +21,15 @@ pre {
   padding: 0.5em;
 }
 
+table, th, td {
+  border: 1px solid;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.3em;
+}
+
 .bookend {
   font-size: smaller;
   margin-top: 0.5em;

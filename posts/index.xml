@@ -5,7 +5,17 @@
     <link>https://petsta.net/posts/</link>
     <description>Recent content in Posts on Peter Stace</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 21 Jul 2022 19:29:28 +0000</lastBuildDate><atom:link href="https://petsta.net/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Sep 2022 10:25:05 +1000</lastBuildDate><atom:link href="https://petsta.net/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>When to use Go&#39;s RWMutex</title>
+      <link>https://petsta.net/posts/rwmutex/</link>
+      <pubDate>Fri, 30 Sep 2022 10:25:05 +1000</pubDate>
+      
+      <guid>https://petsta.net/posts/rwmutex/</guid>
+      <description>The Go programming language has two flavours of mutex that can be used to serialise access to shared state. They are sync.Mutex and sync.RWMutex. This blog post explains the differences between them and quantitatively analyses why RWMutex may not give performance benefits over Mutex even under read-heavy data access scenarios.
+The mutex is a classic synchronisation primitive A mutex is a synchronisation primitive that can be used to help ensure only a single thread of execution can access a critical section at any one time.</description>
+    </item>
+    
     <item>
       <title>Indirect Expansion in Bash</title>
       <link>https://petsta.net/posts/bash-indirect-expansion/</link>
