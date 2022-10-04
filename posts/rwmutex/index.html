@@ -150,7 +150,97 @@ for i, start := range eventStarts {
 </code></pre><p>After the simulation has completed, percentiles on the distribution of read
 event durations can be calculated (code omitted due to being obvious and
 uninteresting).</p>
-<p>The full code listing is available <a href="/2022-09-30-rwmutex/main.go">here</a>.</p>
+<p>The unabridged code listing is below:</p>
+<details>
+<summary><code>main.go</code></summary>
+<pre tabindex="0"><code>package main
+
+import (
+	&#34;encoding/json&#34;
+	&#34;flag&#34;
+	&#34;math/rand&#34;
+	&#34;os&#34;
+	&#34;sort&#34;
+	&#34;time&#34;
+
+	&#34;golang.org/x/exp/slices&#34;
+)
+
+func main() {
+	criticalSectionLength := flag.Duration(
+		&#34;critical-section-length&#34;,
+		500*time.Microsecond,
+		&#34;length of the simulated critical section length&#34;)
+	eventsPerSec := flag.Int(
+		&#34;events-per-second&#34;,
+		1_000,
+		&#34;number of requests to access the critical section per second&#34;)
+	flag.Parse()
+	Simulate(criticalSectionLength.Seconds(), float64(*eventsPerSec))
+}
+
+func Simulate(crititalSectionLengthSec float64, eventsPerSec float64) {
+	const totalEvents = 10_000_000
+	totalDurationSec := totalEvents / eventsPerSec
+
+	eventStarts := make([]float64, totalEvents)
+	for i := range eventStarts {
+		eventStarts[i] = rand.Float64() * totalDurationSec
+	}
+	sort.Float64s(eventStarts)
+
+	var blockedUntil float64
+	eventDurations := make([]float64, len(eventStarts))
+	for i, start := range eventStarts {
+		if blockedUntil &lt;= start {
+			// The event is unblocked so can run straight away.
+			blockedUntil = start + crititalSectionLengthSec
+		} else {
+			// The event is blocked, so can&#39;t run immediately.
+			blockedUntil += crititalSectionLengthSec
+		}
+		eventDuration := blockedUntil - start
+		eventDurations[i] = eventDuration
+	}
+
+	dist := distribution(eventDurations)
+
+	output := map[string]any{
+		&#34;crit&#34;: crititalSectionLengthSec,
+		&#34;eps&#34;:  eventsPerSec,
+		&#34;p50&#34;:  dist.p50 / crititalSectionLengthSec,
+		&#34;p95&#34;:  dist.p95 / crititalSectionLengthSec,
+		&#34;p99&#34;:  dist.p99 / crititalSectionLengthSec,
+		&#34;avg&#34;:  mean(eventDurations) / crititalSectionLengthSec,
+	}
+	json.NewEncoder(os.Stdout).Encode(output)
+}
+
+type percentiles struct {
+	p50 float64
+	p95 float64
+	p99 float64
+}
+
+func distribution(durations []float64) percentiles {
+	slices.Sort(durations)
+	n := len(durations)
+	return percentiles{
+		p50: durations[n*50/100],
+		p95: durations[n*95/100],
+		p99: durations[n*99/100],
+	}
+}
+
+func mean(durations []float64) float64 {
+	var sum float64
+	for _, d := range durations {
+		sum += d
+	}
+	n := float64(len(durations))
+	return sum / n
+}
+</code></pre></details>
 <h2 id="readwrite-mutexes-only-give-benefit-in-rare-circumstances">Read/write mutexes only give benefit in rare circumstances</h2>
 <p>The graph below shows the result of the Monte Carlo simulation for various
 scenarios. The colours in the graph show the theoretical slowdown of <code>RWMutex</code>
