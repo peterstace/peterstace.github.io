@@ -7,6 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 06 Jul 2020 20:13:00 +0000</lastBuildDate><atom:link href="https://petsta.net/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Using Go&#39;s RWMutex recursively is a bug</title>
+      <link>https://petsta.net/posts/recursive-rwmutex/</link>
+      <pubDate>Fri, 14 Oct 2022 05:13:31 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/recursive-rwmutex/</guid>
+      <description>A previous blog post made a few claims about recursive usage of Go&amp;rsquo;s RWMutex. In particular:
+Recursive usage is always a bug. This class of bug is hard to detect via testing. The bug may lay dormant for a long time before causing problems. These claims were used as part of a justification for preferring Mutex over RWMutex as a default choice and only using RWMutex after having explicitly calculated that RWMutex would give a performance improvement.</description>
+    </item>
+    
+    <item>
       <title>When to use Go&#39;s RWMutex</title>
       <link>https://petsta.net/posts/rwmutex/</link>
       <pubDate>Fri, 30 Sep 2022 10:25:05 +1000</pubDate>

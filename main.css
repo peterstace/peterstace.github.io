@@ -16,9 +16,16 @@ hr {
 }
 
 pre {
-  background: whitesmoke;
+  background: #f0f0f0;
   margin: 0;
   padding: 0.5em;
+  tab-size: 4;
+}
+
+blockquote {
+  margin-left: 0em;
+  border-left: 0.3em solid #ddd;
+  padding-left: 0.7em;
 }
 
 table, th, td {

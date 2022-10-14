@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Using Go&#39;s RWMutex recursively is a bug</title>
+    <link href="/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="page" style="max-width: 50em; margin: auto">
+      <div class="bookend">
+        <ul>
+          <li><a href="/">About</a></li>
+          <li><a href="/posts">Posts</a></li>
+          
+        </ul>
+      </div>
+      <hr/>
+      <div>
+        
+<h1>Using Go&#39;s RWMutex recursively is a bug</h1>
+<div>2022-10-14</div>
+<div><p>A previous blog <a href="../rwmutex">post</a> made a few claims about recursive usage of
+<a href="https://go.dev/">Go&rsquo;s</a> <a href="https://pkg.go.dev/sync#RWMutex"><code>RWMutex</code></a>.  In
+particular:</p>
+<ul>
+<li>Recursive usage is <em>always</em> a bug.</li>
+<li>This class of bug is hard to detect via testing.</li>
+<li>The bug may lay dormant for a long time before causing problems.</li>
+</ul>
+<p>These claims were used as part of a justification for preferring
+<a href="https://pkg.go.dev/sync#Mutex"><code>Mutex</code></a> over <code>RWMutex</code> as a default choice and
+only using <code>RWMutex</code> after having explicitly calculated that <code>RWMutex</code> would
+give a performance improvement.</p>
+<p>This post will dive into the details. It will explain the mechanism behind this
+bug class and how it may occur during real-world software engineering
+activities.</p>
+<h2 id="regressions-always-start-with-a-correct-program">Regressions always start with a correct program</h2>
+<p>The example used throughout this post will be a small Go type that models a
+financial account ledger. It simplifies a real account ledger model but is
+sufficient to show how recursive usage of <code>RWMutex</code> can occur. It contains:</p>
+<ul>
+<li>A list of credit and debit entries, each of which are slices of <code>int</code>s.</li>
+<li>An <code>RWMutex</code> to control thread-safe read-only and read-write access to the
+entries.</li>
+</ul>
+<p>The type definition is:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> AccountLedger <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	mu      sync.RWMutex
+</span></span><span style="display:flex;"><span>	debits  []<span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	credits []<span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>It has a method that updates the account ledger by adding new credit and debit
+entries. The mutex is held in read-write mode during the execution of the
+method.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> (a <span style="color:#666">*</span>AccountLedger) <span style="color:#06287e">AddEntries</span>(debits, credits []<span style="color:#902000">int</span>) {
+</span></span><span style="display:flex;"><span>	a.mu.<span style="color:#06287e">Lock</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">defer</span> a.mu.<span style="color:#06287e">Unlock</span>()
+</span></span><span style="display:flex;"><span>	a.debits = <span style="color:#007020">append</span>(a.debits, debits<span style="color:#666">...</span>)
+</span></span><span style="display:flex;"><span>	a.credits = <span style="color:#007020">append</span>(a.credits, credits<span style="color:#666">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>It has another method that calculates the net balance of the account ledger.
+The net balance is just the difference between the sum of the credits and the
+sum of the debits. The mutex is held in read-only mode during the execution of
+this method.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> (a <span style="color:#666">*</span>AccountLedger) <span style="color:#06287e">sumDebits</span>() <span style="color:#902000">int</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">var</span> sum <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">for</span> _, d <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">range</span> a.debits {
+</span></span><span style="display:flex;"><span>		sum <span style="color:#666">+=</span> d
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> sum
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> (a <span style="color:#666">*</span>AccountLedger) <span style="color:#06287e">sumCredits</span>() <span style="color:#902000">int</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">var</span> sum <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">for</span> _, c <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">range</span> a.credits {
+</span></span><span style="display:flex;"><span>		sum <span style="color:#666">+=</span> c
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> sum
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> (a <span style="color:#666">*</span>AccountLedger) <span style="color:#06287e">Net</span>() <span style="color:#902000">int</span> {
+</span></span><span style="display:flex;"><span>	a.mu.<span style="color:#06287e">RLock</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">defer</span> a.mu.<span style="color:#06287e">RUnlock</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> a.<span style="color:#06287e">sumDebits</span>() <span style="color:#666">-</span> a.<span style="color:#06287e">sumCredits</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Everything in this program works well! There are no bugs here. Some unit tests
+can be written to show how the type behaves. First, its basic usage can be
+tested by adding some entries to the account ledger and then calculating the
+net balance and ensuring it&rsquo;s the right value.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">TestNet</span>(t <span style="color:#666">*</span>testing.T) {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">var</span> ledger AccountLedger
+</span></span><span style="display:flex;"><span>	ledger.<span style="color:#06287e">AddEntries</span>([]<span style="color:#902000">int</span>{<span style="color:#40a070">10</span>, <span style="color:#40a070">7</span>}, []<span style="color:#902000">int</span>{<span style="color:#40a070">9</span>})
+</span></span><span style="display:flex;"><span>	got <span style="color:#666">:=</span> ledger.<span style="color:#06287e">Net</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">const</span> want = <span style="color:#40a070">8</span> <span style="color:#60a0b0;font-style:italic">// 10 + 7 - 9
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#007020;font-weight:bold">if</span> got <span style="color:#666">!=</span> want {
+</span></span><span style="display:flex;"><span>		t.<span style="color:#06287e">Errorf</span>(<span style="color:#4070a0">&#34;got %d want %d&#34;</span>, got, want)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Since the type is thread-safe, some tests should be written that call the
+methods concurrently to ensure everything works correctly. The new test adds
+more entries to the account ledger while concurrently calculating the net
+balance. Because the ordering of the method calls is non-deterministic, the
+test passes if the net balance is one of two values.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">TestNetConcurrent</span>(t <span style="color:#666">*</span>testing.T) {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">var</span> ledger AccountLedger
+</span></span><span style="display:flex;"><span>	ledger.<span style="color:#06287e">AddEntries</span>([]<span style="color:#902000">int</span>{<span style="color:#40a070">10</span>, <span style="color:#40a070">7</span>}, []<span style="color:#902000">int</span>{<span style="color:#40a070">9</span>}) <span style="color:#60a0b0;font-style:italic">// Net is 8
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">var</span> wg sync.WaitGroup
+</span></span><span style="display:flex;"><span>	wg.<span style="color:#06287e">Add</span>(<span style="color:#40a070">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">go</span> <span style="color:#007020;font-weight:bold">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#60a0b0;font-style:italic">// Added entries net to -1.
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>		<span style="color:#007020;font-weight:bold">defer</span> wg.<span style="color:#06287e">Done</span>()
+</span></span><span style="display:flex;"><span>		ledger.<span style="color:#06287e">AddEntries</span>([]<span style="color:#902000">int</span>{<span style="color:#40a070">6</span>, <span style="color:#40a070">3</span>}, []<span style="color:#902000">int</span>{<span style="color:#40a070">10</span>})
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">var</span> got <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">go</span> <span style="color:#007020;font-weight:bold">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#007020;font-weight:bold">defer</span> wg.<span style="color:#06287e">Done</span>()
+</span></span><span style="display:flex;"><span>		got = ledger.<span style="color:#06287e">Net</span>()
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	wg.<span style="color:#06287e">Wait</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#60a0b0;font-style:italic">// The call to Net() should occur either before or after the second call to
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60a0b0;font-style:italic">// AddEntries(...), so got should either be 8 or 7, depending on the
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60a0b0;font-style:italic">// ordering.
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#007020;font-weight:bold">if</span> got <span style="color:#666">!=</span> <span style="color:#40a070">7</span> <span style="color:#666">&amp;&amp;</span> got <span style="color:#666">!=</span> <span style="color:#40a070">8</span> {
+</span></span><span style="display:flex;"><span>		t.<span style="color:#06287e">Errorf</span>(<span style="color:#4070a0">&#34;got was %d but expected 7 or 8&#34;</span>, got)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="changing-software-can-introduce-bugs">Changing software can introduce bugs</h2>
+<p>Software requirements change over time. Imagine there is a desire to calculate
+the sum of the credits and the sum of the debits separately. Because the <code>Net</code>
+method was implemented using helper methods, similar methods already exist.
+All that needs to be done is export them and ensure the lock is
+held in read-only mode during execution.</p>
+<p>The diff looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span><span style="color:#800080;font-weight:bold">@@ -19,3 +22,5 @@
+</span></span></span><span style="display:flex;"><span><span style="color:#800080;font-weight:bold"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a00000">-func (a *AccountLedger) sumDebits() int {
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span><span style="color:#00a000">+func (a *AccountLedger) SumDebits() int {
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+       a.mu.RLock()
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+       defer a.mu.RUnlock()
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span>        var sum int
+</span></span><span style="display:flex;"><span><span style="color:#800080;font-weight:bold">@@ -27,3 +32,5 @@
+</span></span></span><span style="display:flex;"><span><span style="color:#800080;font-weight:bold"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a00000">-func (a *AccountLedger) sumCredits() int {
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span><span style="color:#00a000">+func (a *AccountLedger) SumCredits() int {
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+       a.mu.RLock()
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+       defer a.mu.RUnlock()
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span>        var sum int
+</span></span></code></pre></div><p>Some new unit tests for the newly exported methods can now be written (these
+are omitted due to not being very interesting). The existing unit tests still
+pass, so high fives are exchanged, and the new code is pushed out to
+production.</p>
+<h2 id="tracking-down-concurrency-bugs-is-hard">Tracking down concurrency bugs is hard</h2>
+<p>Eighteen months later, the software starts locking up. When it initially starts
+up, it works fine for a while. But then <em>something</em> happens, and all of the
+methods on the <code>AccountLedger</code> start blocking indefinitely.</p>
+<p>Strangely, the unit tests have never failed. Perhaps the goroutines are being
+interleaved slightly differently in the production environment compared to the
+unit tests? The way goroutines are interleaved is an implementation detail of
+Go&rsquo;s scheduler, so it shouldn&rsquo;t be surprising if things act slightly
+differently in different scenarios.</p>
+<p>One way to reproduce the failure is to sprinkle in some calls to
+<a href="https://pkg.go.dev/runtime#Gosched"><code>runtime.Gosched()</code></a>, which artificially
+yields control back to Go&rsquo;s scheduler, allowing other goroutines to be
+scheduled instead. This is a general debugging technique for
+concurrency-related bugs because it can help change how goroutines
+interleave with each other.</p>
+<p>It turns out that only one call to <code>runtime.Gosched()</code> is needed to reproduce
+the deadlock via the existing unit test suite.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span> func (a *AccountLedger) Net() int {
+</span></span><span style="display:flex;"><span>        a.mu.RLock()
+</span></span><span style="display:flex;"><span>        defer a.mu.RUnlock()
+</span></span><span style="display:flex;"><span><span style="color:#00a000">+       runtime.Gosched()
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span>        return a.SumDebits() - a.SumCredits()
+</span></span><span style="display:flex;"><span> }
+</span></span></code></pre></div><p>The tests now time out:</p>
+<pre tabindex="0"><code>$ go test
+panic: test timed out after 10m
+</code></pre><h2 id="what-caused-the-bug">What caused the bug?</h2>
+<p>The documentation for <code>sync.RWMutex</code> states that it shouldn&rsquo;t be used
+recursively (emphasis mine):</p>
+<blockquote>
+<p>If a goroutine holds a (sic) RWMutex for reading and another goroutine might
+call Lock, no goroutine should expect to be able to acquire a read lock until
+the initial read lock is released. In particular, <strong>this prohibits recursive
+read locking.</strong> This is to ensure that the lock eventually becomes available;
+a blocked Lock call excludes new readers from acquiring the lock.</p>
+</blockquote>
+<p>That&rsquo;s exactly what the code does though! The lock is acquired in read-only
+mode by calling <code>RLock()</code> at the start of the <code>Net</code> method. It&rsquo;s then
+reacquired a second time in the <code>SumDebits</code> method. Another goroutine could
+simultaneously call the <code>AddEntries</code> method, which acquires the lock in
+read-write mode by calling <code>Lock()</code>.</p>
+<p>The following sequence diagram shows a goroutine ordering that could cause
+the deadlock to occur in the unit test:</p>
+<p><img src="sequence_diagram.svg" alt="sequence diagram"></p>
+<p>The bug can be fixed by restructuring the code so that the mutex is acquired in
+read-only mode only once per call to an exported method. There are many ways to
+do this, each with its own trade-offs. The details are not explored in this
+post.</p>
+<h2 id="would-mutex-have-prevented-the-bug">Would <code>Mutex</code> have prevented the bug?</h2>
+<p>Unfortunately, using a regular <code>Mutex</code> instead of an <code>RWMutex</code> wouldn&rsquo;t have
+prevented this bug. The <code>Mutex</code> type doesn&rsquo;t support recursive locking either
+(i.e. cannot be locked multiple times by the same goroutine).</p>
+<p><strong>However, if <code>Mutex</code> were used, then the bug would have been trivial to
+catch:</strong></p>
+<ul>
+<li>
+<p>Even the non-concurrent unit test would have caught the problem. Calls to the
+<code>Net</code> method would block forever, so the test would just time out and fail.</p>
+</li>
+<li>
+<p><em>Even if there were no testing</em>, the program would have locked up the first
+time the <code>Net</code> method was called in production. In most circumstances, this
+is better than having a dormant bug.</p>
+</li>
+</ul>
+</div>
+
+      </div>
+      <hr/>
+      <div class="bookend" style="display: flex">
+        <div style="width: 50%; text-align: left">
+          <ul>
+            <li><a href="https://github.com/peterstace">Github</a></li>
+            <li><a href="https://twitter.com/peterjohnstace">Twitter</a></li>
+            <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+          </ul>
+        </div>
+        <div style="width: 50%; text-align: right">
+          
+&copy; Peter Stace 2022
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
