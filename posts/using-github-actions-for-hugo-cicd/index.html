@@ -47,104 +47,83 @@ committing, then pushing the change live.</p>
 </li>
 </ul>
 <h2 id="automation">Automation</h2>
-<ul>
-<li>
 <p>First I created a GitHub Personal Access Token. This is needed later for
 pushing to the public GitHub Pages repo. GitHub <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">provides some decent
 documentation</a>
 for how to do this. It&rsquo;s all done through the GitHub website. Since it&rsquo;s a one
 off step, there isn&rsquo;t much point automating it.</p>
-</li>
-<li>
 <p>Then I added the newly created Personal Access Token as a secret for the
 private website source repo. GitHub also <a href="https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets">provides some
 documentation</a>
 for how to do this. Adding the secret to the repo will allow us to use use the
 secret in its GitHub Actions workflows. Again, this is done as a manual step
 via the GitHub website.</p>
-</li>
-<li>
 <p>Finally, we can add the GitHub Actions workflow. The workflow is defined as a
 YAML file, stored in <code>.github/worflows/deploy.yaml</code>. It has a few interesting
 aspects.</p>
-<pre><code>  name: build
-  on:
-    push:
-      branches:
-        - master
-  jobs:
-    deploy:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: deploy
-          shell: bash
-          env: 
-            GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          run: |
-            set -exo pipefail
-            git config --global user.email &quot;ci@ci&quot;
-            git config --global user.name &quot;CI&quot;
-            commit_msg=&quot;$(git log --pretty='%h %s' -n1)&quot;
-            git clone https://$GH_TOKEN@github.com/peterstace/peterstace.github.io.git
-            cd peterstace.github.io
-            rm -r *
-            echo petsta.net &gt; CNAME
-            cp -r ../site/public/* .
-            git add -A
-            git status
-            git commit -m &quot;$commit_msg&quot;
-            git push
-</code></pre>
-</li>
-<li>
-<p>It only executes when changes are pushed to the master branch. This is
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>build<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">on</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">push</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	</span><span style="color:#062873;font-weight:bold">branches</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	  </span>- master<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">jobs</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">deploy</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	</span><span style="color:#062873;font-weight:bold">runs-on</span>:<span style="color:#bbb"> </span>ubuntu-latest<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	</span><span style="color:#062873;font-weight:bold">steps</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	  </span>- <span style="color:#062873;font-weight:bold">uses</span>:<span style="color:#bbb"> </span>actions/checkout@v2<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	  </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>deploy<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		</span><span style="color:#062873;font-weight:bold">shell</span>:<span style="color:#bbb"> </span>bash<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		</span><span style="color:#062873;font-weight:bold">env</span>:<span style="color:#bbb"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span><span style="color:#062873;font-weight:bold">GH_TOKEN</span>:<span style="color:#bbb"> </span>${{ secrets.GH_TOKEN }}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		</span><span style="color:#062873;font-weight:bold">run</span>:<span style="color:#bbb"> </span>|<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>set -exo pipefail<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>git config --global user.email &#34;ci@ci&#34;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>git config --global user.name &#34;CI&#34;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>commit_msg=&#34;$(git log --pretty=&#39;%h %s&#39; -n1)&#34;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>git clone https://$GH_TOKEN@github.com/peterstace/peterstace.github.io.git<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>cd peterstace.github.io<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>rm -r *<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>echo petsta.net &gt; CNAME<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>cp -r ../site/public/* .<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>git add -A<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>git status<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>git commit -m &#34;$commit_msg&#34;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">		  </span>git push<span style="color:#bbb">
+</span></span></span></code></pre></div><p>It only executes when changes are pushed to the master branch. This is
 controlled by:</p>
-<pre><code>  on:
-    push:
-      branches:
-        - master
-</code></pre>
-</li>
-<li>
-<p>When it runs, it first checks out the source repo. This uses a predefined
-step (provided by GitHub):</p>
-<pre><code>  - uses: actions/checkout@v2
-</code></pre>
-</li>
-<li>
-<p>Then it runs a custom bash script step. This step needs to use the secret,
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">on</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">push</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	</span><span style="color:#062873;font-weight:bold">branches</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">	  </span>- master<span style="color:#bbb">
+</span></span></span></code></pre></div><p>When it runs, it first checks out the source repo. This uses a predefined step
+(provided by GitHub):</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- <span style="color:#062873;font-weight:bold">uses</span>:<span style="color:#bbb"> </span>actions/checkout@v2<span style="color:#bbb">
+</span></span></span></code></pre></div><p>Then it runs a custom bash script step. This step needs to use the secret,
 which is imported as an environment variable named <code>GH_TOKEN</code> from a secret
 also named <code>GH_TOKEN</code>:</p>
-<pre><code>  env: 
-    GH_TOKEN: ${{ secrets.GH_TOKEN }}
-</code></pre>
-</li>
-<li>
-<p>The actual bash script clones the public GitHub Pages repo
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">env</span>:<span style="color:#bbb"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">GH_TOKEN</span>:<span style="color:#bbb"> </span>${{ secrets.GH_TOKEN }}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>The actual bash script clones the public GitHub Pages repo
 (<code>peterstace.github.io</code>), deletes its content, then adds the <code>/public</code>
 directory from the source repo.  It makes the assumption that Hugo has already
 been run on the markdown and HTML templates and the result committed to the
 private repo. This is a reasonable workflow, since Hugo is run as part of the
 regular development cycle anyway (as part of creating a new blog post or
 tweaking a template).</p>
-<pre><code>  set -exo pipefail
-  git config --global user.email &quot;ci@ci&quot;
-  git config --global user.name &quot;CI&quot;
-  commit_msg=&quot;$(git log --pretty='%h %s' -n1)&quot;
-  git clone https://$GH_TOKEN@github.com/peterstace/peterstace.github.io.git
-  cd peterstace.github.io
-  rm -r *
-  echo petsta.net &gt; CNAME
-  cp -r ../site/public/* .
-  git add -A
-  git status
-  git commit -m &quot;$commit_msg&quot;
-  git push
-</code></pre>
-</li>
-</ul>
-</div>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007020">set</span> -exo pipefail
+</span></span><span style="display:flex;"><span>git config --global user.email <span style="color:#4070a0">&#34;ci@ci&#34;</span>
+</span></span><span style="display:flex;"><span>git config --global user.name <span style="color:#4070a0">&#34;CI&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#bb60d5">commit_msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#007020;font-weight:bold">$(</span>git log --pretty<span style="color:#666">=</span><span style="color:#4070a0">&#39;%h %s&#39;</span> -n1<span style="color:#007020;font-weight:bold">)</span><span style="color:#4070a0">&#34;</span>
+</span></span><span style="display:flex;"><span>git clone https://<span style="color:#bb60d5">$GH_TOKEN</span>@github.com/peterstace/peterstace.github.io.git
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> peterstace.github.io
+</span></span><span style="display:flex;"><span>rm -r *
+</span></span><span style="display:flex;"><span><span style="color:#007020">echo</span> petsta.net &gt; CNAME
+</span></span><span style="display:flex;"><span>cp -r ../site/public/* .
+</span></span><span style="display:flex;"><span>git add -A
+</span></span><span style="display:flex;"><span>git status
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$commit_msg</span><span style="color:#4070a0">&#34;</span>
+</span></span><span style="display:flex;"><span>git push
+</span></span></code></pre></div></div>
 
       </div>
       <hr/>

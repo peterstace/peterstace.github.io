@@ -44,19 +44,19 @@ doesn&rsquo;t have an impact on performance.</p>
 <h3 id="go-standard-library">Go Standard Library</h3>
 <p>First, let&rsquo;s benchmark Go&rsquo;s built in random number generator. This serves as a
 baseline, and was used in my initial R-Tree bulk loading implementation.</p>
-<pre tabindex="0"><code>import (
-    &#34;math/rand&#34;
-    &#34;testing&#34;
-)
-
-var k = 100
-
-func BenchmarkMathRand(b *testing.B) {
-    for i := 0; i &lt; b.N; i++ {
-        rand.Intn(k)
-    }
-}
-</code></pre><p>This is already pretty fast (~18 ns per random number). It just goes to show
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#4070a0">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#4070a0">&#34;testing&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> k = <span style="color:#40a070">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkMathRand</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        rand.<span style="color:#06287e">Intn</span>(k)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is already pretty fast (~18 ns per random number). It just goes to show
 that even fast operations can slow you down if they&rsquo;re in a tight loop.</p>
 <pre tabindex="0"><code>BenchmarkMathRand-4             56426527                17.8 ns/op
 </code></pre><h3 id="local-random-number-generator">Local Random Number Generator</h3>
@@ -64,25 +64,25 @@ that even fast operations can slow you down if they&rsquo;re in a tight loop.</p
 shared random number source.  That source is protected by a mutex, so we&rsquo;re
 locking and unlocking each time we get a new number. Let&rsquo;s try using a local
 <code>*rand.Rand</code> instance rather than using the global <code>rand.Intn</code> function.</p>
-<pre tabindex="0"><code>func BenchmarkMathRandLocal(b *testing.B) {
-    rnd := rand.New(rand.NewSource(0))
-    b.ResetTimer()
-    for i := 0; i &lt; b.N; i++ {
-        rnd.Intn(k)
-    }
-}
-</code></pre><p>That made quite a large difference, an improvement of ~40% over the original.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkMathRandLocal</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    rnd <span style="color:#666">:=</span> rand.<span style="color:#06287e">New</span>(rand.<span style="color:#06287e">NewSource</span>(<span style="color:#40a070">0</span>))
+</span></span><span style="display:flex;"><span>    b.<span style="color:#06287e">ResetTimer</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        rnd.<span style="color:#06287e">Intn</span>(k)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>That made quite a large difference, an improvement of ~40% over the original.</p>
 <pre tabindex="0"><code>BenchmarkMathRandLocal-4        100000000               10.2 ns/op
 </code></pre><p>But wait&hellip; We&rsquo;re not measuring the cost of setting up the local <code>*rand.Rand</code>
 instance because it occurs before the call to <code>b.ResetTimer()</code>. This isn&rsquo;t
 really a fair test. To find out how expensive it is to set up a local <code>*rand.Rand</code>
 instance, we can benchmark that operation in isolation.</p>
-<pre tabindex="0"><code>func BenchmarkCreateLocalRand(b *testing.B) {
-    for i := 0; i &lt; b.N; i++ {
-        rand.New(rand.NewSource(0))
-    }
-}
-</code></pre><p>It turns out the cost is significant! The startup cost for a <code>*rand.Rand</code> is
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkCreateLocalRand</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        rand.<span style="color:#06287e">New</span>(rand.<span style="color:#06287e">NewSource</span>(<span style="color:#40a070">0</span>))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>It turns out the cost is significant! The startup cost for a <code>*rand.Rand</code> is
 approximately 3 orders of magnitude slower than generating each random number!</p>
 <pre tabindex="0"><code>BenchmarkCreateLocalRand-4        149104              7868 ns/op
 </code></pre><p>We can use some back of the envelope calculations to determine how many random
@@ -130,19 +130,19 @@ unsigned integer and ignore the modulo aspect  entirely.</p>
 <p>Be wary of Go compiler optimisations when benchmarking. If you&rsquo;re not careful,
 the compiler can optimise everything away. An easy way to avoid this is to
 store the results in a global variable.</p>
-<pre tabindex="0"><code>var result int
-
-func BenchmarkLCG(b *testing.B) {
-    var cumulative int
-    var state int32
-    for i := 0; i &lt; b.N; i++ {
-        state = state*1664525 + 1013904223
-        rndNum := int(state) % k
-        cumulative += rndNum // prevent optimising everything out
-    }
-    result = cumulative
-}
-</code></pre><p>This performance isn&rsquo;t <em>that</em> much better compared to what we saw previously
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> result <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkLCG</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> cumulative <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> state <span style="color:#902000">int32</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        state = state<span style="color:#666">*</span><span style="color:#40a070">1664525</span> <span style="color:#666">+</span> <span style="color:#40a070">1013904223</span>
+</span></span><span style="display:flex;"><span>        rndNum <span style="color:#666">:=</span> <span style="color:#007020">int</span>(state) <span style="color:#666">%</span> k
+</span></span><span style="display:flex;"><span>        cumulative <span style="color:#666">+=</span> rndNum <span style="color:#60a0b0;font-style:italic">// prevent optimising everything out
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>    result = cumulative
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This performance isn&rsquo;t <em>that</em> much better compared to what we saw previously
 when using a local instance of <code>*rand.Rand</code>. But at least we don&rsquo;t have to pay
 the expensive setup cost.</p>
 <pre tabindex="0"><code>BenchmarkLCG-4                  152581359                7.95 ns/op
@@ -173,19 +173,19 @@ and <code>k</code>&hellip;</p>
 number state into a number between 0 and <code>k</code>. It&rsquo;s possible instead to use a
 multiplication and a shift, which are much cheaper operations.</p>
 <p>The full code is:</p>
-<pre tabindex="0"><code>var result int
-
-func BenchmarkFastLCG(b *testing.B) {
-    var cumulative int
-    var state int32
-    for i := 0; i &lt; b.N; i++ {
-        state = state*1664525 + 1013904223
-        rndNum := (int64(state) * int64(k)) &gt;&gt; 32
-        cumulative += int(rndNum) // prevent optimising everything out
-    }
-    result = cumulative
-}
-</code></pre><p>The benchmark results are very promising!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> result <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkFastLCG</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> cumulative <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> state <span style="color:#902000">int32</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        state = state<span style="color:#666">*</span><span style="color:#40a070">1664525</span> <span style="color:#666">+</span> <span style="color:#40a070">1013904223</span>
+</span></span><span style="display:flex;"><span>        rndNum <span style="color:#666">:=</span> (<span style="color:#007020">int64</span>(state) <span style="color:#666">*</span> <span style="color:#007020">int64</span>(k)) <span style="color:#666">&gt;&gt;</span> <span style="color:#40a070">32</span>
+</span></span><span style="display:flex;"><span>        cumulative <span style="color:#666">+=</span> <span style="color:#007020">int</span>(rndNum) <span style="color:#60a0b0;font-style:italic">// prevent optimising everything out
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>    result = cumulative
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The benchmark results are very promising!</p>
 <pre tabindex="0"><code>BenchmarkFastLCG-4              1000000000               1.04 ns/op
 </code></pre><p>If you haven&rsquo;t seen this trick before, (despite its simplicity) it can be a bit
 hard to digest. It&rsquo;s basically just a different way to split up <code>state</code> into

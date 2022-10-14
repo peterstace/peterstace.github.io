@@ -31,30 +31,30 @@ test</em>, an integral part of any path tracer.</p>
 a path tracer. The test takes a ray, and checks to see if it intersects with
 any of the objects in the scene.</p>
 <p>A <code>ray</code> is defined as an origin <code>vector</code> and a (unit) direction <code>vector</code>:</p>
-<pre tabindex="0"><code>type vector { x, y, z float64 }
-
-type ray { origin, dir float64 }
-</code></pre><p>Objects in the scene are defined as:</p>
-<pre tabindex="0"><code>type object interface {
-    intersect(ray) (unitNormal vector, distance float64, hit bool)
-}
-</code></pre><p>If the <code>ray</code> intersects the object, then <code>intersect(ray)</code> will return the unit
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> vector { x, y, z <span style="color:#902000">float64</span> }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> ray { origin, dir <span style="color:#902000">float64</span> }
+</span></span></code></pre></div><p>Objects in the scene are defined as:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> object <span style="color:#007020;font-weight:bold">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#06287e">intersect</span>(ray) (unitNormal vector, distance <span style="color:#902000">float64</span>, hit <span style="color:#902000">bool</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>If the <code>ray</code> intersects the object, then <code>intersect(ray)</code> will return the unit
 normal at the hit site, along with the distance to the hit site from the ray
 origin.</p>
 <p>To calculate the intersection between a ray and all objects in the scene, we
 must complete the following code:</p>
-<pre tabindex="0"><code>type dataStructure struct {
-    // ...
-}
-
-func newDataStructure([]object) *dataStructure {
-    // ...
-}
-
-func (d *dataStructure) intersect(r ray) (unitNormal vector, distance float64, hit bool) {
-    // ...
-}
-</code></pre><p>There are lots of different ways to implement the global ray intersection test,
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> dataStructure <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#60a0b0;font-style:italic">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">newDataStructure</span>([]object) <span style="color:#666">*</span>dataStructure {
+</span></span><span style="display:flex;"><span>    <span style="color:#60a0b0;font-style:italic">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> (d <span style="color:#666">*</span>dataStructure) <span style="color:#06287e">intersect</span>(r ray) (unitNormal vector, distance <span style="color:#902000">float64</span>, hit <span style="color:#902000">bool</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#60a0b0;font-style:italic">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>}
+</span></span></code></pre></div><p>There are lots of different ways to implement the global ray intersection test,
 and performance will always be an important consideration. This is because:</p>
 <ul>
 <li>
@@ -75,37 +75,36 @@ of objects in the scene.</p>
 <p>The naive implementation sequentially checks each object in the scene, keeping
 track of the closest intersection found so far. This is easy to implement, but
 has the worst possible performance.</p>
-<pre tabindex="0"><code>type objectList struct {
-    objs []object
-}
-
-func newObjectList(objs []object) *objectList {
-    return &amp;objectList{objs}
-}
-
-func (o *objectList) intersect(r ray) (unitNormal vector, distance float64, hit bool) {
-
-    closest struct {
-        unitNormal vector
-        distance   float64
-        hit        bool
-    }
-
-    for _, obj := range o.objs {
-        unitNormal, distance, hit := obj.intersect(r)
-        if !hit {
-            continue
-        }
-        if !closest.hit || distance &lt; closest.distance {
-            closest.unitNormal = unitNormal
-            closest.distance = distance
-            closest.hit = true
-        }
-    }
-
-    return closest.unitNormal, closest.distance, closest.hit
-}
-</code></pre><p>The main problem with the naive implementation is that it has to check each
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> objectList <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>    objs []object
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">newObjectList</span>(objs []object) <span style="color:#666">*</span>objectList {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">&amp;</span>objectList{objs}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> (o <span style="color:#666">*</span>objectList) <span style="color:#06287e">intersect</span>(r ray) (unitNormal vector, distance <span style="color:#902000">float64</span>, hit <span style="color:#902000">bool</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> closest <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>        unitNormal vector
+</span></span><span style="display:flex;"><span>        distance   <span style="color:#902000">float64</span>
+</span></span><span style="display:flex;"><span>        hit        <span style="color:#902000">bool</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> _, obj <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">range</span> o.objs {
+</span></span><span style="display:flex;"><span>        unitNormal, distance, hit <span style="color:#666">:=</span> obj.<span style="color:#06287e">intersect</span>(r)
+</span></span><span style="display:flex;"><span>        <span style="color:#007020;font-weight:bold">if</span> !hit {
+</span></span><span style="display:flex;"><span>            <span style="color:#007020;font-weight:bold">continue</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#007020;font-weight:bold">if</span> !closest.hit <span style="color:#666">||</span> distance &lt; closest.distance {
+</span></span><span style="display:flex;"><span>            closest.unitNormal = unitNormal
+</span></span><span style="display:flex;"><span>            closest.distance = distance
+</span></span><span style="display:flex;"><span>            closest.hit = <span style="color:#007020;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">return</span> closest.unitNormal, closest.distance, closest.hit
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The main problem with the naive implementation is that it has to check each
 object in the scene for an intersection. If we can reduce the amount of
 intersection tests with individual objects, we can increase the overall
 performance.</p>
