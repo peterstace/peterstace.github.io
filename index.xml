@@ -101,25 +101,6 @@ When Hugo builds the site, it populates a /public directory in the private repo 
     </item>
     
     <item>
-      <title>Useful Resources</title>
-      <link>https://petsta.net/useful-resources/</link>
-      <pubDate>Mon, 06 Jul 2020 20:13:00 +0000</pubDate>
-      
-      <guid>https://petsta.net/useful-resources/</guid>
-      <description>References This is a collection of useful references and documentation that I keep coming back to.
-Google&amp;rsquo;s shell style guide
-TLDP Advanced Bash-Scripting Guide
-HTTP Statuses
-Naming Schemes
-Go Code Review Comments
-YAML Multiline
-Swagger Specification
-Understanding JSON Schema
-Terraform AWS Provider
-Blog Posts This is a list of excellent blog posts by others. I consider them to be written to a very high quality quality standard, express a rarely communicated but useful idea, or be something that I should come back to and think about from time to time.</description>
-    </item>
-    
-    <item>
       <title>Path Tracing Part 4 - Reflections</title>
       <link>https://petsta.net/posts/path-tracing-part-04-reflections/</link>
       <pubDate>Wed, 26 Jul 2017 13:52:57 +1000</pubDate>
@@ -211,6 +192,25 @@ For example, the following is a diff of a simple type declaration:</description>
       
       <guid>https://petsta.net/posts/where-should-i-put-my-mocks-in-go/</guid>
       <description>Introduction Go&amp;rsquo;s toolchain provides a mechanism to help prevent test code from being included in production binaries. It should be obvious why this is useful; if stubs or mocks intended for testing make their way your production system, they may cause it to fail silently in catastrophic and unexpected ways. This is especially a concern if you don&amp;rsquo;t have automated application and integration tests in place. Imagine if you somehow end up with a stubbed out authentication manager that always returns true when asked if a user has administration privileges.</description>
+    </item>
+    
+    <item>
+      <title>Useful Resources</title>
+      <link>https://petsta.net/useful-resources/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://petsta.net/useful-resources/</guid>
+      <description>References This is a collection of useful references and documentation that I keep coming back to.
+Google&amp;rsquo;s shell style guide
+TLDP Advanced Bash-Scripting Guide
+HTTP Statuses
+Naming Schemes
+Go Code Review Comments
+YAML Multiline
+Swagger Specification
+Understanding JSON Schema
+Terraform AWS Provider
+Blog Posts This is a list of excellent blog posts by others. I consider them to be written to a very high quality quality standard, express a rarely communicated but useful idea, or be something that I should come back to and think about from time to time.</description>
     </item>
     
   </channel>
