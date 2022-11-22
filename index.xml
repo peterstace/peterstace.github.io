@@ -214,11 +214,12 @@ If you try to do something right now and it goes poorly, you&amp;#39;re going to
       
       <guid>https://petsta.net/useful-resources/</guid>
       <description>References This is a collection of useful references and documentation that I keep coming back to.
-Google&amp;rsquo;s shell style guide
+Go Go Code Review Comments
+Practical Go: Real world advice for writing maintainable Go programs
+Bash Google&amp;rsquo;s shell style guide
 TLDP Advanced Bash-Scripting Guide
-HTTP Statuses
+General HTTP Statuses
 Naming Schemes
-Go Code Review Comments
 YAML Multiline
 Swagger Specification
 Understanding JSON Schema
