@@ -7,6 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 06 Jul 2020 20:13:00 +0000</lastBuildDate><atom:link href="https://petsta.net/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Error handling when writing to a file in Go</title>
+      <link>https://petsta.net/posts/error-handling-when-writing-to-a-file-in-go/</link>
+      <pubDate>Fri, 03 Mar 2023 09:00:00 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/error-handling-when-writing-to-a-file-in-go/</guid>
+      <description>Writing content to a file on disk can be a common operation in Go programs. There are many different ways to do it, but one often used is to open a file in write mode and write to it. This sounds trivial, but there are a few ways that Go programmers (beginner and experienced alike) can get this wrong.
+An inexperienced Go programmer may initially attempt something like this:
+func writeFile(filename string) error { f, err := os.</description>
+    </item>
+    
+    <item>
       <title>Using Go&#39;s RWMutex recursively is a bug</title>
       <link>https://petsta.net/posts/recursive-rwmutex/</link>
       <pubDate>Fri, 14 Oct 2022 05:13:31 +1100</pubDate>

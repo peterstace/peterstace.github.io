@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Error handling when writing to a file in Go</title>
+    <link href="/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="page" style="max-width: 50em; margin: auto">
+      <div class="bookend">
+        <ul>
+          <li><a href="/">About</a></li>
+          <li><a href="/posts/">Posts</a></li>
+          <li><a href="/quotes/">Quotes</a></li>
+          <li><a href="/book-diary/">Book Diary</a></li>
+        </ul>
+      </div>
+      <hr/>
+      <div>
+        
+<h1>Error handling when writing to a file in Go</h1>
+<div>2023-03-03</div>
+<div><p>Writing content to a file on disk can be a common operation in Go programs. There are many different ways to do it, but one often used is to open a file in write mode and write to it. This sounds trivial, but there are a few ways that Go programmers (beginner and experienced alike) can get this wrong.</p>
+<p>An inexperienced Go programmer may initially attempt something like this:</p>
+<pre tabindex="0"><code>func writeFile(filename string) error {
+    f, err := os.Create(filename)
+    if err != nil {
+        return err
+    }
+    defer f.Close()
+
+    buf, err := getBytes()
+    if err != nil {
+        return err
+    }
+
+    if _, err := f.Write(buf); err != nil {
+        return err
+    }
+    return nil
+}
+</code></pre><p>At first glance, this seems sensible. One of the first things Go programmers learn is that it&rsquo;s a good idea to defer close operations on resources after creating them so that they&rsquo;re automatically closed when the function exits.</p>
+<p>The problem is that <code>f.Close()</code> can return an error. Data that has been written via the <code>Write</code> method but has not yet persisted to disk may fail to be persisted during the close operation and cause an error to be returned. If this happens, it will go unnoticed.</p>
+<p>This is an insidious bug to reproduce because disk write failures are rare!</p>
+<p>A pattern that more intermediate Go programmers may attempt is to check the error from <code>f.Close()</code> by making the call after all of the <code>f.Write(buf)</code> calls rather than deferring it. This looks like:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span> func writeFile(filename string) error {
+</span></span><span style="display:flex;"><span>     f, err := os.Create(filename)
+</span></span><span style="display:flex;"><span>     if err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span><span style="color:#a00000">-    defer f.Close()
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span> 
+</span></span><span style="display:flex;"><span>     buf, err := getBytes()
+</span></span><span style="display:flex;"><span>     if err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>     if _, err := f.Write(buf); err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span><span style="color:#00a000">+    return f.Close()
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span><span style="color:#a00000">-    return nil
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span> }
+</span></span></code></pre></div><p>This has a problem as well though! If <code>getBytes()</code> or <code>f.Write</code> fails, the OS-level file descriptor will leak.</p>
+<p>You can only have so many file descriptions open simultaneously. If no free file descriptors are available, then <code>os.Create</code> will fail. Depending on how the program is deployed, this may affect just the program itself or other unrelated processes as well.</p>
+<p>The solution is to add back the deferred close after file creation and <em>also</em> keep the <code>f.Close()</code> call at the end of the function.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span> func writeFile(filename string) error {
+</span></span><span style="display:flex;"><span>     f, err := os.Create(filename)
+</span></span><span style="display:flex;"><span>     if err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span><span style="color:#00a000">+    defer f.Close()
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span> 
+</span></span><span style="display:flex;"><span>     buf, err := getBytes()
+</span></span><span style="display:flex;"><span>     if err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>     if _, err := f.Write(buf); err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span>     return f.Close()
+</span></span><span style="display:flex;"><span> }
+</span></span></code></pre></div><p>If the file is successfully closed by the final <code>return f.Close()</code>, then the deferred <code>f.Close()</code> operation does nothing. The deferred <code>f.Close()</code> will return an error because the file is already closed, but this has no impact on the program since the error is not checked.</p>
+<p>If <code>getBytes()</code> or <code>f.Write(buf)</code> fail, then the file will be cleaned up by the deferred <code>f.Close()</code> call.</p>
+<p>The file descriptor leak is gone, and any error occurring while persisting the file to disk will be detected.</p>
+<p><strong>This is enough for most use-cases</strong>. That&rsquo;s right, you can stop here most of the time.</p>
+<p>For some niche use cases though, it&rsquo;s still not watertight enough. When the <code>os.File</code> is closed, its contents may not flush to disk immediately. If the physical machine unexpectedly loses power, the file&rsquo;s contents may not be there when the machine restarts. This matters when you&rsquo;re doing things like building your own database because data persistence behaviour under crash scenarios is critical. It can be remedied with the <code>Sync</code> method:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span> func writeFile(filename string) error {
+</span></span><span style="display:flex;"><span>     f, err := os.Create(filename)
+</span></span><span style="display:flex;"><span>     if err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span>     defer f.Close()
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>     buf, err := getBytes()
+</span></span><span style="display:flex;"><span>     if err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>     if _, err := f.Write(buf); err != nil {
+</span></span><span style="display:flex;"><span>         return err
+</span></span><span style="display:flex;"><span>     }
+</span></span><span style="display:flex;"><span><span style="color:#00a000">+    if err := f.Sync(); err != nil {
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+        return err
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+    }
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span>     return f.Close()
+</span></span><span style="display:flex;"><span> }
+</span></span></code></pre></div><p>You might think this is enough to ensure the file contents are now persisted to disk. Most of the time it is, but it may ultimately depend on the <a href="https://twitter.com/xenadu02/status/1495693475584557056">behaviour of the physical disk</a>.</p>
+</div>
+
+      </div>
+      <hr/>
+      <div class="bookend" style="display: flex">
+        <div style="width: 50%; text-align: left">
+          <ul>
+            <li><a href="https://github.com/peterstace">Github</a></li>
+            <li><a href="https://twitter.com/peterjohnstace">Twitter</a></li>
+            <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+          </ul>
+        </div>
+        <div style="width: 50%; text-align: right">
+          &copy; Peter Stace 2023
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
