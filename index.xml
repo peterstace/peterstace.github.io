@@ -7,6 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 06 Jul 2020 20:13:00 +0000</lastBuildDate><atom:link href="https://petsta.net/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Optional Values in Go</title>
+      <link>https://petsta.net/posts/optional-values-in-go/</link>
+      <pubDate>Fri, 28 Apr 2023 05:19:17 +1100</pubDate>
+      
+      <guid>https://petsta.net/posts/optional-values-in-go/</guid>
+      <description>Optional types are types that can hold a value or be empty, and are sometimes referred to as option types. One way to think of optional types is as container types that can hold either zero or one elements. An optional type has a way to check if it is empty or non-empty, and if it is non-empty, a way to extract the value it contains.
+Optional types are a common feature of many programming languages, and are typically defined in their respective standard libraries.</description>
+    </item>
+    
+    <item>
       <title>Error handling when writing to a file in Go</title>
       <link>https://petsta.net/posts/error-handling-when-writing-to-a-file-in-go/</link>
       <pubDate>Fri, 03 Mar 2023 09:00:00 +1100</pubDate>

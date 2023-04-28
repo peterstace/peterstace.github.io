@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Optional Values in Go</title>
+    <link href="/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="page" style="max-width: 50em; margin: auto">
+      <div class="bookend">
+        <ul>
+          <li><a href="/">About</a></li>
+          <li><a href="/posts/">Posts</a></li>
+          <li><a href="/quotes/">Quotes</a></li>
+          <li><a href="/book-diary/">Book Diary</a></li>
+        </ul>
+      </div>
+      <hr/>
+      <div>
+        
+<h1>Optional Values in Go</h1>
+<div>2023-04-28</div>
+<div><p>Optional types are types that can hold a value or be empty, and are sometimes
+referred to as <em>option</em> types. One way to think of optional types is as
+container types that can hold either zero or one elements. An optional type has
+a way to check if it is empty or non-empty, and if it is non-empty, a way to
+extract the value it contains.</p>
+<p>Optional types are a common feature of many programming languages, and are
+typically defined in their respective standard libraries. The following table
+shows some examples of optional types in various programming languages:</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Optional Type</th>
+<th>Package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td><code>Optional</code></td>
+<td><code>java.util</code></td>
+</tr>
+<tr>
+<td>C#</td>
+<td><code>Optional</code></td>
+<td><code>Microsoft.CodeAnalysis.Common</code></td>
+</tr>
+<tr>
+<td>C++</td>
+<td><code>std::optional</code></td>
+<td><code>std</code></td>
+</tr>
+<tr>
+<td>Rust</td>
+<td><code>Option</code></td>
+<td><code>std::option</code></td>
+</tr>
+<tr>
+<td>Haskell</td>
+<td><code>Maybe</code></td>
+<td><code>base</code></td>
+</tr>
+<tr>
+<td>Scala</td>
+<td><code>Option</code></td>
+<td><code>scala</code></td>
+</tr>
+</tbody>
+</table>
+<p>While the implementation of optional types may differ slightly between
+programming languages, the underlying concept remains the same. An optional
+type is created from an (existing) underlying type, and it can hold all values
+of that type as well as an additional <em>empty</em> value.</p>
+<h2 id="optional-types-arent-widely-adopted-in-go">Optional types aren&rsquo;t widely adopted in Go</h2>
+<p>Although many programming languages offer optional types, Go is not one of
+them. There is no optional type in the <a href="https://pkg.go.dev/std">official standard
+library</a> or its
+<a href="https://pkg.go.dev/golang.org/x">sub-repositories</a>.</p>
+<p>Despite the absence of an official optional type, several third-party packages
+provide an implementation of optional types in Go. However, none of them have
+gained widespread popularity. Some of these packages were written before
+generics were available in Go 1.18 and make use of code generation to provide
+optional types for common built-in types. The following packages (in
+alphabetical order) use this approach:</p>
+<ul>
+<li><code>github.com/antihax/optional</code></li>
+<li><code>github.com/dangreenhalgh/maybe</code></li>
+<li><code>github.com/keep94/maybe</code></li>
+<li><code>github.com/markphelps/optional</code></li>
+</ul>
+<p>Other packages were developed more recently and utilize generics to provide
+optional types for any existing type. The following packages use this approach:</p>
+<ul>
+<li><code>4d63.com/optional</code></li>
+<li><code>github.com/calebcase/maybe</code></li>
+<li><code>github.com/dogmatiq/ferrite/maybe</code></li>
+<li><code>github.com/pmorelli92/maybe</code></li>
+<li><code>zenhack.net/go/util/maybe</code></li>
+</ul>
+<p>In my experience with the projects I have worked on or read the source code
+for, the Go community has not widely adopted the use of optional types. I
+hypothesise several possible reasons for this:</p>
+<ol>
+<li>
+<p>Optional types are cumbersome to implement and use without parametric
+polymorphism-style generics, instead relying on code generation. Go only
+began supporting generics in Go 1.18, which was released in March 2022
+(about a year ago at the time of writing). The possibilities that generics
+allow have not yet been fully realized.</p>
+</li>
+<li>
+<p>Anecdotally, many Go programmers say that they are satisfied with
+non-generics-based solutions for representing optional values. Some Go
+programmers believe that using generics for optional types is non-idiomatic.</p>
+</li>
+<li>
+<p>Go programmers be suffering from &ldquo;lack-of-generics Stockholm syndrome&rdquo;,
+which has not worn off despite generics now being available. They may think,
+&ldquo;we have done fine without generics for a long time, so why do we need them
+now?&rdquo;</p>
+</li>
+</ol>
+<h2 id="optionality-needs-to-be-modelled-in-many-contexts">Optionality needs to be modelled in many contexts</h2>
+<p>Go programs need to represent optionality in various contexts, including:</p>
+<ol>
+<li>
+<p>Function and method input parameters: Some input parameters are semantically
+optional. For example, an optional search parameter.</p>
+</li>
+<li>
+<p>Function and method results: A function or method may or may not return a
+value depending on its execution. For example, a lookup in a data store.</p>
+</li>
+<li>
+<p>Default behavior overrides: Configurable values often have defaults for
+their behavior, which may be optionally overridden.</p>
+</li>
+<li>
+<p>Serialization and deserialization: Absent values need to be considered when
+serializing or deserializing, such as <code>NULL</code> for SQL, missing or <code>null</code>
+fields for JSON, and optional fields in Protocol Buffers.</p>
+</li>
+<li>
+<p>Fields in entity model types: Fields that are sometimes optional, such as
+the &ldquo;middle name&rdquo; field of a type representing a person.</p>
+</li>
+</ol>
+<h2 id="optionality-in-the-context-of-entity-types">Optionality in the context of entity types</h2>
+<p>This blog post focuses on the last context listed in the previous section &ndash;
+entity types that require optional fields. The other four contexts already have
+good solutions that don&rsquo;t involve optional types, so aren&rsquo;t as interesting to
+discuss.</p>
+<p>So, what is an entity type? The definition may vary depending on the
+development community, and different terms may refer to the same concept. For
+example, an entity type may also be called a <em>model</em>. For the purpose of this
+blog post, an entity type is defined as follows:</p>
+<blockquote>
+<p>An entity type is a type that models some part of the business domain or use
+case, enabling it to be managed inside a computer program.</p>
+</blockquote>
+<p>There are many things that could be modeled as entity types. For example, a
+library management program could have entity types for:</p>
+<ul>
+<li>Book: represents an individual book available for loan.</li>
+<li>Author: represents the writer of a book.</li>
+<li>Patron: represents a user of the library.</li>
+<li>Library branch: represents a branch of a multi-branch library that holds physical books.</li>
+<li>Loan: represents a temporary loan made by patrons to borrow books.</li>
+<li>Reservation: represents holds by patrons on books that are temporarily unavailable.</li>
+</ul>
+<p>Another example is a Customer Relationship Management (CRM) platform, which
+would require entities for:</p>
+<ul>
+<li>Customer: represents the company or organization that the CRM tracks information about.</li>
+<li>Contact: represents individual people associated with a customer.</li>
+<li>Lead: represents potential customers who have expressed interest in the product being sold.</li>
+<li>Product: represents the products or services being sold.</li>
+<li>Campaign: represents the marketing campaigns launched to help acquire new customers.</li>
+</ul>
+<p>In Go, a common way to implement entities is to use a <code>struct</code>. The struct
+contains fields that represent details about the entity. For example, a book
+can be represented using the following struct:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> Book <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ID              <span style="color:#902000">int</span>       <span style="color:#60a0b0;font-style:italic">// required
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	Title           <span style="color:#902000">string</span>    <span style="color:#60a0b0;font-style:italic">// required
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	Author          <span style="color:#902000">string</span>    <span style="color:#60a0b0;font-style:italic">// required
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	PublicationDate time.Time <span style="color:#60a0b0;font-style:italic">// optional
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	Description     <span style="color:#902000">string</span>    <span style="color:#60a0b0;font-style:italic">// optional
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>}
+</span></span></code></pre></div><p>Note that some fields are optional because they are either not relevant to a
+particular book or their values are unknown.</p>
+<p>Another example of a struct that represents an entity is the contact entity
+from the CRM example:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> Contact <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ID            <span style="color:#902000">int</span>    <span style="color:#60a0b0;font-style:italic">// required
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	FirstName     <span style="color:#902000">string</span> <span style="color:#60a0b0;font-style:italic">// required
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	LastName      <span style="color:#902000">string</span> <span style="color:#60a0b0;font-style:italic">// required
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	Email         <span style="color:#902000">string</span> <span style="color:#60a0b0;font-style:italic">// required
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	PhoneNumber   <span style="color:#902000">string</span> <span style="color:#60a0b0;font-style:italic">// optional
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	PostalAddress <span style="color:#902000">string</span> <span style="color:#60a0b0;font-style:italic">// optional
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>}
+</span></span></code></pre></div><p>Again, note that some fields are <em>optional</em> because they are either not
+relevant to a particular contact or their values are unknown.</p>
+<h2 id="why-do-we-need-to-distinguish-between-optional-and-non-optional-fields">Why do we need to distinguish between optional and non-optional fields?</h2>
+<p>Developers need to know whether a field is optional or required for several
+reasons:</p>
+<ol>
+<li>
+<p>Input validation: Appropriate validation should take place when populating
+entities via user input. Part of this validation would involve ensuring that
+required fields are populated.</p>
+</li>
+<li>
+<p>Proper initialization during testing: Test authors may find it helpful to
+ensure that all required fields of entity types are populated. To do this,
+they need to know which fields are required.</p>
+</li>
+<li>
+<p>Absent optional fields can sometimes be a hidden special case: For example,
+when searching for books published before a specific date, <code>Book</code> entities
+without a <code>PublicationDate</code> should not be returned in the result. Depending
+on how the optional <code>PublicationDate</code> field is represented, this may or may
+not be an explicit special case.</p>
+</li>
+<li>
+<p>Proper use of fields: Some business logic relating to fields may differ
+depending on whether a field is optional or required. For instance, if a
+physical mail campaign is launched for each <code>Contact</code> in a CRM, mail should
+only be sent to contacts with an (optional) <code>PostalAddress</code>.</p>
+</li>
+</ol>
+<h2 id="optionality-without-optional-types-has-pitfalls">Optionality without optional types has pitfalls</h2>
+<p>In this section, we will explore various ways to represent optionality without
+using optional types. Each approach has at least some pitfalls.</p>
+<h3 id="zero-value">Zero value</h3>
+<p>In the examples given earlier, the type used to represent required and optional
+fields is the same, and a comment is used to differentiate between them. The
+field is left as its zero value (e.g. <code>&quot;&quot;</code> for <code>string</code>) when an optional field
+is not populated. This approach is not ideal for a few reasons.</p>
+<p>Developers may accidentally ignore comments when reading or modifying code.
+This could result in the omission of a comment indicating whether a field is
+optional or required when new fields are added. This is a particular risk in
+codebases that have existing poor hygiene. The compiler does not enforce the
+correctness of comments.</p>
+<p>For some optional fields, the zero value might be a valid present value. For
+example, when modelling the number of teaspoons of sugar a person prefers in
+their hot-beverage-of-choice, <code>0</code> is a valid value that is distinct from
+<code>unknown</code>.</p>
+<p>Misusing an optional field as if it were a required field is difficult to
+detect and may introduce subtle bugs. This is more likely to happen when
+reading from a field. For example, suppose we want to find all <code>Book</code> values
+that were published before a certain date. An incorrect attempt could look
+like:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> found []Book
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">for</span> _, b <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">range</span> books {
+</span></span><span style="display:flex;"><span>  <span style="color:#007020;font-weight:bold">if</span> b.PublicationDate.<span style="color:#06287e">Before</span>(cutoff) {
+</span></span><span style="display:flex;"><span>    found = <span style="color:#007020">append</span>(found, b)
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Since the zero value is used for the <code>PublicationDate</code> field when it&rsquo;s unknown,
+this erroneous code would include books without a publication date.</p>
+<h3 id="pointer">Pointer</h3>
+<p>Using a pointer is another way to represent optionality instead of relying on
+the zero value and comments. In the book example, a field is marked as optional
+by using a pointer, as shown below:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> Book <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ID              <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	Title           <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	Author          <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	PublicationDate <span style="color:#666">*</span>time.Time
+</span></span><span style="display:flex;"><span>	Description     <span style="color:#666">*</span><span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This approach uses the Go type system to indicate that the <code>PublicationDate</code>
+and <code>Description</code> fields are optional. Developers can understand which fields
+are optional, especially when the &ldquo;pointers mean optional&rdquo; convention is
+followed consistently in the codebase.</p>
+<p>When creating a <code>Book</code> value, developers need to provide a pointer to a <code>time.Time</code>
+value for the <code>PublicationDate</code> field. This reminds developers that the field is
+optional, as they need to use the <code>&amp;</code> operator to take the address of a <code>time.Time</code>
+value.</p>
+<p>However, there is no hint available when <em>using</em> the <code>PublicationDate</code> field.
+This is because in Go, the <code>.</code> operator implicitly dereferences pointers. For
+example, the following code would panic due to an implicit point dereference if
+run with a book without a publication date:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>book <span style="color:#666">:=</span> <span style="color:#06287e">getBookFromSomewhere</span>()
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">if</span> book.PublicationDate.<span style="color:#06287e">Year</span>() <span style="color:#666">&gt;=</span> date.<span style="color:#06287e">Now</span>().<span style="color:#06287e">Year</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#60a0b0;font-style:italic">// Special handling for &#34;new&#34; releases
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#666">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Using pointers to represent optionality can also introduce readability and
+understandability problems in code. It&rsquo;s often not clear what the use of a
+pointer actually intends to represent. While it could be an optional field, it
+could also be used for other purposes. For example, pointers are often used to
+implement reference semantics, allowing multiple copies of a pointer to refer
+to the same value. In this case, the field may not be optional, but the pointer
+is used to ensure updates to the value are seen by all holders of the pointer.
+Another reason why pointers are commonly used is to avoid the performance
+penalty of copying exceptionally large structs. The intention may be that a
+pointer field is non optional, and the pointer is simply a performance
+optimization.  Determining the reason why a field is a pointer rather than a
+non-pointer type can be difficult, with comments or conventions the only way to
+tell.</p>
+<h3 id="sentinel-value">Sentinel value</h3>
+<p>Sentinel values are a specific kind of value that can be assigned to a field to
+indicate that the field&rsquo;s value is absent. This is similar to using the zero
+value to indicate absence, but more general. This approach is useful when the
+zero value is a valid value for the field. For example, an <code>int</code> field where
+the value <code>0</code> is a meaningful present value may use <code>-1</code> as a sentinel value to
+indicate absence.</p>
+<p>Using sentinel values presents the same challenges as using the zero value, but
+with the added burden of keeping track of which value represents the sentinel.</p>
+<h3 id="extra-boolean">Extra boolean</h3>
+<p>When working with optional fields in Go, an extra boolean value can be added to
+indicate whether or not the field is present. For example, the <code>Book</code> entity
+would be defined like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> Book <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ID                     <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	Title                  <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	Author                 <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	PublicationDate        time.Time
+</span></span><span style="display:flex;"><span>	PublicationDatePresent <span style="color:#902000">bool</span>
+</span></span><span style="display:flex;"><span>	Description            <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	DescriptionPresent     <span style="color:#902000">bool</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>One benefit of this approach is that it is explicit and makes it less likely
+for developers to accidentally use the field as if it were required. This is
+especially true for developers using autocomplete functionality that shows
+completions with common prefixes together. However, it is not foolproof, as
+copying, pasting, and modifying code can still lead to errors.</p>
+<p>On the downside, this method can increase the number of fields in the struct,
+making the code longer and harder to read. Some developers may also find this
+approach unattractive.</p>
+<h3 id="optional-types-from-other-parts-of-the-stack">Optional types from other parts of the stack</h3>
+<p>In a previous section, I mentioned that the Go standard library doesn&rsquo;t have
+any optional types, but that was not entirely true. The <code>database/sql</code> package
+does contain several optional types, including the
+<a href="https://pkg.go.dev/database/sql#NullString"><code>sql.NullString</code></a>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// NullString represents a string that may be null.
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// NullString implements the Scanner interface so
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// it can be used as a scan destination:
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	var s NullString
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	err := db.QueryRow(&#34;SELECT name FROM foo WHERE id=?&#34;, id).Scan(&amp;s)
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	...
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	if s.Valid {
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	   // use s.String
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	} else {
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	   // NULL value
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">//	}
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">type</span> NullString <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	String <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	Valid  <span style="color:#902000">bool</span> <span style="color:#60a0b0;font-style:italic">// Valid is true if String is not NULL
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>}
+</span></span></code></pre></div><p>While these types are designed to be used in SQL contexts, there&rsquo;s nothing
+preventing their use in non-SQL contexts.</p>
+<p>The fact that the value must be accessed via the <code>String</code> field reminds
+developers that they are working with a non-standard type and should be
+cautious when using it. This can reduce the chances of accidentally using the
+field as a required field.</p>
+<p>However, there are some drawbacks to using these types in non-SQL contexts.
+Their use can be confusing and blur the lines between database access and other
+layers of the software application.  The <code>database/sql</code> package also only defines
+eight <code>Null*</code> types, which can be limiting. If new types are needed, they would
+need to be created manually.</p>
+<h3 id="slices">Slices</h3>
+<p>A slice is a container that can hold zero or more elements, and an optional
+type is a container that can hold zero or one elements. As a result, it&rsquo;s
+possible to use a slice to represent an optional type by simply ignoring any
+elements after the first element.</p>
+<p>The <code>Book</code> entity would be defined as follows:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> Book <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ID              <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	Title           <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	Author          <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	PublicationDate []time.Time
+</span></span><span style="display:flex;"><span>	Description     []<span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>However, there are two significant issues with this approach.  Firstly, it may
+be challenging for readers to distinguish between an optional field and a
+repeated field. The only way to differentiate between them is through either a
+comment or the plurality of the field&rsquo;s name (e.g., <code>PublicationDate</code> vs.
+<code>PublicationDates</code>).  Secondly, it&rsquo;s unclear what should happen if there is
+more than one element in the slice. Should the program ignore the additional
+entries? Panic? Return an error? Ideally, illegal states should not be
+representable in the first place.</p>
+<h2 id="a-simple-generic-optional-type">A simple generic optional type</h2>
+<p>An explicit optional type can help to solve many of the problems above. It
+should do a few different things:</p>
+<ol>
+<li>
+<p>Convey to the reader that it is indeed an optional type. Readers should
+immediately recognise that the field has a value or doesn&rsquo;t have a value.</p>
+</li>
+<li>
+<p>Leave the decision of whether the field has reference or value semantics up
+to the user. Reference vs. value semantics should be orthogonal to whether
+the field represents a required or an optional field.</p>
+</li>
+<li>
+<p>It should be difficult for a developer to accidentally use the field as
+though it is present when it actually isn&rsquo;t.</p>
+</li>
+</ol>
+<p>To meet these requirements, we define a simple generic optional type. Here&rsquo;s a
+minimal implementation in Go:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">package</span> maybe
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// M is an immutable type that represents an optional value.
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// Its zero value represents the absense of a value.
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">type</span> M[T any] <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	val T
+</span></span><span style="display:flex;"><span>	has <span style="color:#902000">bool</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// Get returns the value stored in M, with a flag
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// indicating if it exists (true) or not (false).
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> (m M[T]) <span style="color:#06287e">Get</span>() (T, <span style="color:#902000">bool</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> m.val, m.has
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">// Just constructs a new M that contains a value.
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> Just[T any](val T) M[T] {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> M[T]{val, <span style="color:#007020;font-weight:bold">true</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We&rsquo;ve named our optional type <code>M</code>, echoing the package name <code>maybe</code>. This is a
+similar naming style to the <code>testing.T</code> type in the common library. We chose
+<code>maybe</code> over the obvious alternative <code>optional</code> because it&rsquo;s terser.</p>
+<p>Using our <code>maybe</code> package, the book entity would be defined as follows:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> Book <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ID              <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>	Title           <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	Author          <span style="color:#902000">string</span>
+</span></span><span style="display:flex;"><span>	PublicationDate maybe.M[time.Time]
+</span></span><span style="display:flex;"><span>	Description     maybe.M[<span style="color:#902000">string</span>]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Creating a book would look like:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>b <span style="color:#666">:=</span> Book{
+</span></span><span style="display:flex;"><span>	ID:              <span style="color:#40a070">123</span>,
+</span></span><span style="display:flex;"><span>	Title:           <span style="color:#4070a0">&#34;To Kill a Mockingbird&#34;</span>,
+</span></span><span style="display:flex;"><span>	Author:          <span style="color:#4070a0">&#34;Harper Lee&#34;</span>,
+</span></span><span style="display:flex;"><span>	PublicationDate: maybe.M[time.Time]{},
+</span></span><span style="display:flex;"><span>	Description: maybe.<span style="color:#06287e">Just</span>(<span style="color:#4070a0">&#34;To Kill a Mockingbird&#34;</span> <span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#4070a0">&#34; explores themes of racial injustice and&#34;</span> <span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#4070a0">&#34; coming of age in a small town in Alabama&#34;</span> <span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#4070a0">&#34; during the 1930s.&#34;</span>),
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>To populate an optional field, you can use the <code>maybe.Just</code> function, as we did
+for the book&rsquo;s description. To leave an optional field absent, you can use the
+zero value of <code>maybe.M.</code> In the example above, we did this explicitly as
+<code>maybe.M[time.Time]{}</code> for the publication date, but we could also have done it
+by simply not specifying the field.</p>
+<p>Here&rsquo;s an example of finding all books before a cutoff date:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> found []Book
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">for</span> _, b <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">range</span> books {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">if</span> date, ok <span style="color:#666">:=</span> b.PublicationDate.<span style="color:#06287e">Get</span>(); ok <span style="color:#666">&amp;&amp;</span> date.<span style="color:#06287e">Before</span>(cutoff) {
+</span></span><span style="display:flex;"><span>		found = <span style="color:#007020">append</span>(found, b)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Because the <code>Get</code> method returns both the <code>time.Time</code> and the boolean indicating
+whether the value exists, developers are reminded to consider the case when
+the publication date is unknown. This greatly reduces the likelihood that they
+will use an absent publication date as though it were present (they would have
+to ignore the boolean return).</p>
+<p>Additional methods can also be implemented to enhance the functionality of the
+hypothetical package. These methods could include:</p>
+<ul>
+<li>
+<p>A <code>Nothing</code> function with the signature <code>Nothing[T any]() M[T]</code> that
+generates an <code>M</code> value without any data. Although redundant, as the zero value
+of <code>M</code> can perform the same function, some developers may prefer using the
+<code>Nothing</code> method to maintain symmetry with the <code>Just</code> method.</p>
+</li>
+<li>
+<p>A <code>Must</code> method with the signature <code>Must() T</code> that retrieves the stored value
+and panics if it does not exist. This defeats the guardrails that the <code>Get</code>
+method puts in place, but may be useful in some contexts. There is a
+convention in Go that a method with &ldquo;must&rdquo; in its name may panic if
+preconditions are not met.</p>
+</li>
+<li>
+<p>A <code>Has</code> method with the signature <code>Has() bool</code> that returns a boolean value
+indicating whether a value exists.</p>
+</li>
+<li>
+<p>An <code>Or</code> method with the signature <code>Or(other T) T</code> that returns the contained
+value if it exists, or the other provided value if it does not.</p>
+</li>
+<li>
+<p>An <code>OrZero</code> method with the signature <code>OrZero() T</code> that returns the stored
+value if it exists, or the zero value of underlying type.</p>
+</li>
+<li>
+<p>A <code>Map</code> function with the signature <code>Map[T, U any](m M[T], fn func(T) M[U]) M[U]</code> that creates a new <code>M</code> by mapping its contents using a function. This
+would be more natural to implement as a method, but introducing new type
+parameters is not permitted in Go methods. Adding <code>Map</code> would make <code>M</code> a
+monad, which is a concept in functional programming.</p>
+</li>
+<li>
+<p>An implementation of the <code>fmt.Stringer</code> interface that wraps the inner value.</p>
+</li>
+<li>
+<p>An implementation of the <code>json.Unmarshaler</code> and <code>json.Marshaler</code> interfaces.
+These could handle <code>null</code> values as absent values and delegate marshaling and
+unmarshaling for present values to the wrapped type.</p>
+</li>
+<li>
+<p>An implementation of the <code>sql.Scanner</code> and <code>sql/driver.Valuer</code> interfaces. These
+would also delegate SQL interoperability to the wrapped type.</p>
+</li>
+</ul>
+<p>This package is hypothetical and doesn&rsquo;t live anywhere yet. If developers want
+the simplest version, it&rsquo;s only a dozen lines of code, and so can just be
+copied directly into  a project. Some of the ideas presented as additional
+methods are already implemented in the optional type libraries listed at the
+start of this post.</p>
+<h2 id="predictions-for-the-future">Predictions for the future</h2>
+<p>In my opinion, it&rsquo;s likely that a <code>maybe</code> type will eventually be introduced into
+the Go sub-repositories, and eventually into the standard library. However, I
+don&rsquo;t expect this to happen for several years at least.</p>
+<p>In the meantime, there will continue to be many different optional type
+implementations available, each with its own interpretation of the concept of a
+maybe or optional type.</p>
+</div>
+
+      </div>
+      <hr/>
+      <div class="bookend" style="display: flex">
+        <div style="width: 50%; text-align: left">
+          <ul>
+            <li><a href="https://github.com/peterstace">Github</a></li>
+            <li><a href="https://twitter.com/peterjohnstace">Twitter</a></li>
+            <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+          </ul>
+        </div>
+        <div style="width: 50%; text-align: right">
+          &copy; Peter Stace 2023
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
