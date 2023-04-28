@@ -255,9 +255,9 @@ that were published before a certain date. An incorrect attempt could look
 like:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> found []Book
 </span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">for</span> _, b <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">range</span> books {
-</span></span><span style="display:flex;"><span>  <span style="color:#007020;font-weight:bold">if</span> b.PublicationDate.<span style="color:#06287e">Before</span>(cutoff) {
-</span></span><span style="display:flex;"><span>    found = <span style="color:#007020">append</span>(found, b)
-</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">if</span> b.PublicationDate.<span style="color:#06287e">Before</span>(cutoff) {
+</span></span><span style="display:flex;"><span>		found = <span style="color:#007020">append</span>(found, b)
+</span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>Since the zero value is used for the <code>PublicationDate</code> field when it&rsquo;s unknown,
 this erroneous code would include books without a publication date.</p>
