@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Fri, 28 Apr 2023 05:19:17 +1100</lastBuildDate><atom:link href="https://petsta.net/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Optional Values in Go</title>
+      <title>Optional Types in Go</title>
       <link>https://petsta.net/posts/optional-values-in-go/</link>
       <pubDate>Fri, 28 Apr 2023 05:19:17 +1100</pubDate>
       
