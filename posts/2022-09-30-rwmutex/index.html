@@ -153,7 +153,8 @@ when the critical section is next unlocked.</p>
 event durations can be calculated (code omitted due to being obvious and
 uninteresting).</p>
 <p>The unabridged code listing is below:</p>
-<!-- raw HTML omitted -->
+<details>
+<summary><code>main.go</code></summary>
 <pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">package</span> main
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">import</span> (
@@ -241,7 +242,7 @@ uninteresting).</p>
 </span></span><span style="display:flex;"><span>	n <span style="color:#666">:=</span> <span style="color:#007020">float64</span>(<span style="color:#007020">len</span>(durations))
 </span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> sum <span style="color:#666">/</span> n
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre><!-- raw HTML omitted -->
+</span></span></code></pre></details>
 <h2>Read/write mutexes only give benefit in rare circumstances</h2>
 <p>The graph below shows the result of the Monte Carlo simulation for various
 scenarios. The colours in the graph show the theoretical slowdown of <code>RWMutex</code>
@@ -308,15 +309,15 @@ improvement.</p>
 100 requests per second. As part of serving each request, it performs a
 single map lookup, protected by a mutex because the map is <em>occasionally</em>
 updated.  Because a map lookup takes somewhere between 10ns and 100ns, the
-contention factor is between 0.000001 (100 ⋅ 10 ⋅ 10<!-- raw HTML omitted -->-9<!-- raw HTML omitted -->) and
-0.00001 (100 ⋅ 100 ⋅ 10<!-- raw HTML omitted -->-9<!-- raw HTML omitted -->). Because this is <em>well</em> below 0.01, an
+contention factor is between 0.000001 (100 ⋅ 10 ⋅ 10<sup>-9</sup>) and
+0.00001 (100 ⋅ 100 ⋅ 10<sup>-9</sup>). Because this is <em>well</em> below 0.01, an
 <code>RWMutex</code> will not provide any benefit over a <code>Mutex</code>.</p>
 </li>
 <li>
 <p>Performing an aggregation operation on a large dataset may take 1ms (for
 example, calculating a histogram for 100,000 records). If that is needed to
 be done 100 times per second, the contention factor is 0.1 (100 ⋅
-10<!-- raw HTML omitted -->-3<!-- raw HTML omitted -->).  Because this is above 0.01, an <code>RWMutex</code> could
+10<sup>-3</sup>).  Because this is above 0.01, an <code>RWMutex</code> could
 theoretically be expected to provide some benefit over a <code>Mutex</code>.</p>
 </li>
 </ul>
