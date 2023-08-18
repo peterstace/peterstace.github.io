@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Go, gofmt, and diffs</title>
+  <link href="/main.css" rel="stylesheet">
+</head>
+
+<body><div id="page" style="max-width: 50em; margin: auto">
+
+<div class="bookend">
+  <ul>
+    <li><a href="/">About</a></li>
+    <li><a href="/posts/">Posts</a></li>
+    <li><a href="/book-diary/">Book Diary</a></li>
+  </ul>
+</div>
+
+<hr/>
+
+<div><h1>Go, gofmt, and diffs</h1>
+<p>2015-06-02</p>
+<p><a href="https://golang.org/cmd/gofmt/">Gofmt</a> is a Go program formatter. Its universal
+adoption by the Go community has resulted in a consistent formatting style
+among most if not all Go source code.</p>
+<p>When making changes to Go code, <code>gofmt</code> sometimes causes changes to lines of code
+that weren&rsquo;t originally modified. This can done for example to keep indentation
+consistent. This can make diffs hard to read.</p>
+<p>For example, the following is a diff of a simple
+<a href="https://golang.org/ref/spec#Type_declarations">type declaration</a>:</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span>$ git diff
+</span></span></code></pre><pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#000080;font-weight:bold">diff --git a/main.go b/main.go
+</span></span></span><span style="display:flex;"><span><span style="color:#000080;font-weight:bold">index 2c7af41..d9e59cd 100644
+</span></span></span><span style="display:flex;"><span><span style="color:#000080;font-weight:bold"></span><span style="color:#a00000">--- a/main.go
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span><span style="color:#00a000">+++ b/main.go
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span><span style="color:#800080;font-weight:bold">@@ -1,13 +1,12 @@
+</span></span></span><span style="display:flex;"><span><span style="color:#800080;font-weight:bold"></span> type foo struct {
+</span></span><span style="display:flex;"><span><span style="color:#a00000">-    jabberwocky  int
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-    quux         complex128
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-    galumphing   string
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-    vorpal       float64
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-    bandersnatch float64
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-    mimsy        struct {
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-        beaming  int
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-        tumtummy string
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000">-        brillig  float64
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span><span style="color:#00a000">+    jabberwocky int
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+    quux        complex64
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+    tumtummy    string
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+    galumphing  string
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+    vorpal      float64
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+    mimsy       struct {
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+        beaming int
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+        brillig float64
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span>	 }
+</span></span><span style="display:flex;"><span> }
+</span></span></code></pre><p>Because gofmt has rewritten the source code to have consistent indentation, at
+least a whitespace change has been made to every line. It can be hard to see
+what the <em>real</em> change is.</p>
+<p>To see the real changes, the diff algorithm should be configured to ignore
+whitespace. The diff below makes it quite obvious what the actual change is:</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span>$ git diff -b
+</span></span></code></pre><pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#000080;font-weight:bold">diff --git a/main.go b/main.go
+</span></span></span><span style="display:flex;"><span><span style="color:#000080;font-weight:bold">index 2c7af41..d9e59cd 100644
+</span></span></span><span style="display:flex;"><span><span style="color:#000080;font-weight:bold"></span><span style="color:#a00000">--- a/main.go
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span><span style="color:#00a000">+++ b/main.go
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span><span style="color:#800080;font-weight:bold">@@ -1,12 +1,11 @@
+</span></span></span><span style="display:flex;"><span><span style="color:#800080;font-weight:bold"></span> type foo struct {
+</span></span><span style="display:flex;"><span>	 jabberwocky int
+</span></span><span style="display:flex;"><span><span style="color:#a00000">-    quux         complex128
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span><span style="color:#00a000">+    quux        complex64
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000">+    tumtummy    string
+</span></span></span><span style="display:flex;"><span><span style="color:#00a000"></span>	 galumphing  string
+</span></span><span style="display:flex;"><span>	 vorpal      float64
+</span></span><span style="display:flex;"><span><span style="color:#a00000">-    bandersnatch float64
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span>	 mimsy       struct {
+</span></span><span style="display:flex;"><span>		 beaming int
+</span></span><span style="display:flex;"><span><span style="color:#a00000">-        tumtummy string
+</span></span></span><span style="display:flex;"><span><span style="color:#a00000"></span>		 brillig float64
+</span></span><span style="display:flex;"><span>	 }
+</span></span><span style="display:flex;"><span> }
+</span></span></code></pre><p>It&rsquo;s now quite clear that <code>quux</code> has had its type modified, <code>bandersnatch</code> has
+been removed, and <code>tumtummy</code> has been moved from the inner struct, to the outer
+struct.</p>
+<p>This type of diff can typically be created by passing the
+<code>--ignore-space-change</code> flag (the short version is <code>-b</code>). This works with Git,
+Mercurial, Subversion, and well as the <code>diff</code> command that comes with
+<code>diffutils</code>.  GUI based diffs such as those <a href="https://github.com/blog/967-github-secrets">produced by
+Github</a> will typically have an
+ignore-whitespace option as well.</p></div>
+
+<hr/>
+
+<div class="bookend" style="display: flex">
+  <div style="width: 50%; text-align: left">
+    <ul>
+      <li><a href="https://github.com/peterstace">Github</a></li>
+      <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+    </ul>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2023
+  </div>
+</div>
+
+</div></body></html>

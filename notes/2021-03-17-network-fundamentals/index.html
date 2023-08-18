@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Network Fundamentals</title>
+  <link href="/main.css" rel="stylesheet">
+</head>
+
+<body><div id="page" style="max-width: 50em; margin: auto">
+
+<div class="bookend">
+  <ul>
+    <li><a href="/">About</a></li>
+    <li><a href="/posts/">Posts</a></li>
+    <li><a href="/book-diary/">Book Diary</a></li>
+  </ul>
+</div>
+
+<hr/>
+
+<div><h1>Network Fundamentals</h1>
+<p>2021-03-16</p>
+<p>The following are notes that I took while watching Network Direction&rsquo;s <a href="https://www.youtube.com/watch?v=cNwEVYkx2Kk&amp;list=PLDQaRcbiSnqF5U8ffMgZzS7fq1rHUI3Q8">Network
+Fundamentals</a>
+playlist.</p>
+<h2>Part 1 - Introduction to Networking</h2>
+<p>(no notes)</p>
+<h2>Part 2 - Cabling Devices</h2>
+<p>(no notes)</p>
+<h2>Part 3 - How the OSI Model Works</h2>
+<ul>
+<li>
+<p>Hosts need to communicate with each other in ways that they both understand.</p>
+</li>
+<li>
+<p>This is done via languages known as protocols.</p>
+</li>
+<li>
+<p>Several protocols need to work together, and are layered on top of each
+other.</p>
+</li>
+<li>
+<p>The OSI Layers are: Physical, Data Link, Network, Transport, Session,
+Presentation, Application.</p>
+</li>
+<li>
+<p>The layers are generic &ndash; the OSI model is not about <em>specific</em> technologies.</p>
+</li>
+<li>
+<p>The &ldquo;upper&rdquo; layers (Session, Presentation, Application) deal with large items
+of data. The &ldquo;lower&rdquo; layers (Physical, Data Link, Network, Transport) deal
+with smaller data items.</p>
+</li>
+<li>
+<p>When data flows from upper layer to lower layer, it is chunked into small
+pieces.</p>
+</li>
+<li>
+<p>Each layer only communicates with the layer above and the layer below.</p>
+</li>
+<li>
+<p>Examples:</p>
+<ul>
+<li>
+<p>Application: business logic.</p>
+</li>
+<li>
+<p>Presentation: Serialisation of data. E.g. conversion to/from JSON, or
+image formats.</p>
+</li>
+<li>
+<p>Session: SCP (Session Control Protocol). Not many good examples here&hellip;</p>
+</li>
+<li>
+<p>Transport: Transports data between endpoints, breaks data into segments.
+E.g. TCP/UDP using port numbers for routing.</p>
+</li>
+<li>
+<p>Network: Routes data through the network via packets. E.g. IP using IP
+addresses.</p>
+</li>
+<li>
+<p>Data Link: Creates logical link between nodes on the same network
+segment using frames. E.g. ethernet, using MAC addreses.</p>
+</li>
+<li>
+<p>Physical: Concerns itself with the physical aspects of the networks. E.g.
+specification of what voltages represent 1s and 0s.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>The TCP/IP model doesn&rsquo;t fit the OSI model <em>exactly</em>.</p>
+</li>
+</ul>
+<h2>Part 4 - How IP Addresses Work</h2>
+<ul>
+<li>
+<p>IP addresses contain both the address of the device and also the address of
+the network.</p>
+</li>
+<li>
+<p>E.g. 172.16.0.1 &ndash; 172.16 is the network address, and 0.1 is the host
+address.</p>
+</li>
+<li>
+<p>5 classes, A -&gt; E. A, B, C are for devices. D is for multicast, and E is
+reserved.</p>
+</li>
+<li>
+<p>Class A: first octet is network, remaining 3 octets are hosts. First bit of
+the first octet is 0, so the first octet must be in the range 0 to 127. Note
+that 0 and 127 are reserved. So the usable network space is 1.0.0.0 to
+126.0.0.0.</p>
+</li>
+<li>
+<p>Class B: first 2 octets are for the network, remaining 2 are for hosts. First
+octet is always 10XXXXXX. So the usable network range is 128.0.0.0 to
+191.255.0.0.</p>
+</li>
+<li>
+<p>Class C: first 3 octets are for the network, remaining is for the host. First
+octet is always 110XXXXX. So the usable network range is 192.0.0.0 to
+223.255.255.0.</p>
+</li>
+<li>
+<p>We can also have classless networks and subnets. A subnet mask shows which
+part of an IP address in the network (1s on the left) and which part is the
+hosts (0s on the right).</p>
+</li>
+<li>
+<p>Subnetting allows us to have more IP addresses. E.g. 172.16.0.0 is a class B
+address (i.e. the first 2 octets are the network). We could use a subnet
+mask of 255.255.255.0, which breaks up the 172.16.0.0 network into 256
+subnets (in which each can contain 256 hosts).</p>
+</li>
+<li>
+<p>CIDR notation: 172.16.1.0/24 is the same as 172.16.1.0 with a subnet mask of
+255.255.255.0.</p>
+</li>
+</ul>
+<h2>Part 5 - IP Addresses in Depth</h2>
+<ul>
+<li>
+<p>VLSM - Variable Length Subnet Mask. This allows us to break a network into
+subnets, each of which could have a different size. E.g. The 172.16.0.0/16
+network could be broken into the following:
+- /16 subnets: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24</p>
+<ul>
+<li>/30 subnets: 172.16.200.0/30, 172.16.200.4/30, 172.16.200.8/30.</li>
+</ul>
+</li>
+<li>
+<p>Address types: Unicast (1 to 1 communication) vs broadcast (1 to many
+communication).</p>
+</li>
+<li>
+<p>The broadcast address has the host part of the IP address set to all 1s. E.g.
+the broadcast address in the 172.16.2.0/24 network is 172.16.2.255.</p>
+</li>
+<li>
+<p>The network address has the host part of the IP address set to all 1s. E.g.
+the network address in the 172.16.2.0/24 network is 172.16.2.0.</p>
+</li>
+<li>
+<p>The broadcast and network addresses cannot be allocated to devices.</p>
+</li>
+<li>
+<p>Exercises: find the network address, broadcast address, and range of usable
+IPs for the networks containing the following devices:</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Network Address</th>
+<th>Broadcast Address</th>
+<th>First</th>
+<th>Last</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>192.168.24.210/24</td>
+<td>192.168.24.0</td>
+<td>192.168.24.255</td>
+<td>192.168.24.1</td>
+<td>192.168.24.254</td>
+</tr>
+<tr>
+<td>172.16.111.1/30</td>
+<td>172.16.111.0</td>
+<td>192.16.111.3</td>
+<td>192.16.111.1</td>
+<td>192.16.111.2</td>
+</tr>
+<tr>
+<td>10.222.76.14/26</td>
+<td>10.222.76.0</td>
+<td>10.222.76.63</td>
+<td>10.222.76.1</td>
+<td>10.222.76.62</td>
+</tr>
+<tr>
+<td>203.77.56.89/22</td>
+<td>203.77.56.0</td>
+<td>203.77.59.255</td>
+<td>203.77.56.1</td>
+<td>203.77.59.254</td>
+</tr>
+<tr>
+<td>88.43.59.123/20</td>
+<td>88.43.48.0</td>
+<td>88.43.63.255</td>
+<td>88.43.48.1</td>
+<td>88.43.63.254</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>The address of the router on a network is called the gateway address. It&rsquo;s
+the destination address when the destination is not inside the local network.</p>
+</li>
+<li>
+<p>255.255.255.255 is another broadcast address. It doesn&rsquo;t consider the network
+address, and basically says &ldquo;send this packet everywhere&rdquo;. Routers never
+broadcast messages to 255.255.255.255, so it&rsquo;s only ever broadcast within the
+local network.</p>
+</li>
+<li>
+<p>Multicast is a special range of IP addresses that can receive multicast
+packets. Multicast packets are forwarded by routers and go to all multicast
+receivers.</p>
+</li>
+<li>
+<p>IANA (Internet Assigned Numbers Authority) assigns IP address blocks to RIRs
+(Regional Internet Registries). RIRs will then assign blocks to either large
+customers, or ISPs. The ISPs will assign IP addresses to smaller customers.</p>
+</li>
+<li>
+<p>Private Addresses are defined by RFC 1918. They are IP address ranges that
+can be used for any purpose within local networks. There are only 3:</p>
+<p>- 10.0.0.0/8
+- 172.16.0.0/12</p>
+<ul>
+<li>192.168.0.0/16</li>
+</ul>
+</li>
+<li>
+<p>NAT (Network Address Translation) is used in conjunction with private
+addresses so that they are interoperable with the rest of the internet.</p>
+</li>
+<li>
+<p>How are addresses assigned? There are 2 main ways:</p>
+<ul>
+<li>
+<p>Static: They can be assigned by configuring the device itself. There
+aren&rsquo;t really any protections against misconfiguration. This is good for
+servers and routers though.</p>
+</li>
+<li>
+<p>Dynamic: DHCP server. It has a pool of IP addresses available to it. When
+a device starts, it broadcasts to the DHCP server, and the server gives
+it an IP address from its pool. The IP address may change each time the
+device starts up.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>IP Headers. It contains a lot of info, but the most import ones are the source
+and destination fields (these are IP addresses). Other important fields are
+the TTL (counts down to zero, and the packet is dropped if it reaches zero),
+and the fragment offset, which is used to split large packets up.</p>
+</li>
+</ul>
+<h2>Part 6 - TCP/IP Model</h2>
+<ul>
+<li>
+<p>The TCP/IP model is an alternative to the OSI model. It&rsquo;s also known as the
+&ldquo;Internet Protocol Suite&rdquo;.</p>
+</li>
+<li>
+<p>The TCP/IP model however lines up well with the OSI model. The main
+difference is that the Application/Presentation/Session layers from OSI are
+merged together into the Application layer in the TCP/IP model.</p>
+</li>
+<li>
+<p>TCP/IP layers:</p>
+<ul>
+<li>
+<p>Application: Defines how applications use the network. E.g. SSH, Telnet,
+RDP, HTTP.</p>
+</li>
+<li>
+<p>Transport: Use port numbers to track sessions. E.g. TCP and UDP.</p>
+</li>
+<li>
+<p>Network: Allows packets to be transferred between hosts. The path from
+host to host may cross many networks. E.g. IP, ICMP.</p>
+</li>
+<li>
+<p>Data Link: Delivers traffic between hosts on a single network (or
+subnet). E.g. Ethernet or PPP (Point to Point protocol).</p>
+</li>
+<li>
+<p>Physical: Delivers traffic along a physical medium, e.g. Ethernet cable,
+or Wifi. Defines the physical properties of those mediums, e.g. number of
+twisted pairs.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2>Part 7 - TCP and UDP</h2>
+<ul>
+<li>
+<p>TCP and UDP both use ports to address communications. They don&rsquo;t use IP
+addresses, because that is taken care of by the IP layer.</p>
+</li>
+<li>
+<p>A random source port is used (checking to make sure that it&rsquo;s not already in
+use).</p>
+</li>
+<li>
+<p>Using ports allows multiplexing. Multiplexing is when a host can use several
+applications using TCP or UDP at once (each using a different source port).</p>
+</li>
+<li>
+<p>Each application only has a single port. However, it could still connect to
+multiple TCP/UDP connections. We have to use the <em>remote</em> port in order to
+differentiate between the connections.</p>
+</li>
+<li>
+<p>UDP is a might lighter weight protocols compared to TCP. It doesn&rsquo;t do error
+handling or flow control.</p>
+</li>
+</ul>
+<h2>Part 8 - TCP Handshakes</h2>
+<ul>
+<li>
+<p>The handshake is used to set up a TCP connection. It uses flags in the TCP
+header.</p>
+</li>
+<li>
+<p>Step 1: SYN from client to server. The SYN flag is set, source and
+destination ports are filled in, and the sequence number is chosen randomly.</p>
+</li>
+<li>
+<p>Step 2: SYN/ACK from server back to client. The SYN and ACK flags are set,
+the source and destination ports are flipped, and the sequence number is
+incremented.</p>
+</li>
+<li>
+<p>Step 3: ACK from client to server. The ACK flag is set, the source and
+destination ports are back to the original ordering, and the sequence number
+is incremented.</p>
+</li>
+<li>
+<p>The connection can be closed by either the client or server. The client or
+server will send a TCP segment with both FIN and ACK flags set. The other
+device replies with ACK in reply. The other device will then follow up with
+its own FIN/ACK, and then finally the original closer will send an ACK. By
+using two pairs of messages, the application that didn&rsquo;t initiate the close
+has time to prepare for the close (and wouldn&rsquo;t start the second FIN/ACK pair
+until it is ready).</p>
+</li>
+<li>
+<p>Another way to close the connection is to just send an RST message.</p>
+</li>
+</ul>
+<h2>Part 9 - TCP Errors and Windowing</h2>
+<ul>
+<li>
+<p>After the initial handshake, the sequence numbers carry the number of bytes.</p>
+</li>
+<li>
+<p>&ldquo;Forward acknowledgement&rdquo; messages acknowledge that messages have been
+received up to a certain sequence number (according to the byte number in the
+acknowledgement field).</p>
+</li>
+<li>
+<p>Rather than acknowledging all messages sent, TCP uses windowing.</p>
+</li>
+<li>
+<p>The Window field decrements by the number of bytes sent. When it reaches
+zero, the sender waits for an acknowledgement. Once acknowledged, it resets
+back to its initial value. The receiver can actually send the acknowledgement
+as the window field <em>approaches</em> zero, so that the connection never stalls.</p>
+</li>
+<li>
+<p>If the receiver notices that data is missing (i.e. the segment doesn&rsquo;t arrive
+after a period of time, but segments after it did arrive), then it sends an
+acknowledgement for the segment just before the missing one. The sender will
+then know that it has to restart sending from the missing segment.</p>
+</li>
+<li>
+<p>There are other error control mechanisms, such as SACK (Selecting
+Acknowledgement). This strategy means that the received segments after the
+missing segment don&rsquo;t need to be replayed.</p>
+</li>
+<li>
+<p>If many errors are occurring, then the window size will dynamically reduce.</p>
+</li>
+<li>
+<p>The window size can be reduced to zero by the receiver in order to signal to
+the sender that it needs time to catch up processing.</p>
+</li>
+</ul>
+<h2>Part 10 - Cisco CLI</h2>
+<ul>
+<li>
+<p>Walkthrough to set up a Cisco router/switch.</p>
+</li>
+<li>
+<p>I&rsquo;m much more likely to have to deal with networking in the cloud rather than
+with hardware, so I haven&rsquo;t taken any notes.</p>
+</li>
+</ul>
+<h2>Part 11 - Switching</h2>
+<ul>
+<li>
+<p>Without switching, every computer on a network would need to have a direct
+physical connection to every other computer on the network.</p>
+</li>
+<li>
+<p>Switching occurs at the Ethernet level.</p>
+</li>
+<li>
+<p>There is 1 MAC address per network interface.</p>
+</li>
+<li>
+<p>Each MAC address is 48 bits.</p>
+</li>
+<li>
+<p>MAC addresses are split into 2 halves. The first half is the OUI, and is
+given to each manufacturer. The second half is given by the manufacturer to
+each device. This scheme is designed to prevent two devices getting the same
+MAC address.</p>
+</li>
+<li>
+<p>The broadcast MAC address is all Fs. The multicast MAC addresses are
+&ldquo;well-known&rdquo;, and are used to send an Ethernet frame to a set of devices.</p>
+</li>
+<li>
+<p>An Ethernet frame has a header and a trailer. The header contains source and
+destination MAC addresses. The header also contains a &ldquo;type&rdquo; field, which
+indicates the type of data encapsulated in the Ethernet frame. Usually IPv4
+or IPv6. The trailer contains a checksum.</p>
+</li>
+</ul>
+<h3>Hubs</h3>
+<ul>
+<li>
+<p>In older styles of networks (without switches), every computer on the network
+will receive each Ethernet frame. If the Ethernet address is <em>not</em> addressed
+to a particular computer, that computer should ignore the frame.</p>
+</li>
+<li>
+<p>Hubs allow the same bus network to be set up (every computer connected to a
+single physical bus wire). But they make it easier to set up, because each
+computer connects to the bus. So the connections are <em>inside</em> the bus, rather
+than just in the wire running through the room next to all of the computers.
+Hubs were an improvement, but don&rsquo;t add any intelligence to the network
+(they&rsquo;re just a physical solution). They are layer 1 devices, since they are
+just a bunch of wires shoved in a box. The entire network is called a
+&ldquo;Collision Domain&rdquo;, since if two computers on the network send at the same
+time, their message will collide.</p>
+</li>
+<li>
+<p>Collisions are detected using CSMA (Carrier Sense Multiple Access).</p>
+<ul>
+<li>
+<p>Collision Avoidance (CA): each node attempts to detect when the network
+is idle, and only transmits then. This is inherently racy, so doesn&rsquo;t
+work 100% of the time.</p>
+</li>
+<li>
+<p>Collision Detection (CD): collisions can be detected. When these happen,
+each sender backs off a random amount of time and retries.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Bridges</h3>
+<ul>
+<li>
+<p>Bridges can be used to split hub-style networks into multiple segments.</p>
+</li>
+<li>
+<p>A bridge is a device that connects multiple hub segments together.</p>
+</li>
+<li>
+<p>It tracks a list of MAC addresses and which network segment they are in.</p>
+</li>
+<li>
+<p>If it receives an Ethernet frame that it detects needs to &ldquo;cross&rdquo; the bridge
+into a different segment, it forwards the Ethernet frame on unaltered.</p>
+</li>
+<li>
+<p>It ignores any Ethernet frames that are going to a segment that the destination MAC
+address is already part of. The main idea behind a bridge is that it reduces
+the collision domain.</p>
+</li>
+<li>
+<p>Bridges are layer 2 devices.</p>
+</li>
+<li>
+<p>The MAC table in the bridge is populated dynamically. If the segment that a
+destination is in is not known, then the frame is forwarded to all segments
+(except for the source segment). The source MAC address can be used to
+populate the table, because it comes in on a known segment. Inbound frames
+should <em>always</em> update the MAC table, since that allows for computers being
+moved to different network segments.</p>
+</li>
+</ul>
+<h3>Switches</h3>
+<ul>
+<li>
+<p>Switches are more modern approaches to networking. They bring together the
+best of hubs and bridges.</p>
+</li>
+<li>
+<p>Devices get connected directly to switches.</p>
+</li>
+<li>
+<p>Internally, switches use star topology.</p>
+</li>
+<li>
+<p>Every port on the switch acts like a bridge port. So in a sense, the cable
+between each node and the switch is like its own network segment, and the
+switch is like the bridge (but connected to <em>many</em> segments).</p>
+</li>
+<li>
+<p>Switches operate at layer 2 like bridges.</p>
+</li>
+<li>
+<p>Each port is part of its own collision domain.</p>
+</li>
+</ul>
+<h2>Part 12 - VLANs</h2>
+<ul>
+<li>
+<p>It can be easier to cut a large network into smaller parts, rather than
+having a single LAN.</p>
+</li>
+<li>
+<p>LAN is a nebulous term because many people mean different things. A decent
+technical definition is &ldquo;a layer 2 broadcast domain&rdquo;. So basically two nodes
+are in the same network so long as they don&rsquo;t have to pass through a router
+(i.e. they are directly connected, or only pass through hubs, bridges, or
+switches).</p>
+</li>
+<li>
+<p>VLAN is Virtual LAN.</p>
+</li>
+<li>
+<p>Multiple VLANs can be set up using a single switch. Some ports on the switch
+could be for VLAN-A, and other ports for VLAN-B. Broadcasts coming from a
+device on VLAN-A are only broadcast to other devices on VLAN-A, and the same
+for VLAN-B.</p>
+</li>
+<li>
+<p>Advantages:</p>
+<ul>
+<li>
+<p>Less hardware needed compared to multiple LANs.</p>
+</li>
+<li>
+<p>Can help to achieve security goals.</p>
+</li>
+<li>
+<p>Can tread traffic differently based on data type (i.e. some types of data
+go to one VLAN, but other types go to the other VLAN).</p>
+</li>
+<li>
+<p>Limit failure domain.</p>
+</li>
+<li>
+<p>Limit broadcasts and flooding.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>There should only be one subnet per VLAN.</p>
+</li>
+<li>
+<p>The switch being used to created the VLANs will need to be attached to a
+router. You would need to connect 2 ports to the router, each in a different
+VLAN. The purpose of the router is to move traffic from one VLAN to the other
+(it does the routing at layer 3, which is why you want each VLAN to have its
+own subnet).</p>
+</li>
+</ul>
+<h2>Part 13 - VLAN Trunk Links</h2>
+<ul>
+<li>
+<p>VLAN Trunking allows traffic from multiple VLANs to travel across a link
+between two switch ports.</p>
+</li>
+<li>
+<p>Motivation: you have multiple VLANs across 2 switches (with ports for each
+VLAN on each switch). If you were to connect the switches with a link for
+each VLAN, then you are using up a lot of ports (2 ports for each VLAN).
+Trunking allows the same connectivity, but with only 2 ports used (on on each
+switch).</p>
+</li>
+<li>
+<p>The ports connecting the switches have to be configured as trunk ports for
+this to work. Regular ports are &ldquo;access ports&rdquo;.</p>
+</li>
+<li>
+<p>A VLAN ID (tag) is added to the Ethernet header when the Ethernet goes over
+the trunk link.</p>
+</li>
+<li>
+<p>Trunk links extend broadcast domains across switches.</p>
+</li>
+<li>
+<p>The &ldquo;Native VLAN&rdquo; is a special VLAN that will receive any untagged traffic
+sent to a switch.</p>
+</li>
+<li>
+<p>CDP (Cisco Discovery Protocol) always uses VLAN 1, and is used for switches
+to talk to each other (for configuration).</p>
+</li>
+<li>
+<p>Routers can have virtual interfaces. This is where there are multiple
+sub-interfaces per physical interface. Each sub-interface gets its own IP
+address. This is known as ROAS (Router on a Stick), because there is
+sometimes only 1 physical connection to a single router.</p>
+</li>
+</ul>
+<h2>Part 14 - Access Control Lists</h2>
+<ul>
+<li>
+<p>Also known as ACLs.</p>
+</li>
+<li>
+<p>An ACL is made up of Access Control Entries (ACE).</p>
+</li>
+<li>
+<p>Each ACE can filter based on source/destination IPs, protocols (TCP, UDP, IP),
+and port numbers, and a permit/deny flag.</p>
+</li>
+<li>
+<p>ACEs are evaluated in order. As soon as there is a match, the permit/deny
+flag is applied and evaluation over the list stops. First match wins. There
+is an implicit deny rule at the end of the list, so if there are no matches
+then the traffic is denied.</p>
+</li>
+<li>
+<p>Extended ACLs can filter via a whole bunch of additional traffic attributes.</p>
+</li>
+<li>
+<p>ACLs can either be numbered or named. Named ACLs are a bit easier to use.</p>
+</li>
+<li>
+<p>There is one ACL per interface, per direction (ingress and egress). If there
+is no ACL on an interface/direction combination, then the traffic is
+automatically allowed.</p>
+</li>
+<li>
+<p>Firewalls are devices that a purpose built to block traffic. They also use
+ACLs. Firewalls do more than just filter packs, e.g. stateful filtering.
+Firewalls can also inspect the content of packets, not just their headers.</p>
+</li>
+</ul>
+<h2>Part 15 - ARP</h2>
+<ul>
+<li>
+<p>ARP (Address Resolution Protocols) helps to work out at which MAC address to
+find a computer with a given IP address.</p>
+</li>
+<li>
+<p>ARP runs within a single network (i.e. layer 2 broadcast domain).</p>
+</li>
+<li>
+<p>When trying to work out a MAC address for a given IP, ARP starts by sending
+out an ARP Request to the entire network using a layer 2 broadcast. It
+contains the &ldquo;target&rdquo; IP address and the IP address of the node to send it
+back to. If the node with the target IP address receives the message, it
+sends a response back to the original node.</p>
+</li>
+<li>
+<p>An ARP cache is held per node, and maps IP addresses to MAC addresses.
+Entries are held for only 15 to 45 seconds.</p>
+</li>
+<li>
+<p>RARP is Reverse ARP. It can be used if a node knows a MAC address but wants
+to find out the IP address.</p>
+</li>
+<li>
+<p>GARP is Gratuitous ARP. This is used by nodes when they change their IP.
+Other nodes can use GARP to cleanup old entries from their ARP cache.</p>
+</li>
+</ul>
+<h2>Part 16 - DHCP</h2>
+<ul>
+<li>
+<p>DHCP servers hand out IP addresses.</p>
+</li>
+<li>
+<p>When a computer first turns on, it sends out a DHCP Discover request
+(broadcast, UDP).</p>
+</li>
+<li>
+<p>A DHCP server receives the request, finds a free IP address in its pool,
+and reserves it. It then sends a DHCP Offer request back to the original
+node.</p>
+</li>
+<li>
+<p>The original node will then send out a DHCP Request message back to the DHCP
+server. If it receives multiple DHCP Offer requests (from multiple DHCP
+servers), then it will ignore any other than the first.</p>
+</li>
+<li>
+<p>The DHCP server then sends back a DHCP Acknowledgement back to the client.</p>
+</li>
+<li>
+<p>DHCP IP address allocations have a lease expiry time. Clients will attempt to
+renew the lease half way through the lease duration. If the lease expires,
+then the DHCP server will put the address back into its pool.</p>
+</li>
+<li>
+<p>A client may decide to send a DHCP Release message to the DHCP server if it
+no longer needs the IP address. This is optional though.</p>
+</li>
+<li>
+<p>Additional information can be sent out by the DHCP server. E.g. the address
+of a DNS server.</p>
+</li>
+<li>
+<p>Because DHCP only works within a LAN segment, we would have to put a DHCP
+server inside each LAN segment (or at least put one NIC inside each LAN
+segment). An alternative is to use a DHCP Relay. A DHCP Relay is a router
+configuration. The router knows the address of a DHCP server, and forwards on
+the requests (and brings back replies).</p>
+</li>
+</ul>
+<h2>Part 17 - DNS</h2>
+<ul>
+<li>
+<p>DNS (Domain Name System) allows domain names to be converted to IP addresses.</p>
+</li>
+<li>
+<p>The domain name space is separated by dots. E.g. <code>www.google.com</code> is split into
+3 parts, <code>www</code>, <code>google</code>, <code>com</code>.</p>
+</li>
+<li>
+<p>Top Level Domains are the first level, e.g. <code>com</code>, <code>org</code>, <code>net</code>. Countries
+can be included here, e.g. <code>co.uk</code> or <code>com.au</code>.</p>
+</li>
+<li>
+<p>The second level domain is e.g. <code>google</code> or <code>network</code> direction.</p>
+</li>
+<li>
+<p>Host name comes next, e.g. <code>www</code>. This is the web server.</p>
+</li>
+<li>
+<p>A domain name server contains multiple tiny databases, each corresponding to
+a zone. There is a zone for each domain controlled by a single entity, e.g.
+<code>google.com</code>.</p>
+</li>
+<li>
+<p>Each zone contains records, e.g. a host record.</p>
+</li>
+<li>
+<p>A zone is authoritative within a name server if it contains a zone for that
+domain name. That means that the domain name server knows everything there is
+to know about the domain.</p>
+</li>
+<li>
+<p>If a server is non-authoritative for a  domain, then it will forward the
+request onto other servers for help.</p>
+</li>
+<li>
+<p>Domain name servers also have reverse lookup zones. These map IP addresses
+back to domain names (pointer records).</p>
+</li>
+<li>
+<p>A Records map a subdomain to an IP address.</p>
+</li>
+<li>
+<p>CNAME Records map one subdomain to another. E.g. <code>web</code> to <code>www</code>.</p>
+</li>
+<li>
+<p>MX Records advertise the address of mail servers.</p>
+</li>
+<li>
+<p>When a lookup occurs, the client needs to know the IP address of a DNS
+Server. This can either be done manually, or DHCP can help out with this.</p>
+</li>
+<li>
+<p>When a DNS lookup occurs, a message is sent via UDP on port 53. The message
+includes the FQDN to lookup. If the DNS server is authoritative, it will
+return the result (i.e. IP address, or a message saying the record doesn&rsquo;t
+exist).</p>
+</li>
+<li>
+<p>The client will store the result in its local cache. The cache entry will be
+removed after the TTL, as specified in the record.</p>
+</li>
+<li>
+<p>A DNS query can become recursive if the DNS Server isn&rsquo;t authoritative for
+the queried domain name. In this case, the DNS Server will forward on the
+request to another DNS Server, and cache the result, before responding to the
+original request. The caching follows the regular TTL rules, based on the TTL
+of the record.</p>
+</li>
+<li>
+<p>DNS Servers can be given a list of other DNS Servers that they can forward
+their requests onto.</p>
+</li>
+<li>
+<p>DNS Servers can also be given root hints. There are 13 well-known IP
+addresses for DNS root servers. These 13 servers know about the top level
+domains (e.g. <code>com</code> and <code>org</code>). All DNS servers will know about the 13 well
+known DNS servers. The root hints process is known as an iterative lookup,
+since the lookups find additional information and pass it back, rather than
+recursively solving the query.</p>
+</li>
+</ul>
+<h2>Part 18 - Static Route Configuration</h2>
+<ul>
+<li>
+<p>Reminder: routers forward traffic from one network to another, and operate at
+the layer 3 (networking) level.</p>
+</li>
+<li>
+<p>Static routes allow you to manually set the next hop within a particular
+router.</p>
+</li>
+<li>
+<p>A routing path needs to be intact both to and from between two nodes in order
+for traffic to flow.</p>
+</li>
+<li>
+<p>A key limitation of static routing is that they&rsquo;re not aware when pieces of
+the network break.</p>
+</li>
+<li>
+<p>Routers have a default gateway. If a router doesn&rsquo;t know exactly where to
+send traffic, then it will send it to the default gateway. It&rsquo;s a catchall
+route that is used if nothing better can be found in the routing table. It&rsquo;s
+also known as the &ldquo;gateway of last resort&rdquo;.</p>
+</li>
+</ul>
+<h2>Part 19 - Dynamic Routing</h2>
+<ul>
+<li>
+<p>Dynamic routing is important because it allows changes in the network to be
+accounted for automatically.</p>
+</li>
+<li>
+<p>Dynamic routing is about routers learning about other routers in the other
+net (with this information stored in their routing tables).</p>
+</li>
+<li>
+<p>RIP (Routing Information Protocol) is a dynamic routing protocols.</p>
+</li>
+<li>
+<p>Routing decisions are still made locally within each router, based on the
+routing table. Each router gets information from its neighbours, but the
+routing decisions are still ultimately up to each router in isolation.</p>
+</li>
+<li>
+<p>Rule: a router will always use the longest matching route (i.e. the most
+specific route in the routing table). This is called Longest Prefix Match
+(LPM).</p>
+</li>
+<li>
+<p>Routes could be received from multiple sources. E.g. RIP, other dynamic
+protocols, or static routing. The router chooses which source to use for its
+routing table by looking at &ldquo;Administrative Distance&rdquo; of the source. This is
+an indication of how &ldquo;believable&rdquo; each source is.</p>
+</li>
+<li>
+<p>Floating static routes can be added to a routing table to provide alternative
+backup routes in case the primary routes fail. When these are configured,
+they get swapped into the routing table automatically.</p>
+</li>
+</ul>
+<h2>Part 20 - RIP Protocol</h2>
+<ul>
+<li>
+<p>RIP (Routing Information Protocol) is a dynamic routing protocols.</p>
+</li>
+<li>
+<p>RIP is the simplest and oldest routing protocol still in use today.</p>
+</li>
+<li>
+<p>RIPv1 uses classful IP addresses, and RIPv2 uses classless IP addresses.</p>
+</li>
+<li>
+<p>RIP is all about sharing routes with neighbouring routers.</p>
+</li>
+<li>
+<p>RIP can be used instead of or along side of static routing.</p>
+</li>
+<li>
+<p>RIP is a &ldquo;Distance Vector&rdquo; protocol. The alternative class of protocols is
+&ldquo;Link State&rdquo; protocols.</p>
+</li>
+<li>
+<p>Distance Vector protocols trade information about how far away (how many
+hops) a particular address is (i.e. the &ldquo;Distance&rdquo;) and in which
+direction (which hop to make) to take to get the (i.e. the &ldquo;Vector&rdquo;).</p>
+</li>
+<li>
+<p>RIP regularly sends updates messages, telling other routers what networks a
+particular router knows about (along with the distance and vector aspects to
+each network).. RIP v2 sends its updates to multicast IP 224.0.0.9.</p>
+</li>
+<li>
+<p>RIP messages only ever travel a single hop.</p>
+</li>
+<li>
+<p>Each router maintains a RIP database, which contains all of the RIP related
+state received from other routers via RIP. Some of the information in this DB
+flows into the router&rsquo;s main routing table.</p>
+</li>
+<li>
+<p>Auto-summarisation should be disabled by default. This features combines
+routing information into classful IP networks. This can be problematic if
+classless networks are used. Auto-summarisation <em>can</em> be useful, but needs to
+be managed carefully (and should be done manually).</p>
+</li>
+<li>
+<p>Interfaces can be configured as &ldquo;passive interfaces&rdquo;. This allows the network
+connected to by the interface to be advertised to the rest of the network,
+but prevents RIP messages from being sent to that interface. A motivating
+example is an Internet gateway. We want all of our networks to know about the
+Internet gateway, but we don&rsquo;t want to send any RIP messages out to the
+gateway itself.</p>
+</li>
+<li>
+<p>It can be a good idea to make all interfaces passive by default. And then
+disable passive interface mode on any interfaces that we wish to send RIP
+messages via.</p>
+</li>
+<li>
+<p>Authentication can be set up for RIP on a per-interface basis. This makes
+sure we only accept RIP messages from trusted routers.</p>
+</li>
+<li>
+<p>RIP uses hop count as its metric. If there are multiple ways to get from a
+router to a network, it will choose the interface with the lowest hop count.
+Other routing protocols use different (and more complicated) metrics.</p>
+</li>
+<li>
+<p>The Split Horizon rule helps to prevent cycles in the network. The rule says:
+when a RIP update is received on a particular interface, don&rsquo;t resend that
+information back along the same interface (only send that information to
+other interfaces).</p>
+</li>
+<li>
+<p>If a router notices that one of the networks it connects to is down, then it
+can tell other routers that the network is unreachable. RIP does this by
+setting the hop count above the maximum value.</p>
+</li>
+<li>
+<p>To set a default route (e.g. to the Internet), we need to choose the router
+closest to the Internet gateway, and set a static 0.0.0.0 default route. Then
+RIP can be used to advertise this default route to the rest of the network.</p>
+</li>
+</ul>
+<h2>Part 21 - NAT</h2>
+<ul>
+<li>
+<p>We use private IP addresses in our networks, but the Internet uses public IP
+addresses.</p>
+</li>
+<li>
+<p>NAT is used to translate between these two types of addresses. NAT stands for
+Network Address Translation.</p>
+</li>
+<li>
+<p>The motivation behind NAT is to save on public IP addresses. It allows you to
+put many devices behind a single public IP address. The devices go on private
+networks (i.e. 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16).</p>
+</li>
+<li>
+<p>NAT runs inside a router.</p>
+</li>
+<li>
+<p>NAT is configured with NAT rules. The rules pattern match the IP header
+(source and destination IP addresses) to work out if the IP header needs to
+be rewritten. Only the source and destination IP addresses are rewritten.</p>
+</li>
+<li>
+<p>There are two types of NAT: Source NAT (SNAT) and Destination NAT (DNAT).</p>
+</li>
+<li>
+<p>Source NAT (SNAT) changes the source IP address. It&rsquo;s useful for the case where we
+need to give devices on a network access to the Internet. SNAT rewrites the
+source IP address as the package goes out to the Internet. When it comes
+back, the destination IP address is rewritten to point back to the
+originating device.</p>
+</li>
+<li>
+<p>Destination NAT (DNAT) is less common.</p>
+</li>
+<li>
+<p>When configuring a router with NAT, we specify which interfaces are inside
+our network and which interfaces are outside our network.</p>
+</li>
+<li>
+<p>When a device on a network creates an IP header, the source IP address is
+known by NAT as the &ldquo;inside local&rdquo; address. This is typically a private IP.
+The destination IP address is known by NAT as the &ldquo;outside local&rdquo; address
+(and will likely be a public IP, although NAT <em>may</em> change it). After a
+packet goes through NAT, the source address is the &ldquo;inside global&rdquo; address.
+For the Internet access usecase, this is likely a public IP. The destination
+IP is now the &ldquo;outside global&rdquo; IP address. For the Internet access usecase,
+the &ldquo;outside local&rdquo; and &ldquo;outside global&rdquo; IPs will be the same.
+global&quot;</p>
+</li>
+<li>
+<p>Static NAT is a 1 to 1 mapping from private IP to public IP. It&rsquo;s configured
+statically, and doesn&rsquo;t help to solve the problem of running out of public
+IPs.</p>
+</li>
+<li>
+<p>Bidirectional NAT allows traffic to originate either inside or outside of the
+local network. Static NAT is bidirectional.</p>
+</li>
+<li>
+<p>Dynamic NAT maps multiple local IP addresses to a pool of public IP
+addresses. The public IP pool is defined when configuring dynamic NAT (start
+and end IPs, and a subnet mask). The local IP addresses to map are defined
+using an ACL (Access Control List).</p>
+</li>
+<li>
+<p>If all IPs in a dynamic NAT pool are allocated but a packet arrives that
+needs to be translated, an error will occur.</p>
+</li>
+<li>
+<p>Port Address Translation (PAT) is similar to NAT but rewrites ports in TCP or
+UDP headers instead.</p>
+</li>
+<li>
+<p>PAT can allow only certain ports to be available to the Internet.</p>
+</li>
+<li>
+<p>PAT and NAT are usually used in conjunction with each other.</p>
+</li>
+<li>
+<p>Port Overloading could be considered the most important variant of NAT. It&rsquo;s
+also knows an Masquerading or many-to-one NAT. It&rsquo;s used in the case where we
+have many devices, but only a single IP address.</p>
+</li>
+<li>
+<p>In Port Overloading, both the IP address and port are rewritten by the
+router to multiplex the internet connection.</p>
+</li>
+<li>
+<p>Port Overloading is unidirectional NAT, meaning that traffic must be
+initiated from within the network (rather than the Internet).</p>
+</li>
+</ul>
+<h2>Part 22 - NTP</h2>
+<ul>
+<li>
+<p>Any networking hardware needs to know about the current time. E.g. for logs,
+security applications (certificates), intrusion detection, scheduling.</p>
+</li>
+<li>
+<p>NTP uses an NTP server as a time source. Other network devices are NTP
+clients.</p>
+</li>
+<li>
+<p>NTP servers are split into &ldquo;Stratums&rdquo;. Each stratum is a set of servers who
+get their times from the stratum above. The further down the stratum layers
+you go, the higher the chances of inaccuracies.</p>
+</li>
+<li>
+<p>There are public NTP servers available.</p>
+</li>
+<li>
+<p>NTP operates on UDP port 123.</p>
+</li>
+<li>
+<p>NTP measures the amount of time for messages to be exchanged, and can use
+that as an offset for the timestamps in the messages.</p>
+</li>
+</ul>
+<h2>Part 23 - Syslog Server</h2>
+<ul>
+<li>
+<p>Logs can be sent from network devices to an external syslog server using UDP.</p>
+</li>
+<li>
+<p>A common log line format is used for all network devices.</p>
+</li>
+<li>
+<p>Logs are broken into 8 different severity levels.</p>
+</li>
+</ul>
+<h2>Part 24 - SNMP</h2>
+<ul>
+<li>
+<p>SNMP (Simple Network Management Protocol) is useful for monitoring and
+managing the health of a network.</p>
+</li>
+<li>
+<p>A central management server is used to collect metrics for each device on
+your network.</p>
+</li>
+<li>
+<p>The management server can do this via polling (via UDP port 161).</p>
+</li>
+<li>
+<p>Alternatively, traps can be used. When this is set up, network devices report
+directly to the management server whenever there is anything worthwhile to
+report (e.g. a fan stops spinning or a CPU overheats). This in done via UDP
+port 162.</p>
+</li>
+<li>
+<p>Both polling <em>and</em> traps can be used in conjunction with each other.</p>
+</li>
+<li>
+<p>MIB (Management Information Base) is a hierarchy of all of the things that we
+want to keep track of via SNMP. They are distributed via a MIB file.</p>
+</li>
+<li>
+<p>The leaves of the MIB represent things that we want to track. They have
+names, but they are also represented as a list of numbers indicating the
+branches taken at each level of the MIB. This number is the Object Identifier
+(OID).</p>
+</li>
+<li>
+<p>There is a large number of OIDs, which is why we need a MIB to make sense and
+keep track of them.</p>
+</li>
+<li>
+<p>Each device managed by SNMP will have a &ldquo;community string&rdquo;. This is just a
+label to group together devices. Devices can even have more than a single
+community string.</p>
+</li>
+</ul>
+<h2>Part 25 - Spanning Tree Protocol</h2>
+<ul>
+<li>
+<p>A broadcast storm occurs when there are multiple switches connected together
+(with cycles) and someone on the network broadcasts. Frames will loop around
+the network forever, and become duplicated in an exponential fashion.</p>
+</li>
+<li>
+<p>(STP) Spanning Tree Protocol runs on every switch and helps to avoid
+broadcast storms. It detects potential loops, and disables particular loops,
+making the network cycle free (i.e. a tree).</p>
+</li>
+<li>
+<p>STP runs at layer 2, which doesn&rsquo;t have any look protection on its own.</p>
+</li>
+</ul>
+<h2>Part 26 - How STP works</h2>
+<ul>
+<li>
+<p>At a high level, STP detects cycles and then blocks enough links to make the
+network cycle-free.</p>
+</li>
+<li>
+<p>It does this by sending BPDU (Bridge Protocol Data Unit) messages out to
+build up a tree structure.</p>
+</li>
+<li>
+<p>Link cost is used as a heuristic to work out which links should be disabled.</p>
+</li>
+<li>
+<p>STP runs continuously, making it dynamic.</p>
+</li>
+</ul></div>
+
+<hr/>
+
+<div class="bookend" style="display: flex">
+  <div style="width: 50%; text-align: left">
+    <ul>
+      <li><a href="https://github.com/peterstace">Github</a></li>
+      <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+    </ul>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2023
+  </div>
+</div>
+
+</div></body></html>

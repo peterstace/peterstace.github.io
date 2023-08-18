@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Fast Random Number Generation in Go</title>
+  <link href="/main.css" rel="stylesheet">
+</head>
+
+<body><div id="page" style="max-width: 50em; margin: auto">
+
+<div class="bookend">
+  <ul>
+    <li><a href="/">About</a></li>
+    <li><a href="/posts/">Posts</a></li>
+    <li><a href="/book-diary/">Book Diary</a></li>
+  </ul>
+</div>
+
+<hr/>
+
+<div><h1>Fast Random Number Generation in Go</h1>
+<p>2020-07-25</p>
+<h2>Background</h2>
+<p>Some algorithms rely on a stream of random numbers in order to meet their
+(average) time complexity class. One such famous algorithm is
+<a href="https://en.wikipedia.org/wiki/Quicksort">Quicksort</a>.</p>
+<p>I recently worked on some performance optimisations for
+<a href="https:github.com/peterstace/simplefeatures">simplefeatures</a>'
+<a href="https://en.wikipedia.org/wiki/R-tree">R-Tree</a> bulk loading algorithm. This bulk
+loading algorithm also utilises random numbers in order to meet its (average)
+time complexity class. It actually uses random numbers in a very similar way
+compared to Quicksort: to select random pivot indices to sort around.</p>
+<p>This blog post shows one aspect of that performance work, namely optimising the
+generation of random numbers. Optimising random number generation allowed a 20%
+to 40% performance increase for R-Tree bulk loading (depending on what is
+loaded).</p>
+<h2>Fast Random Numbers</h2>
+<p>We&rsquo;ll start out with the most obvious solution for generating random numbers,
+and then see what can be done to improve performance.</p>
+<p>Each benchmark will generate random numbers in the range <code>[0, 100)</code> i.e.
+between between 0 (inclusive) and 100 (exclusive). There isn&rsquo;t anything special
+about this <em>paricular</em> range, but it <em>is</em> representative of the sorts of ranges
+used for R-Tree bulk loading.  Experimentally, I found that changing the range
+doesn&rsquo;t have an impact on performance.</p>
+<h3>Go Standard Library</h3>
+<p>First, let&rsquo;s benchmark Go&rsquo;s built in random number generator. This serves as a
+baseline, and was used in my initial R-Tree bulk loading implementation.</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#4070a0">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#4070a0">&#34;testing&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> k = <span style="color:#40a070">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkMathRand</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        rand.<span style="color:#06287e">Intn</span>(k)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre><p>This is already pretty fast (~18 ns per random number). It just goes to show
+that even fast operations can slow you down if they&rsquo;re in a tight loop.</p>
+<pre><code>BenchmarkMathRand-4             56426527                17.8 ns/op
+</code></pre>
+<h3>Local Random Number Generator</h3>
+<p>Note that we&rsquo;re using the global <code>rand.Intn</code> function, which internally uses a
+shared random number source.  That source is protected by a mutex, so we&rsquo;re
+locking and unlocking each time we get a new number. Let&rsquo;s try using a local
+<code>*rand.Rand</code> instance rather than using the global <code>rand.Intn</code> function.</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkMathRandLocal</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    rnd <span style="color:#666">:=</span> rand.<span style="color:#06287e">New</span>(rand.<span style="color:#06287e">NewSource</span>(<span style="color:#40a070">0</span>))
+</span></span><span style="display:flex;"><span>    b.<span style="color:#06287e">ResetTimer</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        rnd.<span style="color:#06287e">Intn</span>(k)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre><p>That made quite a large difference, an improvement of ~40% over the original.</p>
+<pre><code>BenchmarkMathRandLocal-4        100000000               10.2 ns/op
+</code></pre>
+<p>But wait&hellip; We&rsquo;re not measuring the cost of setting up the local <code>*rand.Rand</code>
+instance because it occurs before the call to <code>b.ResetTimer()</code>. This isn&rsquo;t
+really a fair test. To find out how expensive it is to set up a local <code>*rand.Rand</code>
+instance, we can benchmark that operation in isolation.</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkCreateLocalRand</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        rand.<span style="color:#06287e">New</span>(rand.<span style="color:#06287e">NewSource</span>(<span style="color:#40a070">0</span>))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre><p>It turns out the cost is significant! The startup cost for a <code>*rand.Rand</code> is
+approximately 3 orders of magnitude slower than generating each random number!</p>
+<pre><code>BenchmarkCreateLocalRand-4        149104              7868 ns/op
+</code></pre>
+<p>We can use some back of the envelope calculations to determine how many random
+numbers we would have to generate from the local <code>*rand.Rand</code> is order to break even
+against using the global <code>rand</code> functions.</p>
+<p>Assume each random number from <code>rand.Intn</code> takes ~18ns, and each random number
+from a local <code>*rand.Rand</code> instance takes ~10ns (with a setup of ~7,800ns).</p>
+<pre><code>18x = 10x + 7,800
+ 8x = 7,800
+  x = 975
+</code></pre>
+<p>So we need to be generating around 1,000 random numbers per local <code>*rand.Rand</code>
+instance before this approach even begins to break even.</p>
+<h3>Hybrid Algorithms</h3>
+<p>We <em>could</em> attempt to use a <a href="https://en.wikipedia.org/wiki/Hybrid_algorithm">hybrid
+algorithm</a> if we know up front
+how many random numbers we&rsquo;ll need. For the R-Tree bulk load algorithm, we
+<em>would</em> be able to work that out without too much difficulty. If the number of
+random numbers we need is low, we could use the global functions. If the number
+of random numbers is high, we could use a local instance.</p>
+<p>This is getting finicky though&hellip; Hybrid algorithms need to be finely tuned,
+and the tuning would need to be updated for new hardware or compiler versions.
+This is way too much trouble except for the most specialised situations (and
+this is not one of them). I decided not to pursue this approach.</p>
+<h3>Linear Congruential Generators</h3>
+<p>Because we don&rsquo;t control the random number generation (it&rsquo;s in the <code>math/rand</code>
+package), we can&rsquo;t modify it to make it faster. What if we generate the random
+numbers ourselves?</p>
+<p>One of the most basic random number generation algorithms is the <a href="https://en.wikipedia.org/wiki/Linear_congruential_generator">Linear
+Congruential
+Generator</a>.  It
+works by generating a chain of random values, each based on the previous.  For
+each new random number, the previous number is multiplied by a constant, and
+then another constant is added. This value is then reduced modulo another
+constant (otherwise is will increase forever).</p>
+<pre><code>RND_next := (RND_prev * CONST_MUL + CONST_ADD) % CONST_MOD
+</code></pre>
+<p>Note that Linear Congruential Generators as described above don&rsquo;t emit high
+quality random numbers. That may or may not matter depending on your
+application. For my use case (choosing random pivots), it&rsquo;s fine.</p>
+<p>Implementing this generator is easy, so lets see how it performs. We choose
+some &ldquo;well known&rdquo; constants, <code>CONST_MUL=1664525</code>, <code>CONST_ADD=1013904223</code>, and
+<code>CONST_MOD=2^32</code>. These constants are from <a href="http://numerical.recipes/">Numerical
+Recipes</a>. The choice of modulo constant is
+especially convenient, since it allows us to just store the state in a 32 bit
+unsigned integer and ignore the modulo aspect  entirely.</p>
+<p>Be wary of Go compiler optimisations when benchmarking. If you&rsquo;re not careful,
+the compiler can optimise everything away. An easy way to avoid this is to
+store the results in a global variable.</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> result <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkLCG</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> cumulative <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> state <span style="color:#902000">int32</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        state = state<span style="color:#666">*</span><span style="color:#40a070">1664525</span> <span style="color:#666">+</span> <span style="color:#40a070">1013904223</span>
+</span></span><span style="display:flex;"><span>        rndNum <span style="color:#666">:=</span> <span style="color:#007020">int</span>(state) <span style="color:#666">%</span> k
+</span></span><span style="display:flex;"><span>        cumulative <span style="color:#666">+=</span> rndNum <span style="color:#60a0b0;font-style:italic">// prevent optimising everything out
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>    result = cumulative
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre><p>This performance isn&rsquo;t <em>that</em> much better compared to what we saw previously
+when using a local instance of <code>*rand.Rand</code>. But at least we don&rsquo;t have to pay
+the expensive setup cost.</p>
+<pre><code>BenchmarkLCG-4                  152581359                7.95 ns/op
+</code></pre>
+<h3>Deeper Profiling</h3>
+<p>It&rsquo;s hard to know where to go from here&hellip; We only have two lines of code left,
+and they aren&rsquo;t doing much other than arithmetic operations.</p>
+<p>We&rsquo;ll need to use some profiling techniques in order to work out what part of
+the remaining code is the hotspot. If we generate a CPU profile while running
+the benchmark, the results are enlightening:</p>
+<pre><code>(flat)   
+     .    func BenchmarkLCG(b *testing.B) { 
+     .        var cumulative, state int 
+     .        for i := 0; i &lt; b.N; i++ { 
+ 250ms            state = (state*1664525 + 1013904223) % (1 &lt;&lt; 32) 
+ 1.75s            cumulative = state % k 
+     .        } 
+     .        result = cumulative 
+     .    } 
+</code></pre>
+<p>Most of the execution time is spent taking the state and reducing it modulo <code>k</code>
+in order to get the actual output random number (1.75s total). Generating the
+new random state itself is relatively cheap (260ms total). This makes sense,
+since modulo operations (along with divisions) are well known to be much more
+expensive compared to additions and multiplications.</p>
+<p>So does that mean we&rsquo;re at a dead end? After all, we need a number between 0
+and <code>k</code>&hellip;</p>
+<h3>Modulo Alternatives For Random Number Generation</h3>
+<p>We don&rsquo;t necessarily need to use a modulo operation to convert our random
+number state into a number between 0 and <code>k</code>. It&rsquo;s possible instead to use a
+multiplication and a shift, which are much cheaper operations.</p>
+<p>The full code is:</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">var</span> result <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">BenchmarkFastLCG</span>(b <span style="color:#666">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> cumulative <span style="color:#902000">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">var</span> state <span style="color:#902000">int32</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; b.N; i<span style="color:#666">++</span> {
+</span></span><span style="display:flex;"><span>        state = state<span style="color:#666">*</span><span style="color:#40a070">1664525</span> <span style="color:#666">+</span> <span style="color:#40a070">1013904223</span>
+</span></span><span style="display:flex;"><span>        rndNum <span style="color:#666">:=</span> (<span style="color:#007020">int64</span>(state) <span style="color:#666">*</span> <span style="color:#007020">int64</span>(k)) <span style="color:#666">&gt;&gt;</span> <span style="color:#40a070">32</span>
+</span></span><span style="display:flex;"><span>        cumulative <span style="color:#666">+=</span> <span style="color:#007020">int</span>(rndNum) <span style="color:#60a0b0;font-style:italic">// prevent optimising everything out
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>    result = cumulative
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre><p>The benchmark results are very promising!</p>
+<pre><code>BenchmarkFastLCG-4              1000000000               1.04 ns/op
+</code></pre>
+<p>If you haven&rsquo;t seen this trick before, (despite its simplicity) it can be a bit
+hard to digest. It&rsquo;s basically just a different way to split up <code>state</code> into
+<code>k</code> different buckets.</p>
+<p>An analogy may be useful:</p>
+<blockquote>
+<p>Imagine dealing out a shuffled pack of 52 cards to <code>k</code> players.  Exactly one
+of the cards in the deck is specially marked.  Each player receives either
+<code>floor(52/k)</code> or <code>ceil(52/k)</code> cards (<code>k</code> may not evenly divide 52).  The
+player who receives the marked card wins. This is analogous to choosing a
+random number in the range <code>[0, k)</code> (the player who wins) based on a random
+state in the range <code>[0, 52)</code> (the marked card in the deck).</p>
+<p>The modulus approach is analogous to dealing one card at a time around the
+circle.</p>
+<p>The multiply and shift approach is analogous to dealing <code>floor(52/k)</code> cards
+to the first player, <code>floor(52/k)</code> cards to the second player, and so on.</p>
+</blockquote>
+<h2>Words of Caution when Optimising</h2>
+<p>Performance optimisation are always a trade off. They increase the performance
+of a program at the expense of readability and maintainability (all the while
+attempting to maintain functional equivalence).</p>
+<p>Keep the following tips in mind:</p>
+<ul>
+<li>
+<p>Always thoroughly unit test the code you&rsquo;re optimising. Optimisations
+typically reduce readability and maintainability. Good unit testing can help
+to mitigate this.</p>
+</li>
+<li>
+<p>Always use benchmarks to prove optimisation results. Don&rsquo;t just <em>guess</em> that
+a change <em>should</em> improve performance. It&rsquo;s okay to let intuition guide you,
+but always back it up with measurements.</p>
+</li>
+<li>
+<p>After implementing a performance optimisation, ask yourself whether the trade
+off makes sense. This will depend on many things. What is the impact on
+readability and maintainability? What is the performance gain in percentage
+terms? Does the <em>business application</em> already perform well? Don&rsquo;t fall for
+the sunk cost fallacy; it&rsquo;s okay to abandon an optimisation if you don&rsquo;t feel
+that the trade offs are worth it.</p>
+</li>
+</ul>
+<p>Happy optimising!</p></div>
+
+<hr/>
+
+<div class="bookend" style="display: flex">
+  <div style="width: 50%; text-align: left">
+    <ul>
+      <li><a href="https://github.com/peterstace">Github</a></li>
+      <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+    </ul>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2023
+  </div>
+</div>
+
+</div></body></html>
