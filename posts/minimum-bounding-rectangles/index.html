@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Rotated Minimum Bounding Rectangles</title>
+  <link href="/main.css" rel="stylesheet">
+</head>
+
+<body><div id="page" style="max-width: 50em; margin: auto">
+
+<div class="bookend">
+  <ul>
+    <li><a href="/">About</a></li>
+    <li><a href="/posts/">Posts</a></li>
+    <li><a href="/book-diary/">Book Diary</a></li>
+  </ul>
+</div>
+
+<hr/>
+
+<div><h1>Rotated Minimum Bounding Rectangles</h1>
+<p>2024-01-19</p>
+<p>In 2D computational geometry, rotated minimum bounding rectangles are:</p>
+<ul>
+<li>rectangles that enclose a target geometry,</li>
+<li>don&rsquo;t (necessarily) have their sides aligned with the coordinate system axes, and</li>
+<li>minimise a metric (area, or the smaller of the two side widths).</li>
+</ul>
+<p>I recently implemented rotated minimum bounding rectangles in the <a href="https://github.com/peterstace/simplefeatures/blob/master/CHANGELOG.md#v0470">v0.47.0
+release</a> of the <a href="https://github.com/peterstace/simplefeatures"><code>simplefeatures</code></a> Go library. Both the minimum area and
+minimum width variants are implemented. The implementation uses a <a href="https://en.wikipedia.org/wiki/Rotating_calipers">rotating
+calipers</a> approach, and operates with <em>O(n log n)</em> time complexity.</p>
+<p>A quick demo program to show how to access the new functionality.</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#4070a0">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#4070a0">&#34;github.com/peterstace/simplefeatures/geom&#34;</span> <span style="color:#60a0b0;font-style:italic">// v0.47.0 or higher
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">const</span> input = <span style="color:#4070a0">&#34;POLYGON((0 0,2 2,1 2,0 1,0 0))&#34;</span>
+</span></span><span style="display:flex;"><span>	g, err <span style="color:#666">:=</span> geom.<span style="color:#06287e">UnmarshalWKT</span>(input)
+</span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#007020">panic</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	mbr <span style="color:#666">:=</span> geom.<span style="color:#06287e">RotatedMinimumAreaBoundingRectangle</span>(g)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#60a0b0;font-style:italic">// Outputs: POLYGON((0 0,2 2,1.5 2.5,-0.5 0.5,0 0))
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>	fmt.<span style="color:#06287e">Println</span>(mbr.<span style="color:#06287e">AsText</span>())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre><p>Sometimes the choice of metric to minimise (area vs. width) doesn&rsquo;t matter,
+each resulting in a rectangle that is identical or almost identical. Other
+times, the choice of metric can wildly change the orientation of the rectangle.</p>
+<p>The demo below shows the rotated bounding rectangles of each of the earth&rsquo;s 30
+largest islands. The calculations are performed using the <code>simplefeatures</code>
+library. The <span style="background-color:#f99">minimum <em>area</em> rectangles
+shown in red</span> and the <span style="background-color:#99f">minimum <em>width</em>
+rectangles shown in blue</span>. A lot of the time they are the same (and
+overlap), but sometimes they differ considerably.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 0.5em;">
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Greenland (main island)</b> <img alt="Greenland (main island)" src="islands/03_Greenland__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>New Guinea</b> <img alt="New Guinea" src="islands/04_New_Guinea.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Borneo</b> <img alt="Borneo" src="islands/05_Borneo.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Madagascar (main island)</b> <img alt="Madagascar (main island)" src="islands/06_Madagascar__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Baffin Island</b> <img alt="Baffin Island" src="islands/07_Baffin_Island.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Sumatra</b> <img alt="Sumatra" src="islands/08_Sumatra.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Honshū</b> <img alt="Honshū" src="islands/09_Honshu.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Victoria Island</b> <img alt="Victoria Island" src="islands/10_Victoria_Island.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Great Britain</b> <img alt="Great Britain" src="islands/11_Great_Britain.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Ellesmere Island</b> <img alt="Ellesmere Island" src="islands/12_Ellesmere_Island.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Sulawesi</b> <img alt="Sulawesi" src="islands/13_Sulawesi.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>South Island (Te Waipounamu)</b> <img alt="South Island (Te Waipounamu)" src="islands/14_South_Island__Te_Waipounamu_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Java (Jawa)</b> <img alt="Java (Jawa)" src="islands/15_Java__Jawa_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>North Island (Te Ika-a-Māui)</b> <img alt="North Island (Te Ika-a-Māui)" src="islands/16_North_Island__Te_Ika-a-Maui_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Newfoundland</b> <img alt="Newfoundland" src="islands/17_Newfoundland.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Cuba (main island)</b> <img alt="Cuba (main island)" src="islands/18_Cuba__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Luzon (main island)</b> <img alt="Luzon (main island)" src="islands/19_Luzon__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Iceland (main island)</b> <img alt="Iceland (main island)" src="islands/20_Iceland__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Mindanao (main island)</b> <img alt="Mindanao (main island)" src="islands/21_Mindanao__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Ireland</b> <img alt="Ireland" src="islands/22_Ireland.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Hokkaidō</b> <img alt="Hokkaidō" src="islands/23_Hokkaido.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Sakhalin</b> <img alt="Sakhalin" src="islands/24_Sakhalin.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Hispaniola</b> <img alt="Hispaniola" src="islands/25_Hispaniola.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Banks Island</b> <img alt="Banks Island" src="islands/26_Banks_Island.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Sri Lanka (main island)</b> <img alt="Sri Lanka (main island)" src="islands/27_Sri_Lanka__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Tasmania (main island)</b> <img alt="Tasmania (main island)" src="islands/28_Tasmania__main_island_.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Devon Island</b> <img alt="Devon Island" src="islands/29_Devon_Island.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Isla Grande de Tierra del Fuego</b> <img alt="Isla Grande de Tierra del Fuego" src="islands/30_Isla_Grande_de_Tierra_del_Fuego.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Severny Island</b> <img alt="Severny Island" src="islands/31_Severny_Island.png" width=256 height=256>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-start">
+<b>Southampton Island</b> <img alt="Southampton Island" src="islands/32_Southampton_Island.png" width=256 height=256>
+</div>
+</div></div>
+
+<hr/>
+
+<div class="bookend" style="display: flex">
+  <div style="width: 50%; text-align: left">
+    <ul>
+      <li><a href="https://github.com/peterstace">Github</a></li>
+      <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+    </ul>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2024
+  </div>
+</div>
+
+</div></body></html>
