@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Where should I put my mocks in Go?</title>
+  <link href="/main.css" rel="stylesheet">
+</head>
+
+<body><div id="page" style="max-width: 50em; margin: auto">
+
+<div class="bookend">
+  <ul>
+    <li><a href="/">About</a></li>
+    <li><a href="/blog/">Blog</a></li>
+    <li><a href="/book-diary/">Book Diary</a></li>
+  </ul>
+</div>
+
+<hr/>
+
+<div><h1>Where should I put my mocks in Go?</h1>
+<p>2015-05-21</p>
+<h2>Introduction</h2>
+<p>Go&rsquo;s toolchain provides a mechanism to help prevent test code from being
+included in production binaries. It should be obvious why this is useful; if
+stubs or mocks intended for testing make their way your production system, they
+may cause it to fail silently in catastrophic and unexpected ways. This is
+especially a concern if you don&rsquo;t have automated application and integration
+tests in place. Imagine if you somehow end up with a stubbed out authentication
+manager that always returns <code>true</code> when asked if a user has administration
+privileges. Yikes.</p>
+<p>This blog post will explain this mechanism, along with some of the ways you can
+most effectively take advantage it, especially when dealing with mocks and
+stubs.</p>
+<h2>The Mechanism</h2>
+<p>It&rsquo;s well known that the <code>go test</code> tool looks in files that end in <code>_test.go</code>
+for tests to run. What is less well known is that these <code>*_test.go</code> files are
+<em>excluded</em> from binaries built using <code>go build</code> and <code>go install</code>.</p>
+<p>Excellent! This means we can put all of our testing stubs and mocks in the
+<code>*_test.go</code> files and they will never accidentally be included in production
+binaries!</p>
+<h2>The Problem</h2>
+<p>This works well most of the time. You have an interface <code>Foo</code> declared in
+package <code>foo</code>, and a mocked out implementation <code>MockFoo</code> also in package <code>foo</code>
+but in a file named <code>mock_foo_test.go</code>. This works great, you can use <code>MockFoo</code>
+instead of the real implementation for all of your tests in package <code>foo</code>!</p>
+<p>But what if you want to use <code>MockFoo</code> for tests in packages <code>garply</code> and
+<code>waldo</code>? Unfortunately you can&rsquo;t. Because <code>MockFoo</code> is declared in a file
+ending in <code>_test.go</code>, it can only be used in tests contained in the same
+package.</p>
+<h2>The Solutions</h2>
+<p>There are a two obvious ways to work around this:</p>
+<ul>
+<li>Rename the file containing <code>MockFoo</code> from <code>mock_foo_test.go</code> to
+<code>mock_foo.go</code>. Now that it&rsquo;s not a test file, it can be accessed from other
+packages.</li>
+<li>Copy <code>mock_foo_test.go</code> into the other packages that need it (modifying the
+package declaration to match its destination package).</li>
+</ul>
+<p>There are some drawbacks to both approaches.</p>
+<p>In the first approach, we lose the guarantee that <code>MockFoo</code> won&rsquo;t accidentally
+be included the production binary.  As an additional annoyance, <code>MockFoo</code> is
+now part of the public API, and as such will appear in listings produced by the
+<code>godoc</code> tool.</p>
+<p>The second approach violates the <a href="http://c2.com/cgi/wiki?DontRepeatYourself">DRY
+principal</a>. If the interface
+changes, you then have to go and change all of the mocks. If you&rsquo;re manually
+rolling your own mocks, the process of updating them all could be error prone.</p>
+<p>In my opinion, the second approach is the better of the two, especially when
+considering that mocks can be generated automatically with tools such as
+<a href="https://code.google.com/p/gomock/">gomock</a>. If you write a small script that
+generates all of the mocks in your project using gomock, then you just have to
+run it whenever you change an interface that is being mocked out. Since the
+mocks are generated <em>from</em> the interface, I don&rsquo;t think that the DRY principal
+is of great importance here.</p>
+<p>Happy testing!</p></div>
+
+<hr/>
+
+<div class="bookend" style="display: flex">
+  <div style="width: 50%; text-align: left">
+    <ul>
+      <li><a href="https://github.com/peterstace">Github</a></li>
+      <li><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></li>
+    </ul>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2024
+  </div>
+</div>
+
+</div></body></html>
