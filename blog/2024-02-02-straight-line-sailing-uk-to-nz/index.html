@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Sailing from NZ to the UK in a straight line (from first principles)</title>
+  <title>Sailing from NZ to the UK in a straight-line (from first principles)</title>
   <link href="/main.css" rel="stylesheet">
 </head>
 
@@ -19,18 +19,18 @@
 
 <hr/>
 
-<div><h1>Sailing from NZ to the UK in a straight line (from first principles)</h1>
+<div><h1>Sailing from NZ to the UK in a straight-line (from first principles)</h1>
 <p>2024-02-02</p>
-<p>There are various articles on the web that describe a straight line sailing
+<p>Various articles on the web describe a straight-line sailing
 route from NZ to the UK. Here&rsquo;s a screenshot (I won&rsquo;t include a link):</p>
 <img alt="daily mail article" src="daily_mail.png" width=256>
-<p>A straight line sailing path follows a <a href="https://en.wikipedia.org/wiki/Great_circle">great
+<p>A straight-line sailing path follows a <a href="https://en.wikipedia.org/wiki/Great_circle">great
 circle</a> around the earth between
-two points, and only passes over water.</p>
+two points and only passes over water.</p>
 <p><strong>As far as I can tell, the original source is <a href="https://www.reddit.com/r/MapPorn/comments/amvqxa/its_possible_to_sail_in_a_straight_line_from_the/">this thread</a> in <a href="https://www.reddit.com/r/MapPorn">r/MapPorn</a>.</strong></p>
-<p>I was interested to work out how such a path could be calculated from first
+<p>I was interested in working out how such a path could be calculated from first
 principals, primarily for my own curiosity. This blog post describes how I did
-that. The implementation is in Go, but is simple enough that Go knowledge isn&rsquo;t
+that. The implementation is in Go but is simple enough that Go knowledge isn&rsquo;t
 a prerequisite to understand this post.</p>
 <h3>General overview</h3>
 <p>Map coordinates are commonly represented as longitude/latitude pairs. I&rsquo;ll
@@ -40,7 +40,7 @@ calculations.</p>
 <p>The general idea is as follows:</p>
 <ol>
 <li>
-<p>Convert the starting and ending locations to vectors in 3D euclidean space.
+<p>Convert the starting and ending locations to vectors in 3D Euclidean space.
 These vectors are on the surface of a sphere, representing the earth.</p>
 </li>
 <li>
@@ -60,7 +60,7 @@ longitude and latitudes.</p>
 </li>
 </ol>
 <h3>Implementation</h3>
-<p>First, I defined a type to hold a longitude/latitude pair, and specified the
+<p>First, I defined a type to hold a longitude/latitude pair and specified the
 start and end points:</p>
 <pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> lonLat <span style="color:#007020;font-weight:bold">struct</span> {
 </span></span><span style="display:flex;"><span>	lon, lat <span style="color:#902000">float64</span>
@@ -81,8 +81,8 @@ start and end points:</p>
 </span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> vect{u[<span style="color:#40a070">0</span>] <span style="color:#666">*</span> f, u[<span style="color:#40a070">1</span>] <span style="color:#666">*</span> f, u[<span style="color:#40a070">2</span>] <span style="color:#666">*</span> f}
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre><p>Next is the conversion from the start and end longitude/latitude pairs to 3D
-vectors. Warning: the math might be a bit scary if you haven&rsquo;t done
-trigonometry in a while.</p>
+vectors. Warning: the math might be scary if you haven&rsquo;t done trigonometry in a
+while.</p>
 <pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">lonLatToVect</span>(pt lonLat) vect {
 </span></span><span style="display:flex;"><span>	lon <span style="color:#666">:=</span> <span style="color:#06287e">degreesToRadians</span>(pt.lon)
 </span></span><span style="display:flex;"><span>	lat <span style="color:#666">:=</span> <span style="color:#06287e">degreesToRadians</span>(pt.lat)
@@ -92,7 +92,7 @@ trigonometry in a while.</p>
 </span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> [<span style="color:#40a070">3</span>]<span style="color:#902000">float64</span>{x, y, z}
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre><p>Next is the linear interpolation. For floats, this is just mixing together two
-floats with a <code>t</code> ratio between 0 and 1. For vectors, it&rsquo;s the same thing, just
+floats with a <code>t</code> ratio between 0 and 1. It&rsquo;s the same thing for vectors, just
 applied to each dimension separately.</p>
 <pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">lerpFloat64</span>(a, b, t <span style="color:#902000">float64</span>) <span style="color:#902000">float64</span> {
 </span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> (<span style="color:#40a070">1</span><span style="color:#666">-</span>t)<span style="color:#666">*</span>a <span style="color:#666">+</span> t<span style="color:#666">*</span>b
@@ -116,9 +116,9 @@ the start and end locations. This is easy enough to do in a simple loop:</p>
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">return</span> vects
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre><p>Finally, we need to convert these interpolated vectors back to
-longitude/latitude pairs. This is just the reverse of the original trigonometry
-used to convert from longitude/latitude pairs to 3D vectors.</p>
+</span></span></code></pre><p>Finally, we must convert these interpolated vectors back to longitude/latitude
+pairs. This is just the reverse of the original trigonometry used to convert
+from longitude/latitude pairs to 3D vectors.</p>
 <pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">convertVectsToLonLats</span>(vects []vect) []lonLat {
 </span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">var</span> points []lonLat
 </span></span><span style="display:flex;"><span>	<span style="color:#007020;font-weight:bold">for</span> _, v <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">range</span> vects {
@@ -148,16 +148,16 @@ used to convert from longitude/latitude pairs to 3D vectors.</p>
 </span></span></span></code></pre><p>
 <img alt="short distance great circle" src="bad.png" width=512 height=512>
 </p>
-<p>Oops&hellip; this didn&rsquo;t work as expected. A straight line sailing route cannot
+<p>Oops&hellip; this didn&rsquo;t work as expected. A straight-line sailing route cannot
 go through land.</p>
-<p>After a bit of head scratching, I realised that there are actually two straight
-line paths that can be taken along a great circle between any two points: the
-long way and the short way. Imagine travelling in a straight line from London
-to New York. You can either go the short way (west, across the Atlantic Ocean)
-or the long way (east, across Eurasia, the Pacific Ocean, and North America)</p>
+<p>After a bit of head scratching, I realised that two straight line paths can be
+taken along a great circle between any two points: the long way and the short
+way. Imagine travelling in a straight-line from London to New York. You can
+either go the short way (west, across the Atlantic Ocean) or the long way
+(east, across Eurasia, the Pacific Ocean, and North America)</p>
 <p>The same thing is happening here. I&rsquo;m plotting the short direction rather than
 the long direction.</p>
-<p>This is easy enough to fix, we just need to be explicit about the midpoint of
+<p>This is easy enough to fix; we just need to be explicit about the midpoint of
 the journey (it should be off the coast of South America rather than in Asia).
 To get that midpoint, we can just take the midpoint between the start and end
 vectors, and then scale it by -1 to &ldquo;flip&rdquo; it across to the other side of the
