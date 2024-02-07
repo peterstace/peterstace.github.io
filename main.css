@@ -2,6 +2,11 @@ html {
 	overflow-y: scroll;
 }
 
+#page {
+  max-width: 50em;
+  margin: auto;
+}
+
 body {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
@@ -38,7 +43,7 @@ th, td {
 }
 
 .bookend {
-  font-size: smaller;
+  #font-size: smaller;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
