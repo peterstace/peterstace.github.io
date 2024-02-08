@@ -41,19 +41,3 @@ table, th, td {
 th, td {
   padding: 0.3em;
 }
-
-.bookend {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-}
-
-.bookend ul {
-  padding-left: 0;
-  margin: 0;
-}
-
-.bookend li {
-  display: inline;
-  list-style-type: none;
-  margin-right: 0.5em;
-}
