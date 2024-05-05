@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Heart Rate Zones for Cycling</title>
+  <link href="/main.css" rel="stylesheet">
+  <viewport content="width=device-width">
+</head>
+
+<body><div id="page">
+
+<div style="display: flex; gap: 0.5em">
+  <div><a href="/">About</a></div>
+  <div><a href="/blog/">Blog</a></div>
+  <div><a href="/book-diary/">Book Diary</a></div>
+</div>
+
+<hr/>
+
+<div><h1>Heart Rate Zones for Cycling</h1>
+<p>2024-05-04</p>
+<p>I recently got into sports cycling after using a bike for daily commuting for
+over a decade. There&rsquo;s a lot of new information to absorb, with HR (heart rate)
+zones being one of the most confusing topics I&rsquo;ve come across. It&rsquo;s confusing
+because there is a lot of contradictory information on the topic.</p>
+<p>This blog post summarises my current understanding of all the information I
+could find on the web about HR zones.</p>
+<p>I&rsquo;m new to this topic and not much of an expert, so take everything here with a
+grain of salt!</p>
+<h2>What are Heart Rate Zones?</h2>
+<p>HR zones are simply a way of splitting the continuous range of possible heart
+rates into a set of ranges. The most common systems have five zones, although
+other simpler systems have three zones. I&rsquo;ll focus on 5-zone systems due to
+their popularity.</p>
+<p>The zones semantically categorise the body&rsquo;s response to physical exercise (in
+this case, cycling). Each zone corresponds to a categorical mode in which the
+body&rsquo;s metabolism runs.</p>
+<p>Because each individual is different (both genetically and in terms of
+fitness), the actual zone endpoints differ from person to person.</p>
+<h3>The Heart Rate Zones</h3>
+<p>The 5-zone models include the following zones:</p>
+<ul>
+<li>
+<p><strong>Zone 1: Active Recovery</strong>. The effort is very easy, with little pressure
+through the pedals. It&rsquo;s used on a recovery ride after a hard training
+session or in short recovery periods between high-intensity intervals.</p>
+</li>
+<li>
+<p><strong>Zone 2: Endurance</strong>. Conversation is easy, but breathing starts to become
+heavier. This zone is called &ldquo;endurance&rdquo; because it&rsquo;s the best zone for
+sustained endurance efforts that span many hours.</p>
+</li>
+<li>
+<p><strong>Zone 3: Tempo</strong>. Breathing becomes even harder, and concentration is
+required to maintain this effort level. I&rsquo;m not confident I understand why
+this zone is called &ldquo;tempo&rdquo;. However, the name feels evocative of <em>fast but
+not uncomfortably fast</em>.</p>
+</li>
+<li>
+<p><strong>Zone 4: Threshold</strong>. Very difficult to hold a conversation. Breathing is
+very heavy but not yet strained. It requires mental determination to stay in
+this zone. This zone is called &ldquo;threshold&rdquo; because it&rsquo;s at the threshold
+where the body can no longer clear lactate faster than it&rsquo;s produced, causing
+levels to accumulate rapidly.</p>
+</li>
+<li>
+<p><strong>Zone 5: VO2 Max</strong>. Cannot speak and breathing is extremely laboured.
+Painful to ride in this zone for more than a few minutes. This zone is called
+&ldquo;VO2 Max&rdquo; because it&rsquo;s the zone where the body is consuming oxygen at the
+maximum rate (volume per time) it can.</p>
+</li>
+</ul>
+<h2>Why are Heart Rate Zones Useful?</h2>
+<p>The main idea is that an individual can use a heart rate monitor during
+exercise to help them decide whether to go harder or back off on the effort
+level. HR zones are the framework that helps to make those decisions.</p>
+<p>This can help to achieve specific goals. For example:</p>
+<ul>
+<li>
+<p>Training can be targeted to cause adaptations to the various &ldquo;energy&rdquo; systems
+in the body. The systems are the aerobic system, which powers long-duration
+efforts; the anaerobic system, which powers short and punchy efforts (&lt; 3
+minutes); and the phosphagen system, which powers very short but maximally
+powerful efforts (&lt; 10 seconds).</p>
+</li>
+<li>
+<p>Pace can be modified during an event or exercise session. For beginners, it&rsquo;s
+especially easy at the start of a ride to go &ldquo;too hard&rdquo; and not have enough
+left in the tank to complete the ride. Suppose an individual stays in lower
+HR zones. In that case, exercising without excessive fatigue for a long
+duration (e.g., many hours) should be possible.</p>
+</li>
+</ul>
+<p>Post-workout analysis can quantitatively understand how much stress the body
+has been put under during an exercise session. This can help avoid
+overtraining.</p>
+<p>In addition, data nerds (such as myself!) love having more data to look at and
+play with. Data is <em>interesting</em>.</p>
+<h2>How are the Heart Rate Zone Endpoints Determined?</h2>
+<p>This is where things started getting very confusing for me for a few different
+reasons:</p>
+<ul>
+<li>
+<p>There are multiple systematic ways to construct the zones.</p>
+</li>
+<li>
+<p>Each system has many variants.</p>
+</li>
+</ul>
+<p>The amount of numerical &ldquo;sloppiness&rdquo; I encountered while researching the topic
+surprised me and added to my confusion. For example, some sources list adjacent
+zones as being between 50% and 59% and 60% and 69% (of some value). What about
+the 1% in between?</p>
+<h3>Anchor Methods</h3>
+<p>Heart rate zones can be anchored from two different measurements: maximum HR
+and threshold HR.</p>
+<h3>Maximum Heart Rate</h3>
+<p>Maximum Heart Rate (MHR) is the highest physically possible rate at which an
+individual&rsquo;s heart can beat.</p>
+<p>It depends on genetics and age (it decreases with age). It is <em>not</em> an
+indicator of fitness or health, except at pathologically extreme values.</p>
+<p>Two commonly used linear regression models estimate heart rate based on age.
+The first is <code>220 - age</code>, which is simple but has a low level of accuracy<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>.
+The second is <code>211 - 0.64 * age</code>, which is slightly less straightforward but
+has slightly less inaccuracy<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>.</p>
+<p>Maximum heart rate is easy enough to measure, so the linear regression models
+should be ignored other than as a sanity check.</p>
+<p>One way to measure maximum heart rate is to ride intensively for ~10 minutes,
+followed by a 1-minute maximum effort in the saddle and a 30-second all-out
+sprint out of the saddle. The maximum heart rate is the maximum heart rate
+measured.</p>
+<p>If you often perform max efforts, it&rsquo;s possible to take the highest heart rate
+ever recorded instead of following a specific measurement protocol.</p>
+<p>Once the maximum heart rate is measured, zones can be anchored based on that
+heart rate. This is where a big part of the confusion comes from because there
+isn&rsquo;t a standard way to create heart rate zones based on maximum heart rate. I
+found <em>seven different variants</em>, each with different zone cutoffs.</p>
+<p>I&rsquo;ll describe 3 of the more interesting schemes:</p>
+<ul>
+<li>
+<p><strong>Scheme 1</strong>. I don&rsquo;t think this scheme has a name, but I think of it as the
+&ldquo;10% per zone&rdquo; scheme. It splits the range from 50% to 100% into five 10%
+slices, one per zone. It&rsquo;s appealing because of its simplicity. It was the
+most commonly used scheme described when I was researching the topic on the
+web<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup> <sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup>.</p>
+</li>
+<li>
+<p><strong>Scheme 2</strong> is similar, but increases the size of zone 1 from 10% to 15%,
+and compresses zones 4 and 5 to account for the extra 5% added to zone 1.
+Because zone 1 is bigger, everything is shifted upwards. It was the second
+most commonly described scheme I found when researching the topic on the
+net<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup> <sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup>.</p>
+</li>
+<li>
+<p><strong>Scheme 3</strong> is the scheme that Strava uses when you don&rsquo;t specify custom HR
+zones. It&rsquo;s similar to scheme 2, but both zone 1 and zone 2 are large (15%
+each). Zone 3 is tiny (5%), and the remaining 15% is split between zone 4 and
+zone 5.</p>
+</li>
+</ul>
+<p>The percentages in the table below are percentages of MHR.</p>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Zone 1</th>
+<th>Zone 2</th>
+<th>Zone 3</th>
+<th>Zone 4</th>
+<th>Zone 5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>50% - 60%</td>
+<td>60% - 70%</td>
+<td>70% - 80%</td>
+<td>80% - 90%</td>
+<td>90% - 100%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>50% - 65%</td>
+<td>65% - 75%</td>
+<td>75% - 85%</td>
+<td>85% - 92%</td>
+<td>92% - 100%</td>
+</tr>
+<tr>
+<td>3 (Strava)</td>
+<td>50% - 65%</td>
+<td>65% - 80%</td>
+<td>80% - 85%</td>
+<td>85% - 92%</td>
+<td>92% - 100%</td>
+</tr>
+</tbody>
+</table>
+<h4>Threshold Heart Rate</h4>
+<p>Threshold heart rate (THR) is also known as Lactate Threshold Heart Rate (LTHR)
+and Functional Threshold Heart Rate (FTHR).</p>
+<p>It&rsquo;s the threshold between aerobic and anaerobic exercise and the point at
+which lactate begins to build up in the body because it&rsquo;s being produced faster
+than it can be metabolised.</p>
+<p>It&rsquo;s the maximum heart rate that can be sustained for arbitrary amounts of time
+(e.g. over an hour).</p>
+<p>Unlike MHR, a higher THR (relative to MHR) <em>is</em> indicative of higher fitness.</p>
+<p>Like MHR, simple formulas can be used to estimate THR. For example, THR can be
+estimated as a percentage of MHR (common estimations are 10% and 15%). However,
+these are not accurate for individuals, so it&rsquo;s better to measure THR instead.</p>
+<p>There are two protocols for testing THR:</p>
+<ul>
+<li>
+<p><strong>30-minute time trial.</strong><sup id="fnref1:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> <sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup> <sup id="fnref:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup> Warm up for 10 to 15 minutes. Then,
+do a 30-minute all-out but evenly-paced effort (a &ldquo;time trial&rdquo;). THR is the
+average HR for the last 20 minutes of the 30-minute effort. Only the last 20
+minutes are taken to avoid the effects of <a href="https://en.wikipedia.org/wiki/Cardiovascular_drift">cardiovascular
+drift</a>.</p>
+</li>
+<li>
+<p><strong>Scaled double interval.</strong> Do an 8-minute well-paced max effort. Then, ride
+at a recovery pace for 10 minutes. Then, perform another 8-minute,
+well-paced, max effort. Find the average HR across each of the two 8-minute
+efforts and take the higher of these 2 averages. Multiply this by 0.93 to get
+THR.</p>
+</li>
+</ul>
+<p>The main challenge with both protocols is finding a place to safely perform
+them. Because you can&rsquo;t stop or slow down during either protocol, this rules
+out most on-road locations (at least in urban areas).</p>
+<p>There are two commonly used ways to create zones that are anchored off THR:</p>
+<ul>
+<li>
+<p>Andrew Coggan&rsquo;s system<sup id="fnref2:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> <sup id="fnref1:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> <sup id="fnref1:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup> <sup id="fnref:10"><a href="#fn:10" class="footnote-ref" role="doc-noteref">10</a></sup> <sup id="fnref:11"><a href="#fn:11" class="footnote-ref" role="doc-noteref">11</a></sup> <sup id="fnref:12"><a href="#fn:12" class="footnote-ref" role="doc-noteref">12</a></sup>.</p>
+</li>
+<li>
+<p>Joe Friel&rsquo;s system<sup id="fnref1:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup> <sup id="fnref:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup>.</p>
+</li>
+</ul>
+<p>Andrew Coggan&rsquo;s system lets up THR to be exactly in the centre of zone 4 (the
+&ldquo;threshold&rdquo; zone). In contrast, Joe Friel&rsquo;s system sets THR at the upper bound
+of zone 4 and the lower bound of zone 5. Having THR at the centre of zone 4
+makes a lot more intuitive sense to me.</p>
+<p>The percentages in the table below are percentages of THR.</p>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Zone 1</th>
+<th>Zone 2</th>
+<th>Zone 3</th>
+<th>Zone 4</th>
+<th>Zone 5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coggan</td>
+<td>&lt; 68%</td>
+<td>68% - 85%</td>
+<td>85% - 95%</td>
+<td>95% - 105%</td>
+<td>&gt; 105%</td>
+</tr>
+<tr>
+<td>Friel</td>
+<td>&lt; 81%</td>
+<td>81% - 90%</td>
+<td>90% - 94%</td>
+<td>94% - 100%</td>
+<td>&gt; 100%</td>
+</tr>
+</tbody>
+</table>
+<h2>Concluding Thoughts</h2>
+<p>Writing this blog post has clarified many concepts for me and helped me form an
+opinion about which system I like best.</p>
+<p>I prefer THR anchoring to MHR anchoring because THR feels like a more robust
+measurement (it&rsquo;s an average rather than a maximum) and corresponds to what
+seems to be a more important measurement. I spend a non-trivial amount of time
+near THR, but I rarely get near my MHR.</p>
+<p>Coggan&rsquo;s system feels more intuitive to me than Friel&rsquo;s system. I like that THR
+is in the centre of zone 4, matching the semantic meaning of that zone.</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://www.bicycling.com/training/a34717708/heart-rate-training-cycling/">https://www.bicycling.com/training/a34717708/heart-rate-training-cycling/</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://www.ntnu.edu/cerg/hrmax">https://www.ntnu.edu/cerg/hrmax</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://www.highnorth.co.uk/articles/cycling-training-zones">https://www.highnorth.co.uk/articles/cycling-training-zones</a>&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p><a href="https://stagescycling.com/en_au/content/power-vs-heart-rate-which-is-better">https://stagescycling.com/en_au/content/power-vs-heart-rate-which-is-better</a>&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5">
+<p><a href="https://au.wahoofitness.com/blog/the-ultimate-guide-for-tracking-your-cycling-heart-rate/">https://au.wahoofitness.com/blog/the-ultimate-guide-for-tracking-your-cycling-heart-rate/</a>&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6">
+<p><a href="https://www.cycling-inform.com/how-to-use-heart-rate-monitor-and-zones-to-improve-your-cycling">https://www.cycling-inform.com/how-to-use-heart-rate-monitor-and-zones-to-improve-your-cycling</a>&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7">
+<p><a href="https://www.cycling-inform.com/how-to-work-out-your-cycling-heart-rate-zones">https://www.cycling-inform.com/how-to-work-out-your-cycling-heart-rate-zones</a>&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8">
+<p><a href="https://www.bikeradar.com/advice/fitness-and-training/training-zones">https://www.bikeradar.com/advice/fitness-and-training/training-zones</a>&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:9">
+<p><a href="https://www.trainingpeaks.com/learn/articles/joe-friel-s-quick-guide-to-setting-zones/">https://www.trainingpeaks.com/learn/articles/joe-friel-s-quick-guide-to-setting-zones/</a>&#160;<a href="#fnref:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:10">
+<p><a href="https://www.cyclingweekly.com/fitness/training/training-zones-what-are-they-and-why-do-they-matter-180110">https://www.cyclingweekly.com/fitness/training/training-zones-what-are-they-and-why-do-they-matter-180110</a>&#160;<a href="#fnref:10" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:11">
+<p><a href="https://www.garmin.com/en-GB/blog/cycling-training-zones-guide/">https://www.garmin.com/en-GB/blog/cycling-training-zones-guide/</a>&#160;<a href="#fnref:11" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:12">
+<p><a href="https://endurancebikeandrun.com/blog/2020/04/29/how-to-use-heartrate-to-train-for-endurance-cyling">https://endurancebikeandrun.com/blog/2020/04/29/how-to-use-heartrate-to-train-for-endurance-cyling</a>&#160;<a href="#fnref:12" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:13">
+<p><a href="https://manuals.stagescycling.com/en/dash-m50-l50/user-manual/settings/user-settings/heart-rate-zones/">https://manuals.stagescycling.com/en/dash-m50-l50/user-manual/settings/user-settings/heart-rate-zones/</a>&#160;<a href="#fnref:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div></div>
+
+<hr/>
+
+<div style="display: flex">
+  <div style="width: 50%; text-align: left; display: flex; gap: 0.5em">
+    <div><a href="https://github.com/peterstace">Github</a></div>
+    <div><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></div>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2024
+  </div>
+</div>
+
+</div></body></html>
