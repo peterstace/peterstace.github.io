@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Three Conic Projections</title>
+  <link href="/main.css" rel="stylesheet">
+  <viewport content="width=device-width">
+</head>
+
+<body><div id="page">
+
+<div style="display: flex; gap: 0.5em">
+  <div><a href="/">About</a></div>
+  <div><a href="/blog/">Blog</a></div>
+  <div><a href="/book-diary/">Book Diary</a></div>
+</div>
+
+<hr/>
+
+<div><h1>Three Conic Projections</h1>
+<p>2024-10-25</p>
+<p>I&rsquo;m currently doing a deep dive to understand map projections, with the
+intention to implement some basic projections as <a href="https://github.com/peterstace/simplefeatures/issues/629">part of the part of the
+simplefeatures project</a>.</p>
+<p>I&rsquo;ve just gotten up to conic projections, which I&rsquo;ve found to be the most
+interesting projections so far. This post gives a short demo of the projections
+I&rsquo;ve implemented, and explains some of the key characteristics between the
+three projections.</p>
+<p>The three conic projections I&rsquo;ve implemented are:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Equidistant_conic_projection">Equidistant Conic</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Albers_projection">Albers Equal Area Conic</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Lambert_conformal_conic_projection">Lambert Conformal Conic</a></li>
+</ul>
+<p>In each of the projections, the map maker has to choose two standard parallels
+(lines of constant latitude). The map is true to scale along these standard
+parallels. In all of the examples below, the standard parallels are set to 30°
+and 60° north, but these are completely arbitrary choices.</p>
+<p>In all of the conic projections, the scale elongates in an east-west direction
+north and south of the standard parallels. The scale compresses in an east-west
+direction between the standard parallels. This is a consequence of the shape
+that the map is being projected onto (the net of a cone, which the family of
+projections derives its name from).</p>
+<h2>Equidistant Conic</h2>
+<p>The Equidistant Conic is the simplest and oldest of the three conic
+projections. It was invented by Ptolemy in the 2nd century AD.</p>
+<p>The distinguishing feature of the Equidistant Conic is that it&rsquo;s not just the
+standard parallels that are true to scale, it&rsquo;s also the meridians (lines of
+constant longitude) that are true to scale. This can be seen in the image
+below, where the distance between each concentric arc (parallel) is the same.</p>
+<p>This projection is useful for maps where the distance between two points that
+lie on the same meridian is important. For example, if you need to accurately
+represent the distance between two cities that are directly north or south of
+each other. It comes at the cost of distorting the shapes and areas of
+features.</p>
+<p><img src="equidistant_conic_blog.png" alt="Equidistant Conic"></p>
+<h2>Albers Equal Area Conic</h2>
+<p>The Albers Equal Area Conic projection is a relatively modern projection,
+invented by Heinrich Albers in 1805.</p>
+<p>The distinguishing feature of the Albers Equal Area Conic is that areas are
+preserved everywhere. This is done by adjusting the distance between parallels
+to exactly cancel out the east-west stretching or compression that occurs at
+different latitudes. Parallels are space closer together south and north of the
+standard parallels, and spaced further apart between the standard parallels.</p>
+<p>This projection is useful for maps where it&rsquo;s important that areas of features
+are truly represented relative to each other (but comes at the cost of
+accurately representing their shapes).</p>
+<p><img src="albers_equal_area_conic_blog.png" alt="Albers Equal Area Conic"></p>
+<h2>Lambert Conformal Conic</h2>
+<p>The Lambert Conformal Conic projection is another relatively modern
+projection, invented by Johann Lambert in 1772.</p>
+<p>The distinguishing feature of the Lambert Conformal Conic is that it&rsquo;s
+<em>conformal</em>. This means that the angles that two straight lines on the globe
+cross each other at is preserved when projected onto the map. Effectively, this
+means that shapes don&rsquo;t become &ldquo;skewed&rdquo;. Rectangles remain rectangles, rather
+than than being transformed into parallelograms.</p>
+<p>This projection is useful for maps where the shape of features is important
+(but comes at the cost of inaccurately representing their sizes, and the
+distance to other features).</p>
+<p><img src="lambert_conformal_conic_blog.png" alt="Lambert Conformal Conic"></p></div>
+
+<hr/>
+
+<div style="display: flex">
+  <div style="width: 50%; text-align: left; display: flex; gap: 0.5em">
+    <div><a href="https://github.com/peterstace">Github</a></div>
+    <div><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></div>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2024
+  </div>
+</div>
+
+</div></body></html>
