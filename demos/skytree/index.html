@@ -30,12 +30,13 @@
       ).addTo(map);
 
       var tilesource_layer = L.tileLayer(
-        'tiles/v4/{z}/{x}/{y}.img',
+        'tiles/v5/{z}/{x}/{y}{r}.img',
         {
           minZoom: 16,
           maxZoom: 20,
           tms: false,
           attribution: '© <a href="https://petsta.net">Peter Stace</a>',
+          detectRetina: true,
         }
       ).addTo(map);
 
