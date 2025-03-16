@@ -24,8 +24,9 @@
       L.tileLayer(
         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
+          maxNativeZoom: 19,
           maxZoom: 20,
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }
       ).addTo(map);
 
@@ -36,7 +37,6 @@
           maxZoom: 20,
           tms: false,
           attribution: '© <a href="https://petsta.net">Peter Stace</a>',
-          detectRetina: true,
         }
       ).addTo(map);
 
