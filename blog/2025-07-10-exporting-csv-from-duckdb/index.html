@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Exporting CSV From DuckDB</title>
+  <link href="/main.css" rel="stylesheet">
+  <viewport content="width=device-width">
+</head>
+
+<body><div id="page">
+
+<div style="display: flex; gap: 0.5em">
+  <div><a href="/">About</a></div>
+  <div><a href="/blog/">Blog</a></div>
+  <div><a href="/demos/">Demos</a></div>
+  <div><a href="/book-diary/">Book Diary</a></div>
+</div>
+
+<hr/>
+
+<div><h1>Exporting CSV From DuckDB</h1>
+<p>If doing this based on a query that has been interactively developed, the
+easiest way is:</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span>.<span style="color:#007020;font-weight:bold">mode</span><span style="color:#bbb"> </span>csv<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>.header<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">on</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>.<span style="color:#007020;font-weight:bold">output</span><span style="color:#bbb"> </span>myfile.csv<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#666">*</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">FROM</span><span style="color:#bbb"> </span>mytable;<span style="color:#bbb"> </span><span style="color:#60a0b0;font-style:italic">-- or whatever query you want
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span>.<span style="color:#007020;font-weight:bold">output</span><span style="color:#bbb"> </span><span style="color:#60a0b0;font-style:italic">-- to reset output to console
+</span></span></span></code></pre></div>
+
+<hr/>
+
+<div style="display: flex">
+  <div style="width: 50%; text-align: left; display: flex; gap: 0.5em">
+    <div><a href="https://github.com/peterstace">Github</a></div>
+    <div><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></div>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2024
+  </div>
+</div>
+
+</div></body></html>
