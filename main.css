@@ -25,9 +25,9 @@ body {
 }
 
 hr {
-	height: 1px;
-	background: black;
-	border: none;
+  height: 1px;
+  background: black;
+  border: none;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
