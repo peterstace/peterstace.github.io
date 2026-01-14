@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>`psql` Read-Only by Default</title>
+  <link href="/main.css" rel="stylesheet">
+  <viewport content="width=device-width">
+</head>
+
+<body><div id="page">
+
+<div style="display: flex; gap: 0.5em">
+  <div><a href="/">About</a></div>
+  <div><a href="/blog/">Blog</a></div>
+  <div><a href="/demos/">Demos</a></div>
+  <div><a href="/book-diary/">Book Diary</a></div>
+</div>
+
+<hr/>
+
+<div><h1><code>psql</code> Read-Only by Default</h1>
+<p>2026-01-15</p>
+<p>When running ad-hoc queries against a production database, there&rsquo;s always a
+risk of accidentally running a destructive query. A stray <code>UPDATE</code> without a
+<code>WHERE</code> clause or an unintended <code>DELETE</code> can cause significant damage.</p>
+<p>A simple way to protect against this is to run <code>psql</code> in read-only mode by
+default. PostgreSQL has a session setting called
+<code>default_transaction_read_only</code> that does exactly this. When enabled, any DML
+(INSERT, UPDATE, DELETE) or DDL will fail with an error like <code>cannot execute INSERT in a read-only transaction</code>.</p>
+<p>To enable this by default, add the following to your <code>.psqlrc</code> file:</p>
+<pre><code>SET default_transaction_read_only = on;
+</code></pre>
+<p>This makes all sessions read-only by default. But what about when you actually
+need to write something?</p>
+<p>The <code>default_transaction_read_only</code> setting is just the <em>default</em> transaction
+mode, and can be overridden on a per-transaction basis:</p>
+<pre tabindex="0" style="background-color:#f0f0f0;"><code><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">BEGIN</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">READ</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">WRITE</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#60a0b0;font-style:italic">-- your writes here
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">COMMIT</span>;<span style="color:#bbb">
+</span></span></span></code></pre><p>This approach has a nice property: write operations become intentional and
+explicit. You can&rsquo;t accidentally run a destructive query because you have to
+consciously start a read-write transaction first.</p>
+<p>There are other ways to achieve a similar result, such as creating a shell
+alias that sets the flag off or using a database role with only SELECT
+privileges. But the <code>.psqlrc</code> setting combined with <code>BEGIN READ WRITE</code> is
+simple, requires no additional tooling, and makes write intent visible in your
+query history.</p></div>
+
+<hr/>
+
+<div style="display: flex">
+  <div style="width: 50%; text-align: left; display: flex; gap: 0.5em">
+    <div><a href="https://github.com/peterstace">Github</a></div>
+    <div><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></div>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2024
+  </div>
+</div>
+
+</div></body></html>
