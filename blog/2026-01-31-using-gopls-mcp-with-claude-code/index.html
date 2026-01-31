@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Using gopls MCP with Claude Code</title>
+  <link href="/main.css" rel="stylesheet">
+  <viewport content="width=device-width">
+</head>
+
+<body><div id="page">
+
+<div style="display: flex; gap: 0.5em">
+  <div><a href="/">About</a></div>
+  <div><a href="/blog/">Blog</a></div>
+  <div><a href="/demos/">Demos</a></div>
+  <div><a href="/book-diary/">Book Diary</a></div>
+</div>
+
+<hr/>
+
+<div><h1>Using gopls MCP with Claude Code</h1>
+<p>2026-01-31</p>
+<p><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a> supports the
+<a href="https://modelcontextprotocol.io/">Model Context Protocol</a> (MCP), which allows
+it to connect to external tools and services. The Go language server <code>gopls</code>
+now has an MCP mode, giving Claude Code access to Go-specific functionality
+like finding references, looking up documentation, and navigating to
+definitions.</p>
+<p>Setting this up requires two steps.</p>
+<p><strong>Install the latest gopls.</strong> The MCP support in <code>gopls</code> is relatively new, so
+you&rsquo;ll need a recent version. Install or update it with:</p>
+<pre><code>go install golang.org/x/tools/gopls@latest
+</code></pre>
+<p><strong>Configure Claude Code.</strong> Tell Claude Code about the MCP server by running:</p>
+<pre><code>claude mcp add --transport stdio --scope user gopls -- gopls mcp
+</code></pre>
+<p>This registers <code>gopls</code> as an MCP server that communicates over stdio. The
+<code>--scope user</code> flag makes it available across all your projects rather than
+just the current one.</p>
+<p>That&rsquo;s it. Claude Code will now have access to Go language server features when
+working on Go code.</p></div>
+
+<hr/>
+
+<div style="display: flex">
+  <div style="width: 50%; text-align: left; display: flex; gap: 0.5em">
+    <div><a href="https://github.com/peterstace">Github</a></div>
+    <div><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></div>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2024
+  </div>
+</div>
+
+</div></body></html>
