@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grid Angles</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+
+  <style>
+    html, body { margin: 0; height: 100%; }
+    #map { height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // --- Hardcoded overlay configuration ---
+    const SRC_ZOOM = 14;      // fixed source/native zoom of the overlay tiles
+    const BLEND = "color";    // mix-blend-mode applied to the overlay pane
+    const SATURATION = 8;     // pre-blend saturation boost (CSS saturate())
+    const OPACITY = 1;        // overlay opacity
+
+    // --- Tile <-> geographic helpers (standard Web Mercator slippy scheme) ---
+    function tile2lon(x, z) { return (x / Math.pow(2, z)) * 360 - 180; }
+    function tile2lat(y, z) {
+      const n = Math.PI - (2 * Math.PI * y) / Math.pow(2, z);
+      return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+    }
+
+    // Extent of the overlay tile set at z=SRC_ZOOM. The footprint is roughly
+    // circular; these are the bounding tile indices that enclose it. The "max"
+    // values are inclusive, so the south/east geographic edges use +1.
+    const TILE_X_MIN = 15042, TILE_X_MAX = 15080;
+    const TILE_Y_MIN = 9811,  TILE_Y_MAX = 9846;
+
+    // Geographic bounding box of the tile extent. north/west come from the
+    // min indices; south/east from one tile past the max indices.
+    const TILE_BOUNDS = L.latLngBounds(
+      [tile2lat(TILE_Y_MAX + 1, SRC_ZOOM), tile2lon(TILE_X_MIN, SRC_ZOOM)],     // south-west
+      [tile2lat(TILE_Y_MIN, SRC_ZOOM),     tile2lon(TILE_X_MAX + 1, SRC_ZOOM)], // north-east
+    );
+
+    // Initial view: centred over Leichhardt, an Inner-West Sydney suburb that
+    // sits within the tile extent.
+    const LEICHHARDT = [-33.8836, 151.1565];
+
+    const PANE = "gridangles"; // dedicated pane so blending only affects overlay
+
+    const map = L.map("map", {
+      minZoom: 12,
+      maxZoom: 21,
+      // Confine panning to the tile extent so the user can't drift off the data.
+      maxBounds: TILE_BOUNDS,
+      maxBoundsViscosity: 1.0,
+    }).setView(LEICHHARDT, 14);
+
+    // Base layer: OpenStreetMap.
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 21,
+      maxNativeZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    // Overlay pane sits above the base tiles; we set mix-blend-mode here. CSS
+    // filters are applied to the element's rendering *before* mix-blend-mode
+    // composites it against the base, so saturate() is a genuine pre-blend boost.
+    map.createPane(PANE);
+    const paneStyle = map.getPane(PANE).style;
+    paneStyle.zIndex = 450; // above tilePane (200), below overlays
+    paneStyle.mixBlendMode = BLEND;
+    paneStyle.filter = "saturate(" + SATURATION + ")";
+
+    // 1x1 transparent PNG: shown in place of missing tiles instead of the
+    // browser's broken-image icon.
+    const BLANK =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMBAQDJ/pLvAAAAAElFTkSuQmCC";
+
+    L.tileLayer("output/{z}/{x}/{y}/output.jpg", {
+      pane: PANE,
+      // Pin both native bounds to SRC_ZOOM so Leaflet always fetches z=SRC_ZOOM
+      // tiles and scales them to the current map zoom — i.e. a fixed source zoom.
+      minNativeZoom: SRC_ZOOM,
+      maxNativeZoom: SRC_ZOOM,
+      bounds: TILE_BOUNDS,
+      opacity: OPACITY,
+      errorTileUrl: BLANK,
+      attribution: "Grid angles edge tiles",
+    }).addTo(map);
+  </script>
+</body>
+</html>
