@@ -15,10 +15,99 @@
   <style>
     html, body { margin: 0; height: 100%; }
     #map { height: 100%; }
+
+    /* Explanatory panel: a collapsible card floating over the map. It sits in
+       the top-right corner, clear of Leaflet's zoom control (top-left) and
+       attribution (bottom-right). */
+    #info {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000; /* above Leaflet panes and controls */
+      max-width: min(20rem, calc(100% - 20px));
+      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 6px;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+      font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #222;
+    }
+    #info > summary {
+      list-style: none; /* hide the default disclosure triangle */
+      cursor: pointer;
+      padding: 8px 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    #info > summary::-webkit-details-marker { display: none; }
+    /* Custom open/close affordance that rotates when expanded. */
+    #info > summary::after {
+      content: "\25B6"; /* right-pointing triangle */
+      font-size: 11px;
+      color: #888;
+      transition: transform 0.15s ease;
+    }
+    #info[open] > summary::after { transform: rotate(90deg); }
+    #info .body {
+      padding: 0 12px 12px;
+      border-top: 1px solid #eee;
+    }
+    #info p { margin: 10px 0 0; }
+    #info .legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    /* A hue wheel rendered with a conic gradient, mirroring how the overlay
+       maps edge orientation to colour. The full spectrum repeats four times
+       around the wheel, so the hue cycle completes every quarter turn. */
+    #info .legend .swatch {
+      flex: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: repeating-conic-gradient(red, yellow, lime, cyan, blue, magenta, red 90deg);
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
+
+  <details id="info" open>
+    <summary>About this demo</summary>
+    <div class="body">
+      <p>
+        This map covers Sydney. Every pixel is coloured by the
+        <strong>orientation of the local structure</strong> it sits on
+        &mdash; the edges of roofs, walls, roads, and fences. The colour comes
+        purely from the <em>angle</em> of that edge, not from what the object
+        is.
+      </p>
+      <p>
+        Because a city block tends to be built on a single street grid,
+        everything aligned to that grid lights up in the <strong>same
+        hue</strong>. Across the city, grids of varying angle mosaic together
+        &mdash; where one grid meets another, or streets bend to follow a
+        ridge or river, the colour shifts. Patches of confident, uniform
+        colour are strongly gridded; speckled, multicoloured areas are not.
+      </p>
+      <div class="legend">
+        <span class="swatch" aria-hidden="true"></span>
+        <span>Hue encodes edge angle; it repeats every quarter turn.</span>
+      </div>
+      <p>
+        Each tile starts as Nearmap vertical aerial imagery. It is converted
+        to grayscale and run through a <strong>Sobel operator</strong> to
+        estimate the edge direction at each pixel. The pixels are grouped into
+        small spatial bins; each bin's dominant angle is then computed and
+        encoded as a hue.
+      </p>
+    </div>
+  </details>
 
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -30,7 +119,7 @@
     // --- Hardcoded overlay configuration ---
     const SRC_ZOOM = 14;      // fixed source/native zoom of the overlay tiles
     const BLEND = "color";    // mix-blend-mode applied to the overlay pane
-    const SATURATION = 8;     // pre-blend saturation boost (CSS saturate())
+    const SATURATION = 6;     // pre-blend saturation boost (CSS saturate())
     const OPACITY = 1;        // overlay opacity
 
     // --- Tile <-> geographic helpers (standard Web Mercator slippy scheme) ---
