@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 712" width="560" height="712" font-family="sans-serif">
+  <g stroke="#000" stroke-width="1.5" fill="#f0f0f0">
+    <rect x="175" y="10"  width="210" height="46" rx="4"/>
+    <rect x="225" y="112" width="110" height="38" rx="4"/>
+    <rect x="225" y="200" width="110" height="38" rx="4"/>
+    <rect x="225" y="288" width="110" height="38" rx="4"/>
+    <rect x="205" y="376" width="150" height="38" rx="4"/>
+    <rect x="95"  y="470" width="110" height="46" rx="4"/>
+    <rect x="355" y="470" width="110" height="46" rx="4"/>
+    <rect x="225" y="566" width="110" height="46" rx="4"/>
+    <rect x="105" y="656" width="350" height="46" rx="4"/>
+  </g>
+
+  <g fill="#000" font-size="15" font-weight="600" text-anchor="middle">
+    <text x="280" y="30">Power</text>
+    <text x="280" y="136">NP</text>
+    <text x="280" y="224">IF</text>
+    <text x="280" y="312">TSS</text>
+    <text x="280" y="400">Daily TSS</text>
+    <text x="150" y="490">CTL</text>
+    <text x="410" y="490">ATL</text>
+    <text x="280" y="586">TSB</text>
+    <text x="280" y="676">Performance Management Chart</text>
+  </g>
+
+  <g fill="#555" font-size="11" text-anchor="middle">
+    <text x="280" y="46">sampled once per second</text>
+    <text x="150" y="506">fitness</text>
+    <text x="410" y="506">fatigue</text>
+    <text x="280" y="602">form</text>
+    <text x="280" y="692">CTL, ATL and TSB plotted against time</text>
+  </g>
+
+  <g stroke="#000" stroke-width="1.5" fill="none">
+    <path d="M 280 56  L 280 112"/>
+    <path d="M 280 150 L 280 200"/>
+    <path d="M 280 238 L 280 288"/>
+    <path d="M 280 326 L 280 376"/>
+    <path d="M 280 414 L 280 442 L 150 442 L 150 470"/>
+    <path d="M 280 414 L 280 442 L 410 442 L 410 470"/>
+    <path d="M 150 516 L 150 542 L 280 542 L 280 566"/>
+    <path d="M 410 516 L 410 542 L 280 542 L 280 566"/>
+    <path d="M 280 612 L 280 656"/>
+  </g>
+
+  <g fill="#000" stroke="none">
+    <polygon points="275,104 285,104 280,113"/>
+    <polygon points="275,192 285,192 280,201"/>
+    <polygon points="275,280 285,280 280,289"/>
+    <polygon points="275,368 285,368 280,377"/>
+    <polygon points="145,462 155,462 150,471"/>
+    <polygon points="405,462 415,462 410,471"/>
+    <polygon points="275,558 285,558 280,567"/>
+    <polygon points="275,648 285,648 280,657"/>
+  </g>
+
+  <g fill="#333" font-size="12">
+    <text x="296" y="80">30 s rolling average, 4th power,</text>
+    <text x="296" y="95">mean, 4th root</text>
+    <text x="296" y="179">divide by FTP</text>
+    <text x="296" y="267">100 &#215; hours &#215; IF&#178;</text>
+    <text x="296" y="355">sum per calendar day</text>
+    <text x="138" y="457" text-anchor="end">EWMA, &#964; = 42 days</text>
+    <text x="422" y="457">EWMA, &#964; = 7 days</text>
+    <text x="292" y="562">CTL &#8722; ATL</text>
+    <text x="345" y="312" font-size="11" fill="#555">one value per ride</text>
+  </g>
+</svg>

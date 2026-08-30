@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>The Performance Management Chart for Cycling</title>
+  <link href="/main.css" rel="stylesheet">
+  <viewport content="width=device-width">
+</head>
+
+<body><div id="page">
+
+<div style="display: flex; gap: 0.5em">
+  <div><a href="/">About</a></div>
+  <div><a href="/blog/">Blog</a></div>
+  <div><a href="/demos/">Demos</a></div>
+  <div><a href="/book-diary/">Book Diary</a></div>
+</div>
+
+<hr/>
+
+<div><h1>The Performance Management Chart for Cycling</h1>
+<p>2026-08-16</p>
+<p>I&rsquo;ve had a power meter on my bike for a while now, and power-derived metrics
+turn up in every ride summary: NP, IF, and TSS. I had a rough sense of what
+each metric meant — NP is power normalised to account for variability, IF is
+how intense the ride was relative to my FTP, and TSS is how big the ride was.
+But I couldn&rsquo;t have said how any of them were actually calculated.</p>
+<p>None of it turns out to be difficult. What makes it interesting is that the
+metrics form a stack, each one defined in terms of the one before it, starting
+from the raw power recording. Following that stack all the way down also led me
+somewhere I hadn&rsquo;t expected. It ends at the Performance Management Chart. I&rsquo;d
+seen that chart before without fully appreciating how it worked or what it was
+trying to convey, and it&rsquo;s what all of the other metrics exist to produce.</p>
+<p>This post works through the stack from top to bottom.</p>
+<h2>The Pipeline</h2>
+<p>Everything starts with the raw power recording from the power meter and ends
+with a chart. Each step is a straightforward transformation of the step before
+it. The rest of this post walks down the pipeline one box at a time, so there&rsquo;s
+no need to make sense of it all at once:</p>
+<p><img src="pipeline.svg" alt="A flow diagram. Power, sampled once per second,
+becomes NP via a 30 second rolling average, 4th power, mean and 4th root. NP
+divided by FTP gives IF. 100 times hours times IF squared gives TSS, one value
+per ride. TSS summed per calendar day gives daily TSS, which feeds two
+exponentially weighted moving averages: CTL with a 42 day time constant
+(fitness) and ATL with a 7 day time constant (fatigue). CTL minus ATL gives TSB
+(form). CTL, ATL and TSB plotted against time form the Performance Management
+Chart." style="width: 100%; max-width: 35em"></p>
+<h2>Normalized Power</h2>
+<p>Average power is a poor measure of how hard a ride was. An hour spent
+alternating between soft-pedalling and sprinting is far more taxing than an
+hour held at a constant power, even when both average out to the same number.</p>
+<p>Normalized Power (NP) is an attempt to correct for this. It estimates the
+constant power that would have cost the same physiologically as the variable
+ride you actually did.</p>
+<p>The algorithm operates on power sampled once per second and has four
+steps<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>:</p>
+<ol>
+<li>Take a 30 second rolling average of the power series.</li>
+<li>Raise each of those rolling average values to the 4th power.</li>
+<li>Take the mean of the result.</li>
+<li>Take the 4th root of that mean.</li>
+</ol>
+<p>Writing the 30 second rolling average ending at second <em>i</em> as
+<math><msub><mi>P</mi><mrow><mn>30</mn><mo separator="true">,</mo><mi>i</mi></mrow></msub></math>,
+and the number of such values as <em>n</em>:</p>
+<math display="block">
+<mi>NP</mi><mo>=</mo>
+<mroot>
+<mrow>
+<mfrac><mn>1</mn><mi>n</mi></mfrac>
+<munderover><mo>&#8721;</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover>
+<msubsup><mi>P</mi><mrow><mn>30</mn><mo separator="true">,</mo><mi>i</mi></mrow><mn>4</mn></msubsup>
+</mrow>
+<mn>4</mn>
+</mroot>
+</math>
+<p>The algorithm involves two arbitrary-looking constants, and both have a
+physiological justification:</p>
+<ul>
+<li>
+<p><strong>The 30 second window</strong> approximates how quickly the body responds to a
+change in workload. Oxygen uptake doesn&rsquo;t step instantly to a new level when
+you push harder, so a 5 second surge isn&rsquo;t experienced as a 5 second step
+change in cost.</p>
+</li>
+<li>
+<p><strong>The 4th power</strong> is there because blood lactate, along with several other
+markers of physiological stress, rises roughly as the fourth power of
+intensity. This is the term that lifts NP above average power whenever the
+effort is variable.</p>
+</li>
+</ul>
+<h3>Why NP exceeds average power</h3>
+<p>Consider a ride that alternates between one minute at 100 W and one minute at
+300 W. The average power is 200 W. Setting the smoothing step aside for a
+moment, the 4th power steps give:</p>
+<math display="block">
+<mroot>
+<mrow>
+<mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#183;</mo><msup><mn>100</mn><mn>4</mn></msup>
+<mo>+</mo>
+<mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#183;</mo><msup><mn>300</mn><mn>4</mn></msup>
+</mrow>
+<mn>4</mn>
+</mroot>
+<mo>&#8776;</mo><mn>253</mn><mspace width="0.15em"/><mi mathvariant="normal">W</mi>
+</math>
+<p>The 30 second rolling average blunts swings on this timescale, so the real
+figure lands somewhat below 253 W, but still well above the 200 W average.</p>
+<p>For a perfectly steady ride, NP and average power are equal. The ratio between
+them is called the Variability Index, and it&rsquo;s a reasonable measure of how
+punchy a ride was. A well paced time trial sits close to 1.0, whereas a
+criterium can be 1.3 or higher.</p>
+<h3>Things that trip up the calculation</h3>
+<ul>
+<li>
+<p><strong>The sampling rate matters.</strong> The algorithm assumes power sampled once per
+second. Head units using &ldquo;smart recording&rdquo; store samples irregularly, and
+feeding those in directly gives a different (and generally lower) answer. The
+data has to be resampled to one sample per second first.</p>
+</li>
+<li>
+<p><strong>Zeros count.</strong> Time spent coasting at 0 W stays in the series and is
+included in the rolling average. Whether elapsed time or moving time is used
+changes the answer, which is one reason two apps can disagree about the NP of
+the same ride.</p>
+</li>
+<li>
+<p><strong>Short efforts are meaningless.</strong> NP isn&rsquo;t considered valid for efforts
+below about 20 minutes.</p>
+</li>
+</ul>
+<h2>Intensity Factor</h2>
+<p>Intensity Factor (IF) is the simplest metric in the stack<sup id="fnref1:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>:</p>
+<math display="block">
+<mi>IF</mi><mo>=</mo><mfrac><mi>NP</mi><mi>FTP</mi></mfrac>
+</math>
+<p>FTP is Functional Threshold Power, roughly the highest power that could
+theoretically be sustained for 40 to 60 minutes. IF is therefore dimensionless,
+and riding at exactly FTP produces an IF of 1.0 by construction.</p>
+<p>It captures how hard a ride was, regardless of how long it lasted:</p>
+<table>
+<thead>
+<tr>
+<th>IF</th>
+<th>Ride type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 0.75</td>
+<td>Recovery rides</td>
+</tr>
+<tr>
+<td>0.75 - 0.85</td>
+<td>Endurance-paced rides</td>
+</tr>
+<tr>
+<td>0.85 - 0.95</td>
+<td>Tempo rides; interval sessions; road races over 2.5 hours</td>
+</tr>
+<tr>
+<td>0.95 - 1.05</td>
+<td>Road races under 2.5 hours; criteriums; 40 km time trials</td>
+</tr>
+<tr>
+<td>1.05 - 1.15</td>
+<td>Short time trials, around 15 km</td>
+</tr>
+<tr>
+<td>&gt; 1.15</td>
+<td>Prologue time trials; track pursuit</td>
+</tr>
+</tbody>
+</table>
+<p>Interval sessions land lower in the table than their name suggests. A threshold
+session comes out at around 0.85 to 0.90 as a whole ride, rather than up at
+threshold itself, because the warm-up, the recoveries between efforts and the
+cool-down make up most of the elapsed time. Only a sustained racing effort
+pushes an entire ride above 0.95. The work periods in isolation would score
+higher, but that&rsquo;s a number describing a fraction of a session rather than a
+whole ride.</p>
+<h2>Training Stress Score</h2>
+<p>Training Stress Score (TSS) combines intensity with duration to give a single
+number per ride. It&rsquo;s scaled so that one hour ridden at FTP scores exactly
+100<sup id="fnref2:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>:</p>
+<math display="block">
+<mi>TSS</mi><mo>=</mo>
+<mfrac>
+<mrow><mi>t</mi><mo>&#183;</mo><mi>NP</mi><mo>&#183;</mo><mi>IF</mi></mrow>
+<mrow><mi>FTP</mi><mo>&#183;</mo><mn>3600</mn></mrow>
+</mfrac>
+<mo>&#183;</mo><mn>100</mn>
+</math>
+<p>where <em>t</em> is the duration of the ride in seconds. That&rsquo;s how it&rsquo;s usually
+presented, but substituting
+<math><mi>NP</mi><mo>=</mo><mi>IF</mi><mo>·</mo><mi>FTP</mi></math>
+collapses it into something much easier to reason about:</p>
+<math display="block">
+<mi>TSS</mi><mo>=</mo><mn>100</mn><mo>&#183;</mo><mi>h</mi><mo>&#183;</mo><msup><mi>IF</mi><mn>2</mn></msup>
+</math>
+<p>where <em>h</em> is the duration of the ride in hours.</p>
+<p>TSS is just hours multiplied by intensity squared. Some examples:</p>
+<table>
+<thead>
+<tr>
+<th>Ride</th>
+<th>IF</th>
+<th>Hours</th>
+<th>TSS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recovery spin</td>
+<td>0.60</td>
+<td>1.0</td>
+<td>36</td>
+</tr>
+<tr>
+<td>Endurance ride</td>
+<td>0.80</td>
+<td>3.0</td>
+<td>192</td>
+</tr>
+<tr>
+<td>Long endurance ride</td>
+<td>0.75</td>
+<td>5.0</td>
+<td>281</td>
+</tr>
+<tr>
+<td>Threshold session</td>
+<td>0.88</td>
+<td>1.5</td>
+<td>116</td>
+</tr>
+<tr>
+<td>One hour at exactly FTP</td>
+<td>1.00</td>
+<td>1.0</td>
+<td>100</td>
+</tr>
+</tbody>
+</table>
+<p>Duration enters linearly but intensity is squared, which sounds like it should
+favour intensity, but in practice duration wins easily. The five hour endurance
+ride scores more than twice the threshold session, despite being much easier
+throughout.</p>
+<p>This is also the metric&rsquo;s biggest blind spot. Once a ride has been reduced to a
+TSS, the shape of it is gone. A hundred TSS accumulated in zone 2 and a hundred
+TSS accumulated at threshold are the same number, and everything further down
+the pipeline treats them identically, even though they adapt the body in quite
+different ways.</p>
+<h2>Fitness, Fatigue and Form</h2>
+<p>The whole scheme rests on the idea that a hard ride does two things at once. It
+makes you fitter, and it makes you tired. The important part is that the
+tiredness fades much faster than the fitness does. Rest for a week and most of
+the tiredness has gone while nearly all of the fitness remains.</p>
+<p>Capturing that requires tracking two quantities rather than one, differing only
+in how quickly each responds. Daily TSS totals on their own are far too noisy
+to steer training by, so both are built by smoothing them into exponentially
+weighted moving averages<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> <sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>:</p>
+<ul>
+<li>
+<p><strong>CTL</strong> (Chronic Training Load) uses a 42 day time constant. It responds
+slowly, and is interpreted as <em>fitness</em>.</p>
+</li>
+<li>
+<p><strong>ATL</strong> (Acute Training Load) uses a 7 day time constant. It responds
+quickly, and is interpreted as <em>fatigue</em>.</p>
+</li>
+</ul>
+<p>Both are computed with the same recurrence, applied once per day. Writing
+<math><msub><mi>x</mi><mi>d</mi></msub></math> for the value on day <em>d</em>:</p>
+<math display="block">
+<msub><mi>x</mi><mi>d</mi></msub><mo>=</mo>
+<msub><mi>x</mi><mrow><mi>d</mi><mo>&#8722;</mo><mn>1</mn></mrow></msub>
+<mo>+</mo>
+<mo>(</mo><msub><mi>TSS</mi><mi>d</mi></msub><mo>&#8722;</mo><msub><mi>x</mi><mrow><mi>d</mi><mo>&#8722;</mo><mn>1</mn></mrow></msub><mo>)</mo>
+<mo>(</mo><mn>1</mn><mo>&#8722;</mo><msup><mi>e</mi><mrow><mo>&#8722;</mo><mn>1</mn><mo>/</mo><mi>&#964;</mi></mrow></msup><mo>)</mo>
+</math>
+<p>where the time constant <math><mi>τ</mi></math> is 42 for CTL and 7 for
+ATL. Days without a ride count as a TSS of zero, which is why both decay when
+training stops.</p>
+<p>Both are in units of TSS per day, which takes some getting used to. A CTL of 60
+roughly means &ldquo;you have been averaging 60 TSS per day recently, weighted
+towards the more recent past&rdquo;.</p>
+<p>The third quantity is the difference between them:</p>
+<math display="block">
+<mi>TSB</mi><mo>=</mo><mi>CTL</mi><mo>&#8722;</mo><mi>ATL</mi>
+</math>
+<p>TSB (Training Stress Balance) is interpreted as <em>form</em>. It&rsquo;s conventionally
+computed from the previous day&rsquo;s CTL and ATL, so that today&rsquo;s ride doesn&rsquo;t
+affect today&rsquo;s form. The usual interpretation:</p>
+<ul>
+<li><strong>Below -30</strong>: heavily overloaded. Short excursions here are normal, and are
+often the deliberate point of a hard block or a training camp. Staying here
+is how people injure themselves or get ill.</li>
+<li><strong>-30 to -10</strong>: in the middle of a training block. Fatigued, but adapting.
+This is where most of a build is spent.</li>
+<li><strong>-10 to +5</strong>: maintaining. Training is roughly matching what&rsquo;s being
+recovered from.</li>
+<li><strong>+5 to +25</strong>: rested and ready. This is what you&rsquo;d aim for on event day,
+such as a gran fondo.</li>
+<li><strong>Above +25</strong>: detrained, if sustained. Fitness is being lost.</li>
+</ul>
+<p>Those boundaries are conventions rather than measurements, and different
+sources place them differently. They also can&rsquo;t be compared between people: a
+TSB of -20 doesn&rsquo;t mean the same thing for two riders with different CTLs,
+because the same absolute number represents a much larger disturbance to
+someone training lightly than to someone training a lot.</p>
+<h2>The Performance Management Chart</h2>
+<p>The Performance Management Chart (PMC) is CTL, ATL and TSB plotted against
+time<sup id="fnref1:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>. There&rsquo;s nothing more to it than that. It is the pipeline&rsquo;s
+output, and it&rsquo;s where all of the preceding metrics are actually meant to be
+read. This is my own riding for the last six months:</p>
+<p><img src="pmc.svg" alt="Three stacked panels sharing a time axis from February
+to August 2026. The top panel shows daily TSS as bars, mostly between 50 and
+300, with two reaching about 440 and a sparse stretch through June. The middle
+panel shows CTL and ATL in TSS per day: CTL rises from about 55 in early March
+to a peak near 86 in early May, falls to about 40 by mid July, then recovers to
+just under 50. ATL swings between about 5 and 146 around it. The bottom panel
+shows TSB, which drops to -70 at the end of March, sits above +25 for much of
+June, and returns to around zero by August. Dashed vertical lines mark the
+Bobbin Head Classic in late March and the Mudgee Classic in early May."
+style="width: 100%; max-width: 50em"></p>
+<p>The two gran fondos I rode are marked, and I rode them in very different
+states. I arrived at the Bobbin Head Classic on a TSB of -34, well into the
+heavily overloaded band, largely because I&rsquo;d ridden 300 TSS the previous day. I
+had a thoroughly bad time. The event itself scored 436, ATL spiked to 146, and
+TSB bottomed out at -70 the following morning, the lowest point on the chart by
+some margin.</p>
+<p>The Mudgee Classic five weeks later was the reverse. Four days off beforehand
+pulled ATL down while CTL barely moved, which is what a taper is supposed to
+do, and I started on a TSB of +6. I felt strong for most of it. I did get
+dropped in the end, but I&rsquo;d been holding on in a group that was stronger than I
+thought I could ride with, so I counted it as a win. The two rides scored 436
+and 419, so as training stress they were nearly identical. The difference
+between them is entirely in the state I turned up in, which is what the chart
+is tracking.</p>
+<h2>Where It Came From</h2>
+<p>The two-exponential structure long predates power meters. It&rsquo;s the
+<em>impulse-response model</em> proposed by Eric Banister in 1975, which treats each
+training session as an impulse producing a positive fitness effect and a
+negative fatigue effect, each decaying exponentially at its own rate, with
+performance being the difference between them. Banister measured training
+load using heart rate, in units he called TRIMP (Training Impulse).</p>
+<p>Andrew Coggan adapted the model to power meter data, introducing TSS in 2003
+and, with a group of beta testers, building the Performance Manager chart that
+shipped in WKO+<sup id="fnref1:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> <sup id="fnref1:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>. He and Hunter Allen popularised the whole framework
+in <em>Training and Racing with a Power Meter</em> in 2006.</p>
+<h2>Who Owns the Names</h2>
+<p>There&rsquo;s a complication if you go looking for these metrics in software other
+than TrainingPeaks. Six names are registered US trademarks owned by
+TrainingPeaks LLC: <strong>Training Stress Score</strong> and <strong>TSS</strong>, <strong>Normalized Power</strong>
+and <strong>NP</strong>, <strong>Intensity Factor</strong> and <strong>IF</strong><sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup>.</p>
+<p>Nothing else in the pipeline is registered: TrainingPeaks holds no mark on CTL,
+ATL, TSB or FTP, and none on &ldquo;Performance Management Chart&rdquo; or &ldquo;PMC&rdquo;.</p>
+<p>A trademark covers a name used in connection with particular goods and
+services. It says nothing about the mathematics behind the name. The algorithms
+were published in the 2006 book and no patent covers them, so anyone is free to
+compute the numbers. What you can&rsquo;t do is distribute software that labels the
+output TSS.</p>
+<p>Software either licenses the names or invents its own. Garmin&rsquo;s device manuals
+carry a trademark notice for all three metrics<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup>, and since Garmin bought
+TrainingPeaks in July 2026<sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup> it licenses the marks from itself. Hammerhead
+writes Normalized Power™, Intensity Factor® and Training Stress Score® in its
+list of data fields<sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup>, and TrainerRoad says it uses the terms with
+permission<sup id="fnref:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup>. Strava has its own names for all of it: Weighted Average
+Power, Training Load, and Fitness, Fatigue and Form for the three curves<sup id="fnref:10"><a href="#fn:10" class="footnote-ref" role="doc-noteref">10</a></sup>.
+Those aren&rsquo;t just renames. Strava doesn&rsquo;t publish its algorithms, and the
+figures it reports for a ride don&rsquo;t match TrainingPeaks&rsquo;<sup id="fnref:11"><a href="#fn:11" class="footnote-ref" role="doc-noteref">11</a></sup>.</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://www.trainingpeaks.com/learn/articles/normalized-power-intensity-factor-training-stress/">https://www.trainingpeaks.com/learn/articles/normalized-power-intensity-factor-training-stress/</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://www.trainingpeaks.com/learn/articles/the-science-of-the-performance-manager/">https://www.trainingpeaks.com/learn/articles/the-science-of-the-performance-manager/</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://help.trainingpeaks.com/hc/en-us/articles/204071874-Performance-Management-Chart-PMC">https://help.trainingpeaks.com/hc/en-us/articles/204071874-Performance-Management-Chart-PMC</a>&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p><a href="https://fascatcoaching.com/blogs/training-tips/performance-manager-chart/">https://fascatcoaching.com/blogs/training-tips/performance-manager-chart/</a>&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5">
+<p>US serial numbers 85913835, 85913836 and 85913838 (Training Stress
+Score); 85913857, 85913859 and 85913860 (TSS); 85913878, 85913880 and
+85913884 (Normalized Power); 85913929, 85913932 and 85913935 (NP);
+85913941, 85913945 and 85913946 (Intensity Factor); 85913951, 85913953 and
+85913956 (IF). Each is on the register at
+<a href="https://tsdr.uspto.gov/">https://tsdr.uspto.gov/</a>.&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6">
+<p><a href="https://www8.garmin.com/manuals/webhelp/GUID-C001C335-A8EC-4A41-AB0E-BAC434259F92/EN-US/GUID-EA8E54CC-013B-460C-B861-049A1DED1FCA.html">https://www8.garmin.com/manuals/webhelp/GUID-C001C335-A8EC-4A41-AB0E-BAC434259F92/EN-US/GUID-EA8E54CC-013B-460C-B861-049A1DED1FCA.html</a>&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7">
+<p><a href="https://www.garmin.com/en-US/newsroom/press-release/corporate/garmin-acquires-trainingpeaks-and-trainheroic-leading-endurance-and-strength-training-platforms-for-athletes-and-coaches/">https://www.garmin.com/en-US/newsroom/press-release/corporate/garmin-acquires-trainingpeaks-and-trainheroic-leading-endurance-and-strength-training-platforms-for-athletes-and-coaches/</a>&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8">
+<p><a href="https://support.hammerhead.io/hc/en-us/articles/35533240795419-Data-Fields-Legend">https://support.hammerhead.io/hc/en-us/articles/35533240795419-Data-Fields-Legend</a>&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:9">
+<p><a href="https://www.trainerroad.com/blog/why-tss-atl-ctl-and-tsb-matter/">https://www.trainerroad.com/blog/why-tss-atl-ctl-and-tsb-matter/</a>&#160;<a href="#fnref:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:10">
+<p><a href="https://support.strava.com/hc/en-us/articles/216917147-Strava-Training-Glossary-for-Cycling">https://support.strava.com/hc/en-us/articles/216917147-Strava-Training-Glossary-for-Cycling</a>&#160;<a href="#fnref:10" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:11">
+<p><a href="https://science4performance.com/2017/04/20/strava-ride-statistics/">https://science4performance.com/2017/04/20/strava-ride-statistics/</a>&#160;<a href="#fnref:11" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div></div>
+
+<hr/>
+
+<div style="display: flex">
+  <div style="width: 50%; text-align: left; display: flex; gap: 0.5em">
+    <div><a href="https://github.com/peterstace">Github</a></div>
+    <div><a href="https://www.linkedin.com/in/petsta/">LinkedIn</a></div>
+  </div>
+  <div style="width: 50%; text-align: right">
+    &copy; Peter Stace 2015-2026
+  </div>
+</div>
+
+</div></body></html>
